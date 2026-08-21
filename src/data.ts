@@ -117,6 +117,10 @@ export interface Task extends CatalogTask {
   guideTitle: string
   guideDefinition: string
   guideScope: string
+  quickOutput: string
+  quickSteps: string[]
+  quickEvidence: string
+  quickTemplateRequired: boolean
   cadence: string
   processClass: string
   objective: string
@@ -312,6 +316,22 @@ function sharePointPathFor(task: CatalogTask, term: AcademicTerm, pattern?: stri
     .replaceAll('{taskId}', task.id)
 }
 
+function quickEvidenceFor(task: CatalogTask) {
+  const evidenceByOutput: Record<string, string> = {
+    'خطة': 'الخطة النهائية.',
+    'تقرير': 'التقرير النهائي.',
+    'جدول': 'الجدول النهائي.',
+    'قائمة': 'القائمة النهائية.',
+    'مادة إعلامية': 'رابط النشر أو صورة النشر.',
+    'نموذج': 'النموذج المكتمل.',
+    'ملف أكاديمي': 'الملف المكتمل.',
+    'قاعدة بيانات': 'قاعدة البيانات المحدثة.',
+    'نشاط وفعالية': 'إثبات تنفيذ النشاط.',
+    'إجراء تشغيلي': 'إثبات تنفيذ الإجراء.',
+  }
+  return evidenceByOutput[task.outputType] ?? 'المخرج النهائي.'
+}
+
 export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[] {
   if (!term.supportsFullCommitteePlan) return []
 
@@ -336,8 +356,9 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
     const assignment = guideAssignments[task.id]
     const procedureGuide = assignment ? guideById.get(assignment.guideId) : undefined
     const guideTitle = procedureGuide?.nameAr ?? `دليل ${task.outputType}`
+    const isOfficeHoursAnnouncement = assignment?.guideId === 'guide-office-hours-publication'
     const primaryTemplateId = assignment?.primaryTemplateId ?? primaryTemplateFor(task)
-    const companionTemplateIds = assignment?.companionTemplateIds ?? companionTemplates(primaryTemplateId)
+    const companionTemplateIds = isOfficeHoursAnnouncement ? [] : assignment?.companionTemplateIds ?? companionTemplates(primaryTemplateId)
     const fallbackGuide = detailSet(task, guideTitle)
     const executionSteps = procedureGuide
       ? procedureGuide.steps.map((step) => `${step.title}: ${step.action} — معيار الخروج: ${step.exitCriterion}`)
@@ -369,6 +390,10 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
       guideTitle,
       guideDefinition: procedureGuide?.definition ?? fallbackGuide.objective,
       guideScope: procedureGuide?.scope ?? `نطاق المهمة المسجلة: ${task.title}.`,
+      quickOutput: isOfficeHoursAnnouncement ? 'جدول عام مكتمل للساعات المكتبية ومنشور للطلاب.' : `إنجاز «${task.title}» في صورته النهائية.`,
+      quickSteps: isOfficeHoursAnnouncement ? ['يحدد كل عضو ساعاته المكتبية في جدوله الأسبوعي ويوقّعه.', 'يجمع المنسق الجداول ويتحقق من اكتمال جميع الأعضاء.', 'ينشر المنسق الجدول العام للطلاب.'] : task.steps,
+      quickEvidence: isOfficeHoursAnnouncement ? 'الجدول العام المنشور فقط.' : quickEvidenceFor(task),
+      quickTemplateRequired: !isOfficeHoursAnnouncement,
       cadence: procedureGuide?.cadence.type ?? 'تحتاج اعتمادًا',
       processClass: processClassById.get(taskType?.processClass ?? '') ?? 'تنفيذ ومتابعة',
       objective: procedureGuide?.objective ?? fallbackGuide.objective,

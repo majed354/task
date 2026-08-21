@@ -248,84 +248,53 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
 
   return (
     <AccessibleDialog onClose={onClose} titleId="task-modal-title" className="task-detail-modal">
-      <header className="modal-header">
+      <header className="modal-header simple-modal-header">
         <button className="icon-button" type="button" onClick={onClose} aria-label="إغلاق تفاصيل المهمة" data-autofocus><X size={22} /></button>
         <div className="modal-title-copy">
-          <div className="modal-kickers"><span className="task-code">{task.id}</span><span>{task.taskTypeId}</span><span>{task.cadence}</span></div>
+          <div className="modal-kickers"><span className="task-code">{task.id}</span><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
           <h2 id="task-modal-title">{task.title}</h2>
           <p>{task.committee} · {task.department}</p>
         </div>
-        <button className="soft-button modal-link-copy" type="button" onClick={() => copyText(permanentLink, 'link')}><Clipboard size={17} /> {copied === 'link' ? 'تم نسخ الرابط' : 'نسخ رابط المهمة'}</button>
       </header>
 
-      <div className="modal-content">
-        <div className="status-pair" aria-label="حالتا الموعد والتسليم">
-          <div><span>حالة الموعد</span><strong className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</strong></div>
-          <div><span>حالة التسليم الفعلية</span><strong className="status-pill delivery-pending">{task.deliveryStatus}</strong><small>لا توجد بيانات رفع حية بعد</small></div>
-        </div>
-
-        <div className="modal-summary">
-          <div><span>بدء التنفيذ</span><strong>{formatGregorian(task.start, true)}</strong></div>
-          <div><span>المخرج الإلزامي</span><strong>{task.finalOutput}</strong></div>
-          <div><span>التسليم الأساسي</span><strong>{formatGregorian(task.due, true)}</strong></div>
-          <div><span>نهاية المهلة</span><strong>{formatGregorian(task.graceEnd, true)}</strong></div>
-        </div>
-
-        <div className="timing-callout"><CalendarClock size={20} /><div><strong>قاعدة الموعد</strong><span>{task.timingNote} {task.earlySubmissionNote}</span></div></div>
-        {task.privacyClass.startsWith('مقيد') && <div className="privacy-callout"><ShieldCheck size={20} /><div><strong>محتوى مقيد</strong><span>لا تُدرج أسماء الطلبة أو أي بيانات شخصية في اسم الملف أو داخل هذه البوابة. تحفظ البيانات في المسار المؤسسي ذي الصلاحية المناسبة.</span></div></div>}
-
-        <section className="modal-section objective-section">
-          <div className="section-icon"><Target size={20} /></div>
-          <div><span className="detail-eyebrow">{task.guideTitle}</span><h3>الهدف والنطاق</h3><p>{task.guideDefinition}</p><p><strong>الهدف:</strong> {task.objective}</p><p><strong>النطاق:</strong> {task.guideScope}</p></div>
+      <div className="modal-content simple-task-content">
+        <section className="quick-output-card">
+          <div className="quick-icon"><CheckCircle2 size={24} /></div>
+          <div><span>المطلوب</span><h3>{task.quickOutput}</h3></div>
         </section>
 
-        <div className="responsibility-grid">
-          <section><span>المسؤول المباشر</span><strong>{task.executionOwner}</strong><small>طبقًا لدليل نوع المهمة</small></section>
-          <section><span>تنسيق السجل</span><strong>{task.recordCoordinator}</strong><small>بحسب بيانات الكتالوج</small></section>
-          <section><span>المراجع</span><strong>{task.reviewer}</strong><small>مسار وظيفي لا قائمة عضوية</small></section>
-          <section><span>المعتمد</span><strong>{task.approver}</strong><small>وفق نطاق المهمة وقرار التشكيل</small></section>
-          <section><span>تصنيف الوصول</span><strong>{task.privacyClass}</strong><small>تطبق السياسة المحلية عند الربط</small></section>
-          <section><span>المدة المتوقعة</span><strong>{task.expectedDuration}</strong><small>{task.planningNote}</small></section>
+        <div className="quick-meta-grid">
+          <section><span>المنفذ</span><strong>{task.committee}</strong><small>تنسيق السجل: {task.recordCoordinator}</small></section>
+          <section><span>الموعد</span><strong>{formatGregorian(task.due, true)}</strong><small>{task.temporalStatus}</small></section>
         </div>
 
-        <div className="detail-columns">
-          <section className="detail-panel"><div className="section-title"><FolderOpen size={20} /><h3>المدخلات المطلوبة</h3></div><InfoList items={task.inputs} /></section>
-          <section className="detail-panel"><div className="section-title"><FileCheck2 size={20} /><h3>الأدلة والمرفقات</h3></div><InfoList items={task.evidence} /></section>
-        </div>
+        <section className="quick-steps-panel"><div className="section-title"><ListChecks size={21} /><h3>أنجزها في {task.quickSteps.length} خطوات</h3></div><InfoList items={task.quickSteps} ordered /></section>
 
-        <section className="detail-panel full-panel"><div className="section-title"><ListChecks size={20} /><h3>خطوات التنفيذ</h3></div><InfoList items={task.executionSteps} ordered /></section>
+        <section className="quick-evidence-card"><FileCheck2 size={22} /><div><span>الشاهد الكافي</span><strong>{task.quickEvidence}</strong></div></section>
 
-        <div className="detail-columns">
-          <section className="detail-panel"><div className="section-title"><ClipboardCheck size={20} /><h3>معايير القبول</h3></div><InfoList items={task.acceptanceCriteria} /></section>
-          <section className="detail-panel error-panel"><div className="section-title"><AlertTriangle size={20} /><h3>أخطاء شائعة</h3></div><InfoList items={task.commonErrors} /></section>
-        </div>
+        {task.quickTemplateRequired ? <section className="quick-template-card"><div><FileText size={23} /><span><small>ابدأ بهذا القالب</small><strong>{primaryTemplate.name}</strong></span></div><a href={`/templates/${primaryTemplate.file}`} download>تحميل <Download size={18} /></a></section> : <section className="no-template-card"><Check size={21} /><div><strong>لا يحتاج قالبًا إضافيًا</strong><span>استخدم الجدول الأسبوعي للأعضاء ثم انشر الجدول العام.</span></div></section>}
 
-        <div className="detail-columns">
-          <section className="detail-panel"><div className="section-title"><ShieldCheck size={20} /><h3>المراجعة والاعتماد</h3></div><p>{task.approvalMethod}</p></section>
-          <section className="detail-panel"><div className="section-title"><BookOpenCheck size={20} /><h3>صلة الدراسة الذاتية</h3></div><InfoList items={task.selfStudyConnections} /></section>
-        </div>
-
-        <div className="detail-columns">
-          <section className="detail-panel"><div className="section-title"><Target size={20} /><h3>مؤشرات المتابعة المقترحة</h3></div><InfoList items={task.performanceIndicators.map((indicator) => `${indicator.name}: ${indicator.formula}. المستهدف المقترح ${indicator.proposedTarget} (${indicator.direction}).`)} /></section>
-          <section className="detail-panel examples-panel"><div className="section-title"><CheckCircle2 size={20} /><h3>أمثلة قبول ورفض</h3></div><div className="example-block accepted-example"><strong>مثال مقبول</strong><InfoList items={task.acceptedExamples} /></div><div className="example-block rejected-example"><strong>مثال غير مقبول</strong><InfoList items={task.rejectedExamples} /></div></section>
-        </div>
-
-        <section className="delivery-panel" aria-labelledby="delivery-title">
-          <div className="section-title"><FolderOpen size={20} /><h3 id="delivery-title">التسمية والتسليم</h3></div>
-          <div className="delivery-field"><span>اسم الملف المقترح</span><code dir="ltr">{task.fileName}</code><button type="button" onClick={() => copyText(task.fileName, 'file')}><Clipboard size={17} /> {copied === 'file' ? 'تم النسخ' : 'نسخ الاسم'}</button></div>
-          <div className="delivery-field"><span>مسار تنظيمي مقترح — غير معتمد</span><code>{task.proposedSharePointPath}</code><button type="button" onClick={() => copyText(task.proposedSharePointPath, 'path')}><Clipboard size={17} /> {copied === 'path' ? 'تم النسخ' : 'نسخ المسار'}</button></div>
-          <p className="delivery-warning"><Info size={18} /> لم تُربط بنية مجلدات SharePoint المحلية؛ الرابط التالي يفتح الجذر العام ولا يثبت مجلد المهمة.</p>
-        </section>
-
-        <section className="template-callout">
-          <div><FileText size={24} /><span><small>القالب الأساسي</small><strong>{primaryTemplate.name}</strong></span></div>
-          <a href={`/templates/${primaryTemplate.file}`} download>تحميل القالب <Download size={18} /></a>
-        </section>
-        <section className="companion-templates"><h3>قوالب مرافقة</h3><div>{companions.map((template) => <a key={template.id} href={`/templates/${template.file}`} download><FileText size={18} /><span>{template.name}</span><Download size={17} /></a>)}</div></section>
+        {task.quickTemplateRequired && <details className="advanced-task-details">
+          <summary>تفاصيل إضافية عند الحاجة <ChevronDown size={19} /></summary>
+          <div className="advanced-task-content">
+            <div className="status-pair" aria-label="حالتا الموعد والتسليم"><div><span>حالة الموعد</span><strong className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</strong></div><div><span>حالة التسليم الفعلية</span><strong className="status-pill delivery-pending">{task.deliveryStatus}</strong><small>لا توجد بيانات رفع حية بعد</small></div></div>
+            <div className="modal-summary"><div><span>بدء التنفيذ</span><strong>{formatGregorian(task.start, true)}</strong></div><div><span>المخرج التفصيلي</span><strong>{task.finalOutput}</strong></div><div><span>نهاية المهلة</span><strong>{formatGregorian(task.graceEnd, true)}</strong></div></div>
+            <div className="timing-callout"><CalendarClock size={20} /><div><strong>قاعدة الموعد</strong><span>{task.timingNote} {task.earlySubmissionNote}</span></div></div>
+            {task.privacyClass.startsWith('مقيد') && <div className="privacy-callout"><ShieldCheck size={20} /><div><strong>تنبيه عند وجود بيانات مقيدة</strong><span>لا تُدرج أسماء الطلبة أو أي بيانات شخصية في اسم الملف أو داخل هذه البوابة.</span></div></div>}
+            <section className="modal-section objective-section"><div className="section-icon"><Target size={20} /></div><div><span className="detail-eyebrow">{task.guideTitle}</span><h3>الهدف والنطاق</h3><p>{task.guideDefinition}</p><p><strong>الهدف:</strong> {task.objective}</p><p><strong>النطاق:</strong> {task.guideScope}</p></div></section>
+            <div className="responsibility-grid"><section><span>المسؤول المباشر</span><strong>{task.executionOwner}</strong></section><section><span>المراجع</span><strong>{task.reviewer}</strong></section><section><span>المعتمد</span><strong>{task.approver}</strong></section><section><span>المدة المتوقعة</span><strong>{task.expectedDuration}</strong></section></div>
+            <div className="detail-columns"><section className="detail-panel"><div className="section-title"><FolderOpen size={20} /><h3>المدخلات</h3></div><InfoList items={task.inputs} /></section><section className="detail-panel"><div className="section-title"><FileCheck2 size={20} /><h3>الأدلة الكاملة</h3></div><InfoList items={task.evidence} /></section></div>
+            <section className="detail-panel full-panel"><div className="section-title"><ListChecks size={20} /><h3>الدليل التفصيلي</h3></div><InfoList items={task.executionSteps} ordered /></section>
+            <div className="detail-columns"><section className="detail-panel"><div className="section-title"><ClipboardCheck size={20} /><h3>معايير القبول</h3></div><InfoList items={task.acceptanceCriteria} /></section><section className="detail-panel error-panel"><div className="section-title"><AlertTriangle size={20} /><h3>أخطاء شائعة</h3></div><InfoList items={task.commonErrors} /></section></div>
+            <div className="detail-columns"><section className="detail-panel"><div className="section-title"><ShieldCheck size={20} /><h3>المراجعة والاعتماد</h3></div><p>{task.approvalMethod}</p></section><section className="detail-panel"><div className="section-title"><BookOpenCheck size={20} /><h3>صلة الدراسة الذاتية</h3></div><InfoList items={task.selfStudyConnections} /></section></div>
+            <section className="delivery-panel" aria-labelledby="delivery-title"><div className="section-title"><FolderOpen size={20} /><h3 id="delivery-title">التسمية والتسليم</h3></div><div className="delivery-field"><span>اسم الملف المقترح</span><code dir="ltr">{task.fileName}</code><button type="button" onClick={() => copyText(task.fileName, 'file')}><Clipboard size={17} /> {copied === 'file' ? 'تم النسخ' : 'نسخ الاسم'}</button></div><div className="delivery-field"><span>مسار مقترح — غير معتمد</span><code>{task.proposedSharePointPath}</code><button type="button" onClick={() => copyText(task.proposedSharePointPath, 'path')}><Clipboard size={17} /> {copied === 'path' ? 'تم النسخ' : 'نسخ المسار'}</button></div><p className="delivery-warning"><Info size={18} /> بنية مجلد المهمة لم تُربط بعد.</p><div className="advanced-links"><button className="soft-button" type="button" onClick={() => copyText(permanentLink, 'link')}><Clipboard size={17} /> {copied === 'link' ? 'تم نسخ الرابط' : 'نسخ رابط المهمة'}</button><a className="soft-button" href={sharePointUrl} target="_blank" rel="noreferrer">فتح جذر SharePoint <ArrowUpLeft size={17} /></a></div></section>
+            <section className="companion-templates"><h3>قوالب مرافقة</h3><div>{companions.map((template) => <a key={template.id} href={`/templates/${template.file}`} download><FileText size={18} /><span>{template.name}</span><Download size={17} /></a>)}</div></section>
+          </div>
+        </details>}
       </div>
 
       <footer className="modal-actions">
-        <a className="primary-button" href={sharePointUrl} target="_blank" rel="noreferrer">فتح جذر SharePoint العام <ArrowUpLeft size={18} /></a>
+        {task.quickTemplateRequired ? <a className="primary-button" href={`/templates/${primaryTemplate.file}`} download>تحميل القالب والبدء <Download size={18} /></a> : <span className="no-template-note">الشاهد المطلوب: الجدول العام المنشور فقط.</span>}
         <button className="secondary-button" type="button" onClick={onClose}>إغلاق</button>
       </footer>
     </AccessibleDialog>
@@ -548,7 +517,7 @@ function Dashboard() {
               <p>{nextTask.committee} · {nextTask.department}</p>
               <div className="next-task-meta"><div><span>المخرج</span><strong>{nextTask.outputType}</strong></div><div><span>الموعد</span><strong>{formatGregorian(nextTask.due)}</strong></div></div>
               <div className="countdown-box"><div><strong>{daysUntil(nextMilestone.date, now)}</strong><span>يومًا</span></div><p><strong>{nextMilestone.label}</strong><span>{formatGregorian(nextMilestone.date, true)}</span></p></div>
-              <div className="next-task-actions"><button className="primary-button" type="button" onClick={() => openTask(nextTask)}>عرض التنفيذ <ArrowLeft size={18} /></button><a className="secondary-button" href={sharePointUrl} target="_blank" rel="noreferrer">جذر SharePoint <ArrowUpLeft size={18} /></a></div>
+              <div className="next-task-actions"><button className="primary-button" type="button" onClick={() => openTask(nextTask)}>كيف أنجزها؟ <ArrowLeft size={18} /></button><a className="secondary-button" href={sharePointUrl} target="_blank" rel="noreferrer">جذر SharePoint <ArrowUpLeft size={18} /></a></div>
             </> : <div className="no-plan"><CalendarClock size={34} /><h2 id="next-task-title">لا توجد خطة لجان صيفية معتمدة</h2><p>الفصل الصيفي ظاهر للتوسع الزمني فقط، ولم يُسند إليه كتالوج مهام محلي.</p></div>}
           </article>
         </section>
@@ -566,15 +535,13 @@ function Dashboard() {
             <div className="result-count" aria-live="polite"><strong>{filteredTasks.length}</strong><span>نتيجة مطابقة</span></div>
           </div>
 
-          <div className="filters-panel">
+          <div className="filters-panel simple-filters-panel">
             <label className="search-field"><span>البحث في الفصل</span><div><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="مثال: QRA-T003 أو خطة الجودة" /></div></label>
             <label><span>القسم</span><select value={department} onChange={(event) => setDepartment(event.target.value as Department)}>{departments.map((item) => <option key={item}>{item}</option>)}</select></label>
             <label><span>اللجنة</span><select value={committee} onChange={(event) => setCommittee(event.target.value)}><option value={allCommitteeScopes}>{allCommitteeScopes}</option>{committeeOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
-            <label><span>الأسبوع/الفترة</span><select value={weekFilter} onChange={(event) => setWeekFilter(event.target.value)}><option value="all">كل الفصل</option><option value="0">أسبوع التهيئة</option>{weeks.map((item) => <option key={item.number} value={item.number}>الأسبوع {item.number}</option>)}{examEvent && <option value="16">فترة الاختبارات</option>}</select></label>
-            <label><span>نوع الدليل</span><select value={guideFilter} onChange={(event) => setGuideFilter(event.target.value)}><option value="all">كل الأدلة</option>{guideOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
-            <label><span>نوع المخرج</span><select value={outputFilter} onChange={(event) => setOutputFilter(event.target.value)}><option value="all">كل المخرجات</option>{outputOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
-            <label><span>حالة الموعد</span><select value={temporalFilter} onChange={(event) => setTemporalFilter(event.target.value)}><option value="all">كل الحالات</option>{Object.keys(temporalClass).map((item) => <option key={item}>{item}</option>)}</select></label>
           </div>
+
+          <details className="advanced-filters"><summary>خيارات بحث إضافية <SlidersHorizontal size={18} /></summary><div><label><span>الأسبوع/الفترة</span><select value={weekFilter} onChange={(event) => setWeekFilter(event.target.value)}><option value="all">كل الفصل</option><option value="0">أسبوع التهيئة</option>{weeks.map((item) => <option key={item.number} value={item.number}>الأسبوع {item.number}</option>)}{examEvent && <option value="16">فترة الاختبارات</option>}</select></label><label><span>نوع الدليل</span><select value={guideFilter} onChange={(event) => setGuideFilter(event.target.value)}><option value="all">كل الأدلة</option>{guideOptions.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>نوع المخرج</span><select value={outputFilter} onChange={(event) => setOutputFilter(event.target.value)}><option value="all">كل المخرجات</option>{outputOptions.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>حالة الموعد</span><select value={temporalFilter} onChange={(event) => setTemporalFilter(event.target.value)}><option value="all">كل الحالات</option>{Object.keys(temporalClass).map((item) => <option key={item}>{item}</option>)}</select></label></div></details>
 
           <div className="active-filters">
             <SlidersHorizontal size={19} />
@@ -582,24 +549,14 @@ function Dashboard() {
             {activeChips.length > 0 && <button className="clear-filters" type="button" onClick={resetFilters}>مسح الكل</button>}
           </div>
 
-          <div className="status-explainer"><Info size={19} /><p><strong>حالة الموعد</strong> محسوبة من التقويم فقط. <strong>حالة التسليم</strong> مستقلة وتبقى «بانتظار الربط» حتى تصل بيانات SharePoint الفعلية.</p></div>
-
           <div className="tasks-list">
-            {filteredTasks.slice(0, visibleCount).map((task) => {
-              const primaryTemplate = templateById(task.primaryTemplateId)
-              return <article className="task-card" key={task.id}>
-                <div className="task-card-top"><div><span className="task-code">{task.id}</span><span className="type-code">{task.taskTypeId}</span>{task.scheduleAdjusted && <span className="adjusted-badge">أعيدت الجدولة</span>}</div><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
+            {filteredTasks.slice(0, visibleCount).map((task) => <article className="task-card simple-task-card" key={task.id}>
+                <div className="task-card-top"><div><span className="task-code">{task.id}</span>{task.scheduleAdjusted && <span className="adjusted-badge">أعيدت الجدولة</span>}</div></div>
                 <h3>{task.title}</h3>
                 <p>{task.committee} · {task.department}</p>
-                <div className="task-card-meta">
-                  <div><span>التسليم الأساسي</span><strong>{formatGregorian(task.due)}</strong><small>المهلة: {formatGregorian(task.graceEnd)}</small></div>
-                  <div><span>المخرج والدليل</span><strong>{task.outputType}</strong><small>{task.guideTitle}</small></div>
-                  <div><span>القالب</span><strong>{primaryTemplate.name}</strong><small>{primaryTemplate.type}</small></div>
-                  <div><span>حالة التسليم</span><strong className="pending-text">{task.deliveryStatus}</strong><small>لا توجد بيانات حية</small></div>
-                </div>
-                <div className="task-card-foot"><span className={task.privacyClass.startsWith('مقيد') ? 'privacy-badge restricted' : 'privacy-badge'}><ShieldCheck size={16} /> {task.privacyClass}</span><button className="details-button" type="button" onClick={() => openTask(task)}>التنفيذ والأدلة <ChevronLeft size={18} /></button></div>
-              </article>
-            })}
+                <div className="simple-task-facts"><div><CalendarClock size={19} /><span>الموعد</span><strong>{formatGregorian(task.due)}</strong><small>{task.temporalStatus}</small></div><div><FileCheck2 size={19} /><span>الشاهد الكافي</span><strong>{task.quickEvidence}</strong></div></div>
+                <button className="details-button" type="button" onClick={() => openTask(task)}>كيف أنجزها؟ <ChevronLeft size={18} /></button>
+              </article>)}
             {!filteredTasks.length && <div className="empty-state"><Search size={34} /><h3>لا توجد مهام مطابقة</h3><p>امسح البحث أو أحد الفلاتر، أو اختر فصلًا آخر.</p><button className="secondary-button" type="button" onClick={resetFilters}>مسح البحث والفلاتر</button></div>}
           </div>
           {visibleCount < filteredTasks.length && <button className="show-more-button" type="button" onClick={() => setVisibleCount((count) => count + 40)}>عرض 40 مهمة إضافية</button>}
@@ -657,8 +614,8 @@ function Dashboard() {
         </section>
 
         <section className="workflow-section">
-          <div className="workflow-heading"><span className="section-kicker">مسار العمل</span><h2>من التكليف إلى دليل قابل للاستشهاد</h2><p>المرجع يشرح التنفيذ، والقالب يبني المخرج، وSharePoint يحتفظ بالنسخة النهائية بعد اعتماد المسار.</p></div>
-          <div className="workflow-steps"><div><span>01</span><LayoutDashboard size={24} /><h3>حدّد نطاقك</h3><p>اختر القسم واللجنة واعرف المهمة التالية.</p></div><div><span>02</span><ListChecks size={24} /><h3>اتبع الدليل</h3><p>اجمع المدخلات ونفذ الخطوات المحددة.</p></div><div><span>03</span><ClipboardCheck size={24} /><h3>افحص القبول</h3><p>تحقق من الأدلة والتحليل والاعتماد.</p></div><div><span>04</span><FolderOpen size={24} /><h3>سلّم مؤسسيًا</h3><p>سمّ الملف وارفعه في المسار المعتمد عند تهيئته.</p></div></div>
+          <div className="workflow-heading"><span className="section-kicker">مسار بسيط</span><h2>من المهمة إلى شاهد مكتمل</h2><p>افتح المهمة، نفّذ خطواتها القصيرة، واحتفظ بالشاهد المحدد فقط.</p></div>
+          <div className="workflow-steps"><div><span>01</span><LayoutDashboard size={24} /><h3>افتح المهمة</h3><p>اعرف المطلوب ومن سينفّذه.</p></div><div><span>02</span><ListChecks size={24} /><h3>نفّذ الخطوات</h3><p>اتبع الخطوات الثلاث كما تظهر.</p></div><div><span>03</span><ClipboardCheck size={24} /><h3>احفظ الشاهد</h3><p>اكتفِ بالشاهد المحدد للمهمة.</p></div><div><span>04</span><FolderOpen size={24} /><h3>ارفع الناتج</h3><p>استخدم المسار المؤسسي عند تهيئته.</p></div></div>
         </section>
       </main>
 

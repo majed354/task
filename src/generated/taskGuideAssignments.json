@@ -2,14 +2,12 @@
   "schemaVersion": "1.0.0",
   "generatedAt": "2026-08-21",
   "assignmentCount": 268,
-  "note": "يرتبط كل taskId بدليل أساسي واحد وقالب أساسي واحد، وتعرض القوالب المرافقة عند الحاجة. هوية القسم واللجنة تبقى في taskCatalog ولا تدمج.",
+  "note": "يرتبط كل taskId بدليل وقالب أساسي، ولا يضاف قالب مرافق إلا عند الحاجة. مهام نشر الساعات المكتبية تستخدم دليلًا مستقلًا بلا مرافقات؛ فالجدول المنشور شاهدها الكافي.",
   "assignments": {
     "QRA-T001": {
-      "guideId": "guide-academic-advising-operations",
+      "guideId": "guide-office-hours-publication",
       "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "companionTemplateIds": []
     },
     "QRA-T002": {
       "guideId": "guide-media-communication",
@@ -558,11 +556,9 @@
       ]
     },
     "CUL-T001": {
-      "guideId": "guide-academic-advising-operations",
+      "guideId": "guide-office-hours-publication",
       "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "companionTemplateIds": []
     },
     "CUL-T002": {
       "guideId": "guide-media-communication",
@@ -1063,11 +1059,9 @@
       ]
     },
     "SHR-T001": {
-      "guideId": "guide-academic-advising-operations",
+      "guideId": "guide-office-hours-publication",
       "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "companionTemplateIds": []
     },
     "SHR-T002": {
       "guideId": "guide-media-communication",
@@ -1616,11 +1610,9 @@
       ]
     },
     "LAW-T001": {
-      "guideId": "guide-academic-advising-operations",
+      "guideId": "guide-office-hours-publication",
       "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "companionTemplateIds": []
     },
     "LAW-T002": {
       "guideId": "guide-media-communication",

@@ -63,10 +63,16 @@ assert(catalog.every((task) => audit.recordTypeMap[task.id]), 'لا توجد م�
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))
 const assignments = assignmentDocument.assignments ?? {}
-assert(guides.length === 18 && guideIds.size === 18, 'الأدلة المركزية عددها 18 ومعرّفاتها فريدة')
+assert(guides.length === 19 && guideIds.size === 19, 'الأدلة المركزية عددها 19 ومعرّفاتها فريدة')
+assert(guides.every((guide) => guide.steps.length >= 2 && guide.steps.length <= 4), 'كل دليل يحتوي 2–4 خطوات')
+assert(guides.every((guide) => guide.evidenceAttachments.length === 1), 'كل دليل يحدد شاهدًا واحدًا كافيًا')
+assert(guides.every((guide) => guide.inputs.length <= 2), 'مدخلات الأدلة مختصرة إلى عنصرين بحد أقصى')
+assert(guides.every((guide) => guide.acceptanceCriteria.length <= 2), 'معايير القبول مختصرة إلى عنصرين بحد أقصى')
+assert(guides.every((guide) => guide.commonErrors.length === 1), 'كل دليل يوضح الخطأ الأهم فقط')
 assert(Object.keys(assignments).length === 268, 'ملف الربط يحتوي 268 إحالة')
 assert(catalog.every((task) => assignments[task.id]), 'كل مهمة مرتبطة بدليل وقالب')
 assert(Object.keys(assignments).every((taskId) => catalog.some((task) => task.id === taskId)), 'لا توجد إحالات لمهام مجهولة')
+assert(guides.every((guide) => Object.values(assignments).some((assignment) => assignment.guideId === guide.id)), 'كل الأدلة المركزية مستخدمة فعليًا')
 
 const requiredGuideFields = [
   'definition', 'objective', 'scope', 'roles', 'inputs', 'steps', 'expectedDuration', 'finalOutput',
@@ -84,6 +90,16 @@ for (const [taskId, assignment] of Object.entries(assignments)) {
   assert(assignedTemplates.every((id) => templateIds.has(id)), `${taskId}: القوالب معروفة`)
   const guide = guides.find((item) => item.id === assignment.guideId)
   assert(assignedTemplates.every((id) => guide?.templateIds?.includes(id)), `${taskId}: القوالب مذكورة في دليلها`)
+}
+
+const officeHoursTaskIds = ['QRA-T001', 'CUL-T001', 'SHR-T001', 'LAW-T001']
+for (const taskId of officeHoursTaskIds) {
+  const task = catalog.find((item) => item.id === taskId)
+  const assignment = assignments[taskId]
+  assert(task?.deliverable === 'الجدول العام المنشور للساعات المكتبية', `${taskId}: الجدول المنشور هو المخرج الكافي`)
+  assert(task?.steps.length === 3 && task.steps[0].includes('ويوقعه') && task.steps[1].includes('اكتمال'), `${taskId}: مسار الساعات المكتبية مطابق`)
+  assert(assignment?.guideId === 'guide-office-hours-publication', `${taskId}: مرتبط بدليل الساعات المستقل`)
+  assert(assignment?.companionTemplateIds?.length === 0, `${taskId}: لا قوالب مرافقة زائدة`)
 }
 
 assert(templates.length === 14 && templateIds.size === 14, 'مكتبة القوالب تحتوي 14 قالبًا فريدًا')
