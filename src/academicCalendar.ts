@@ -29,6 +29,7 @@ interface ConfiguredTerm {
   label: string
   academicYear: string
   termType: TermType
+  committeePlanStart: string
   orientationDays: number
   plannedOperationalWeeks: number
   graceWorkDays: number
@@ -39,6 +40,8 @@ interface ConfiguredTerm {
 interface CalendarConfig {
   schemaVersion: string
   title: string
+  displayTitle: string
+  displayNote: string
   reviewedAt: string
   reviewDueAt: string
   localAuthorityNote: string
@@ -67,10 +70,10 @@ const config = rawCalendar as CalendarConfig
 
 export const calendarMeta = {
   schemaVersion: config.schemaVersion,
-  title: config.title,
+  title: config.displayTitle,
   reviewedAt: config.reviewedAt,
   reviewDueAt: config.reviewDueAt,
-  localAuthorityNote: config.localAuthorityNote,
+  displayNote: config.displayNote,
 }
 
 export function getStudyEvent(term: Pick<AcademicTerm, 'events'>) {
@@ -103,8 +106,17 @@ export function parseLocalDate(value: string) {
   return new Date(`${value}T12:00:00`)
 }
 
+// الظهر مرساة آمنة لحساب أيام التقويم؛ أما فتح وإغلاق النوافذ فيعتمد اليوم المحلي أدناه.
 export function startOfLocalDay(value: Date) {
   return new Date(value.getFullYear(), value.getMonth(), value.getDate(), 12)
+}
+
+function localDateOrdinal(value: Date) {
+  return Math.trunc(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()) / dayMs)
+}
+
+export function compareLocalDates(left: Date, right: Date) {
+  return localDateOrdinal(left) - localDateOrdinal(right)
 }
 
 export function addDays(value: Date, days: number) {
@@ -114,7 +126,7 @@ export function addDays(value: Date, days: number) {
 }
 
 export function differenceInDays(later: Date, earlier: Date) {
-  return Math.ceil((startOfLocalDay(later).getTime() - startOfLocalDay(earlier).getTime()) / dayMs)
+  return localDateOrdinal(later) - localDateOrdinal(earlier)
 }
 
 function overlaps(start: Date, end: Date, event: AcademicEvent) {
@@ -164,8 +176,17 @@ function nextSundayAfter(value: Date) {
   return addDays(result, daysToSunday)
 }
 
+export function getCommitteePlanStart(term: Pick<AcademicTerm, 'committeePlanStart'>) {
+  return parseLocalDate(term.committeePlanStart)
+}
+
+export function getCommitteePreparationDue(term: AcademicTerm) {
+  const preparationEnd = addDays(getCommitteePlanStart(term), Math.max(term.orientationDays - 1, 0))
+  return previousWorkDay(preparationEnd)
+}
+
 export function getWorkStart(term: AcademicTerm) {
-  return nextAvailableWorkDay(addDays(parseLocalDate(term.start), term.orientationDays), term, false)
+  return nextAvailableWorkDay(addDays(getCommitteePlanStart(term), term.orientationDays), term, false)
 }
 
 export function buildOperationalWeeks(term: AcademicTerm): OperationalWeek[] {
@@ -215,17 +236,17 @@ export function buildOperationalWeeks(term: AcademicTerm): OperationalWeek[] {
 }
 
 export function getDefaultTerm(today = new Date()) {
-  const current = academicTerms.find((term) => today >= parseLocalDate(term.start) && today <= parseLocalDate(term.end))
+  const current = academicTerms.find((term) => compareLocalDates(today, parseLocalDate(term.start)) >= 0 && compareLocalDates(today, parseLocalDate(term.end)) <= 0)
   if (current) return current
-  return academicTerms.find((term) => parseLocalDate(term.start) > today) ?? academicTerms[academicTerms.length - 1]
+  return academicTerms.find((term) => compareLocalDates(parseLocalDate(term.start), today) > 0) ?? academicTerms[academicTerms.length - 1]
 }
 
 export function getRelevantWeek(term: AcademicTerm, today = new Date()) {
   const weeks = buildOperationalWeeks(term)
   if (!weeks.length) return 0
-  const active = weeks.find((week) => today >= week.start && today <= week.graceEnd)
+  const active = weeks.find((week) => compareLocalDates(today, week.start) >= 0 && compareLocalDates(today, week.graceEnd) <= 0)
   if (active) return active.number
-  const next = weeks.find((week) => today < week.start)
+  const next = weeks.find((week) => compareLocalDates(today, week.start) < 0)
   return next?.number ?? weeks[weeks.length - 1].number
 }
 
@@ -256,8 +277,8 @@ export function daysUntil(value: Date, today = new Date()) {
 }
 
 export function getTemporalState(start: Date, due: Date, graceEnd: Date, today = new Date()): TemporalStatus {
-  if (today < start) return 'لم يبدأ'
-  if (today <= due) return 'نافذة التنفيذ'
-  if (today <= graceEnd) return 'مهلة السماح'
+  if (compareLocalDates(today, start) < 0) return 'لم يبدأ'
+  if (compareLocalDates(today, due) <= 0) return 'نافذة التنفيذ'
+  if (compareLocalDates(today, graceEnd) <= 0) return 'مهلة السماح'
   return 'انتهت المهلة'
 }

@@ -4,8 +4,9 @@ import rawGuides from './generated/taskGuides.json'
 import rawGuideAssignments from './generated/taskGuideAssignments.json'
 import {
   AcademicTerm,
-  addDays,
   buildOperationalWeeks,
+  getCommitteePlanStart,
+  getCommitteePreparationDue,
   getExamEvent,
   getTemporalState,
   parseLocalDate,
@@ -336,8 +337,8 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
   if (!term.supportsFullCommitteePlan) return []
 
   const weeks = buildOperationalWeeks(term)
-  const preparationStart = parseLocalDate(term.start)
-  const preparationDue = addDays(preparationStart, Math.max(term.orientationDays - 1, 0))
+  const preparationStart = getCommitteePlanStart(term)
+  const preparationDue = getCommitteePreparationDue(term)
   const exams = getExamEvent(term)
 
   return catalog.map((sourceTask) => {

@@ -116,14 +116,17 @@ for (const [id, file] of templates) {
   }
 }
 
-assert(calendar.title === 'تقويم جامعي رسمي مقارن — بانتظار تقويم جامعة الطائف', 'وسم التقويم المؤقت ظاهر حرفيًا')
+assert(calendar.title === 'التقويم التشغيلي للمنظومة', 'عنوان التقويم التشغيلي واضح')
+assert(calendar.displayTitle === calendar.title, 'عنوان التقويم الظاهر مطابق للإعداد التشغيلي')
 assert(calendar.reviewedAt && calendar.reviewDueAt, 'للتقويم تاريخ مراجعة وموعد تحقق تالٍ')
 assert(unique(calendar.terms.map((term) => term.termType)).size === 3, 'التقويم يدعم الفصل الأول والثاني والصيفي')
+assert(calendar.terms.find((term) => term.id === '1448-first')?.committeePlanStart === '2026-08-30', 'بداية أعمال اللجان للفصل الأول في 30 أغسطس 2026')
 
 for (const term of calendar.terms) {
   const study = term.events.find((event) => event.eventType === 'study')
   const exams = term.events.find((event) => event.eventType === 'exams')
   assert(Boolean(study), `${term.id}: فترة الدراسة موجودة`)
+  assert(Boolean(term.committeePlanStart), `${term.id}: بداية أعمال اللجان موجودة`)
   assert(
     term.events.every((event) => event.sourceUrl && event.sourceTitle && event.issuingAuthority && event.accessedAt && event.verificationStatus && event.reviewDueAt),
     `${term.id}: مصدر وحالة تحقق لكل حدث`,
@@ -131,7 +134,8 @@ for (const term of calendar.terms) {
   assert(term.events.every((event) => date(event.start) <= date(event.end)), `${term.id}: نطاقات الأحداث صحيحة`)
   if (study && exams) {
     assert(date(study.start) <= date(exams.start) && date(exams.end) <= date(study.end), `${term.id}: الاختبارات داخل نطاق الفصل`)
-    const workStart = new Date(date(study.start).getTime() + term.orientationDays * 86_400_000)
+    assert(date(study.start) <= date(term.committeePlanStart) && date(term.committeePlanStart) < date(exams.start), `${term.id}: بداية أعمال اللجان داخل الفصل وقبل الاختبارات`)
+    const workStart = new Date(date(term.committeePlanStart).getTime() + term.orientationDays * 86_400_000)
     assert(workStart < date(exams.start), `${term.id}: أسبوع التهيئة يسبق التشغيل والاختبارات`)
   }
 }

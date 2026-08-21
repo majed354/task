@@ -47,11 +47,14 @@ import {
   addDays,
   buildOperationalWeeks,
   calendarMeta,
+  compareLocalDates,
   daysUntil,
+  differenceInDays,
   formatGregorian,
   formatHijri,
   formatLiveTime,
   formatShortDate,
+  getCommitteePlanStart,
   getDefaultTerm,
   getExamEvent,
   getRelevantWeek,
@@ -394,7 +397,7 @@ function Dashboard() {
 
   const nextTask = useMemo(() => {
     const scoped = allTasks.filter((task) => (department === 'جميع الأقسام' || task.department === department) && (committee === allCommitteeScopes || task.committee === committee))
-    const actionable = scoped.filter((task) => now <= task.graceEnd)
+    const actionable = scoped.filter((task) => compareLocalDates(now, task.graceEnd) <= 0)
     const candidates = actionable.length ? actionable : scoped
     return [...candidates].sort((a, b) => a.start.getTime() - b.start.getTime() || a.due.getTime() - b.due.getTime())[0] ?? null
   }, [allTasks, committee, department, now])
@@ -404,22 +407,23 @@ function Dashboard() {
   const examEvent = getExamEvent(term)
   const studyEvent = getStudyEvent(term)
   const semesterStart = parseLocalDate(term.start)
+  const committeePlanStart = getCommitteePlanStart(term)
   const firstTaskStart = getWorkStart(term)
-  const termElapsed = Math.max(0, Math.min(100, Math.round(((now.getTime() - semesterStart.getTime()) / (parseLocalDate(term.end).getTime() - semesterStart.getTime())) * 100)))
+  const termElapsed = Math.max(0, Math.min(100, Math.round((differenceInDays(now, semesterStart) / differenceInDays(parseLocalDate(term.end), semesterStart)) * 100)))
 
   const nextMilestone = nextTask
-    ? now < nextTask.start
+    ? compareLocalDates(now, nextTask.start) < 0
       ? { label: 'يبدأ التنفيذ بعد', date: nextTask.start }
-      : now <= nextTask.due
+      : compareLocalDates(now, nextTask.due) <= 0
         ? { label: 'موعد التسليم بعد', date: nextTask.due }
-        : now <= nextTask.graceEnd
+        : compareLocalDates(now, nextTask.graceEnd) <= 0
           ? { label: 'تنتهي مهلة السماح بعد', date: nextTask.graceEnd }
           : { label: 'انتهت نافذة المهمة', date: nextTask.graceEnd }
     : null
 
   const committeeCards = useMemo(() => Array.from(new Set(allTasks.map((task) => task.committee))).map((name) => {
     const tasks = allTasks.filter((task) => task.committee === name)
-    const next = tasks.filter((task) => now <= task.graceEnd).sort((a, b) => a.start.getTime() - b.start.getTime())[0]
+    const next = tasks.filter((task) => compareLocalDates(now, task.graceEnd) <= 0).sort((a, b) => a.start.getTime() - b.start.getTime())[0]
     return {
       name,
       tasks,
@@ -506,7 +510,7 @@ function Dashboard() {
               <label><span>قسمي</span><select value={department} onChange={(event) => setDepartment(event.target.value as Department)}>{departments.map((item) => <option key={item}>{item}</option>)}</select></label>
               <label><span>لجنتي</span><select value={committee} onChange={(event) => setCommittee(event.target.value)}><option value={allCommitteeScopes}>{allCommitteeScopes}</option>{committeeOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
             </div>
-            <a className="source-note" href={studyEvent.sourceUrl} target="_blank" rel="noreferrer"><ShieldCheck size={19} /><span><strong>{calendarMeta.title}</strong><small>{calendarMeta.localAuthorityNote}</small></span><ExternalLink size={17} /></a>
+            <a className="source-note" href={studyEvent.sourceUrl} target="_blank" rel="noreferrer"><ShieldCheck size={19} /><span><strong>{calendarMeta.title}</strong><small>{calendarMeta.displayNote}</small></span><ExternalLink size={17} /></a>
           </div>
 
           <article className="next-task-card" aria-labelledby="next-task-title">
@@ -578,25 +582,25 @@ function Dashboard() {
         <section className="content-section calendar-section" id="weekly">
           <div className="section-heading"><div><span className="section-kicker">خارطة الفصل</span><h2>التقويم التشغيلي المرن</h2><p>يتجاوز التوقفات، يحرك الموعد الواقع في إجازة، ويوقف إنشاء الأسابيع قبل الاختبارات.</p></div><div className="calendar-controls"><button type="button" onClick={() => moveWeek(-1)} aria-label="الأسبوع السابق"><ChevronRight size={20} /></button><span>{selectedWeek ? `الأسبوع ${selectedWeek.number}` : 'كل الأسابيع'}</span><button type="button" onClick={() => moveWeek(1)} aria-label="الأسبوع التالي"><ChevronLeft size={20} /></button></div></div>
           {weeks.length < term.plannedOperationalWeeks && <div className="calendar-warning"><AlertTriangle size={20} /><p>المتاح فعليًا {weeks.length} أسبوعًا من أصل {term.plannedOperationalWeeks} مخططًا؛ أوقف النظام الأسابيع المتبقية قبل بدء الاختبارات.</p></div>}
-          <div className="orientation-band"><CalendarCheck2 size={21} /><div><strong>{term.orientationDays ? 'أسبوع التهيئة غير المقيم' : 'لا توجد تهيئة منفصلة'}</strong><span>{formatShortDate(semesterStart)} - {formatShortDate(addDays(semesterStart, Math.max(term.orientationDays - 1, 0)))}</span></div>{term.supportsFullCommitteePlan && <button type="button" onClick={() => setWeekFilter('0')}>عرض مهام التهيئة</button>}</div>
+          <div className="orientation-band"><CalendarCheck2 size={21} /><div><strong>{term.orientationDays ? 'أسبوع تهيئة أعمال اللجان' : 'لا توجد تهيئة منفصلة'}</strong><span>{formatShortDate(committeePlanStart)} - {formatShortDate(addDays(committeePlanStart, Math.max(term.orientationDays - 1, 0)))}</span></div>{term.supportsFullCommitteePlan && <button type="button" onClick={() => setWeekFilter('0')}>عرض مهام التهيئة</button>}</div>
           <div className="week-track" ref={weekTrackRef} aria-label="الأسابيع التشغيلية">
-            {weeks.map((item) => <button type="button" data-week={item.number} className={`week-item ${String(item.number) === weekFilter ? 'is-active' : ''} ${now > item.graceEnd ? 'is-past' : ''}`} key={item.number} onClick={() => setWeekFilter(String(item.number))} aria-pressed={String(item.number) === weekFilter}>
+            {weeks.map((item) => <button type="button" data-week={item.number} className={`week-item ${String(item.number) === weekFilter ? 'is-active' : ''} ${compareLocalDates(now, item.graceEnd) > 0 ? 'is-past' : ''}`} key={item.number} onClick={() => setWeekFilter(String(item.number))} aria-pressed={String(item.number) === weekFilter}>
               <div><span>الأسبوع {item.number}</span><strong>{formatShortDate(item.due)}</strong></div>
               <p>{formatShortDate(item.start)} - {formatShortDate(item.end)}</p>
               <small>{item.event?.label ?? `المهلة حتى ${formatShortDate(item.graceEnd)}`}</small>
             </button>)}
           </div>
-          <div className="calendar-facts"><span><CalendarClock size={18} /> بداية العمل: {formatGregorian(firstTaskStart, true)}</span>{examEvent && <button type="button" onClick={() => setWeekFilter('16')}><CalendarCheck2 size={18} /> الاختبارات: {formatGregorian(parseLocalDate(examEvent.start))} - {formatGregorian(parseLocalDate(examEvent.end), true)}</button>}<span><ShieldCheck size={18} /> الموضع الزمني داخل الفصل: {termElapsed}% — لا يمثل الإنجاز</span></div>
+          <div className="calendar-facts"><span><CalendarDays size={18} /> بداية الدراسة الأكاديمية: {formatGregorian(semesterStart, true)}</span><span><CalendarClock size={18} /> بداية أعمال اللجان: {formatGregorian(committeePlanStart, true)}</span><span><CalendarCheck2 size={18} /> أول أسبوع تشغيلي: {formatGregorian(firstTaskStart, true)}</span>{examEvent && <button type="button" onClick={() => setWeekFilter('16')}><CalendarCheck2 size={18} /> الاختبارات: {formatGregorian(parseLocalDate(examEvent.start))} - {formatGregorian(parseLocalDate(examEvent.end), true)}</button>}<span><ShieldCheck size={18} /> الموضع الزمني داخل الفصل: {termElapsed}% — لا يمثل الإنجاز</span></div>
 
           <details className="calendar-sources">
-            <summary>مصادر أحداث هذا الفصل وحالة التحقق <ChevronDown size={19} /></summary>
+            <summary>مراجع أحداث هذا الفصل <ChevronDown size={19} /></summary>
             <div>{term.events.map((event) => <article key={event.eventId}>
               <div><span>{event.eventType === 'study' ? 'دراسة' : event.eventType === 'exams' ? 'اختبارات' : 'توقف'}</span><strong>{event.label}</strong></div>
               <p>{formatGregorian(parseLocalDate(event.start), true)}{event.start !== event.end ? ` - ${formatGregorian(parseLocalDate(event.end), true)}` : ''}</p>
-              <p>{event.verificationNote}</p>
+              <p>{event.sourceLocator}</p>
               <a href={event.sourceUrl} target="_blank" rel="noreferrer">{event.sourceTitle} · {event.issuingAuthority} <ExternalLink size={16} /></a>
             </article>)}</div>
-            <p className="source-review">المراجعة التالية: {calendarMeta.reviewDueAt}. لا تُنسب هذه التواريخ إلى جامعة الطائف قبل نشر مصدرها المحلي.</p>
+            <p className="source-review">المراجعة التالية: {calendarMeta.reviewDueAt}. تُراجع إعدادات التقويم دوريًا من ملف الإعداد المركزي.</p>
           </details>
         </section>
 

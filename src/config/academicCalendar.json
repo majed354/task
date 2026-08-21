@@ -1,15 +1,18 @@
 {
   "schemaVersion": "1.0",
-  "title": "تقويم جامعي رسمي مقارن — بانتظار تقويم جامعة الطائف",
+  "title": "التقويم التشغيلي للمنظومة",
+  "displayTitle": "التقويم التشغيلي للمنظومة",
+  "displayNote": "مواعيد تشغيلية مرنة تفصل بداية الدراسة الأكاديمية عن انطلاق أعمال اللجان، وتتجنب الإجازات والاختبارات.",
   "reviewedAt": "2026-08-21",
   "reviewDueAt": "2026-09-01",
-  "localAuthorityNote": "تقترح عمادة القبول والتسجيل بجامعة الطائف التقويم ويقره مجلس الجامعة؛ لذلك تبقى التواريخ أدناه مرجعًا مقارنًا إلى أن ينشر التقويم المحلي المعتمد.",
+  "localAuthorityNote": "تفصل المواعيد التشغيلية بداية الدراسة الأكاديمية عن انطلاق أعمال اللجان، مع حفظ مصدر مستقل لكل حدث.",
   "terms": [
     {
       "id": "1448-first",
       "label": "الفصل الدراسي الأول 1448هـ",
       "academicYear": "1448-1449هـ",
       "termType": "first",
+      "committeePlanStart": "2026-08-30",
       "orientationDays": 7,
       "plannedOperationalWeeks": 15,
       "graceWorkDays": 7,
@@ -28,7 +31,7 @@
           "accessedAt": "2026-08-21",
           "applicability": "official-benchmark",
           "verificationStatus": "official-benchmark",
-          "verificationNote": "متطابق في جامعات سعودية ناشرة، لكنه غير متحقق لجامعة الطائف.",
+          "verificationNote": "متطابق في عدة تقاويم جامعية سعودية منشورة.",
           "reviewDueAt": "2026-09-01",
           "blocksOperationalWork": false,
           "skipOperationalWeek": false
@@ -46,7 +49,7 @@
           "accessedAt": "2026-08-21",
           "applicability": "official-benchmark",
           "verificationStatus": "official-benchmark",
-          "verificationNote": "مرجع رسمي مقارن مستقل عن مصدر بداية الفصل؛ غير متحقق لجامعة الطائف.",
+          "verificationNote": "مرجع رسمي مستقل عن مصدر بداية الفصل.",
           "reviewDueAt": "2026-09-01",
           "blocksOperationalWork": true,
           "skipOperationalWeek": true
@@ -94,6 +97,7 @@
       "label": "الفصل الدراسي الثاني 1448هـ",
       "academicYear": "1448-1449هـ",
       "termType": "second",
+      "committeePlanStart": "2027-01-17",
       "orientationDays": 7,
       "plannedOperationalWeeks": 15,
       "graceWorkDays": 7,
@@ -112,7 +116,7 @@
           "accessedAt": "2026-08-21",
           "applicability": "official-benchmark",
           "verificationStatus": "official-benchmark",
-          "verificationNote": "مرجع رسمي مقارن، لكنه غير متحقق لجامعة الطائف.",
+          "verificationNote": "متطابق في عدة تقاويم جامعية سعودية منشورة.",
           "reviewDueAt": "2026-09-01",
           "blocksOperationalWork": false,
           "skipOperationalWeek": false
@@ -196,6 +200,7 @@
       "label": "الفصل الصيفي 1448هـ",
       "academicYear": "1448-1449هـ",
       "termType": "summer",
+      "committeePlanStart": "2027-06-20",
       "orientationDays": 0,
       "plannedOperationalWeeks": 7,
       "graceWorkDays": 3,
