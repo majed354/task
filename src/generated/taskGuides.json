@@ -1,0 +1,1779 @@
+{
+  "schemaVersion": "1.1.0",
+  "generatedAt": "2026-08-21",
+  "language": "ar",
+  "model": "دليل مركزي مختصر: نتيجة واحدة، 2–4 خطوات، وشاهد كافٍ قدر الإمكان.",
+  "rolesPolicy": {
+    "administrativeHierarchy": [
+      "عضو اللجنة المكلف",
+      "رئيس أو منسق اللجنة",
+      "منسق القسم",
+      "رئيس القسم",
+      "المشرف على المنظومة",
+      "العميد"
+    ],
+    "hierarchyNote": "يراجع كل مستوى ما يقع ضمن صلاحيته، ويصعّد ما يتجاوزها.",
+    "membershipRule": "لا يعد المتعاونون من خارج الجامعة أعضاء في اللجان ولا تسند إليهم مسؤولية أو مراجعة أو اعتماد؛ رأيهم استشاري فقط.",
+    "minimumSeparation": "لا يعتمد المسؤول المباشر عمله بنفسه؛ يراجعه طرف داخلي ثم يعتمده صاحب الصلاحية."
+  },
+  "submissionPolicy": {
+    "systemOfRecord": "SharePoint",
+    "currentStatus": "بانتظار الربط",
+    "pathStatus": "المسارات مقترحة حتى يهيئ مسؤول SharePoint الصلاحيات والروابط.",
+    "privacy": "تحفظ البيانات الحساسة في مسار مقيد، ويعرض في البوابة أقل قدر لازم."
+  },
+  "fileNamingPolicy": {
+    "pattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_{artifactCode}_v{version2}.{ext}",
+    "rules": [
+      "يبقى taskId والإصدار ظاهرين.",
+      "لا توضع أسماء أشخاص أو بيانات حساسة في اسم الملف.",
+      "يرفع إصدار جديد عند كل تعديل معتمد."
+    ],
+    "example": "1448-F1_W03_QRA_QUALITY_QRA-T008_FINAL-REPORT_v01.docx"
+  },
+  "guides": [
+    {
+      "id": "guide-operational-planning",
+      "nameAr": "إعداد الخطة التشغيلية للّجنة",
+      "definition": "إعداد خطة بأهداف ومؤشرات ومسؤوليات ومواعيد واضحة.",
+      "objective": "خطة تشغيلية معتمدة تربط كل هدف بإجراء ومؤشر ومسؤول وموعد.",
+      "scope": "الخطة السنوية أو الفصلية للجنة.",
+      "roles": {
+        "directResponsible": "رئيس اللجنة أو عضو داخلي مكلف.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "اختصاص اللجنة والخطة الأعلى.",
+        "نتائج الفترة السابقة والتقويم."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "تحديد الأولويات",
+          "action": "استخرج الفجوات والأهداف من المصادر.",
+          "exitCriterion": "أولويات محددة ومدعومة."
+        },
+        {
+          "order": 2,
+          "title": "بناء الخطة",
+          "action": "أضف لكل هدف مؤشرًا وإجراءً ومسؤولًا وموعدًا.",
+          "exitCriterion": "كل بند مكتمل."
+        },
+        {
+          "order": 3,
+          "title": "المراجعة",
+          "action": "راجع التعارضات واعتمد النسخة.",
+          "exitCriterion": "نسخة معتمدة."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–5 أيام عمل.",
+        "planningNote": "تنجز قبل بدء التنفيذ."
+      },
+      "finalOutput": "خطة تشغيلية معتمدة تربط كل هدف بإجراء ومؤشر ومسؤول وموعد.",
+      "evidenceAttachments": [
+        "الخطة التشغيلية المعتمدة."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_OP-PLAN_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/01-الخطط-التشغيلية/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "الخطة التشغيلية المعتمدة."
+      },
+      "acceptanceCriteria": [
+        "لكل هدف مؤشر ومستهدف.",
+        "لكل إجراء مسؤول وموعد."
+      ],
+      "commonErrors": [
+        "أهداف عامة بلا مؤشر أو مسؤول."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "تثبت التخطيط والحوكمة.",
+        "citationMethod": "يستشهد بـالخطة التشغيلية المعتمدة. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "اكتمال الخطة",
+          "formula": "البنود المكتملة ÷ إجمالي البنود × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "خطة معتمدة مكتملة المسؤوليات والمواعيد."
+        ],
+        "rejected": [
+          "قائمة أنشطة بلا مؤشرات."
+        ]
+      },
+      "cadence": {
+        "type": "سنوي مع مراجعة فصلية",
+        "trigger": "بداية دورة التخطيط",
+        "followUp": "مراجعة شهرية"
+      },
+      "templateIds": [
+        "operational-plan",
+        "decision-matrix",
+        "minutes"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-program-curriculum-review",
+      "nameAr": "مراجعة وتطوير البرامج والمناهج الأكاديمية",
+      "definition": "مراجعة برنامج أو منهج وتحديد التعديل المبرر ومسار اعتماده.",
+      "objective": "تقرير مراجعة معتمد يحدد التعديل ومبرره وقرار اعتماده.",
+      "scope": "مراجعة البرامج والتوصيفات والمناهج.",
+      "roles": {
+        "directResponsible": "رئيس لجنة المناهج وفريق أكاديمي داخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "النسخة المعتمدة الحالية.",
+        "نتائج القياس والملاحظات ذات الصلة."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "تحديد النطاق",
+          "action": "ثبت النسخة والبنود المطلوب فحصها.",
+          "exitCriterion": "نطاق ونسخة محددان."
+        },
+        {
+          "order": 2,
+          "title": "المراجعة",
+          "action": "قارن المتطلب بالواقع واكتب التعديل المبرر.",
+          "exitCriterion": "ملاحظات قابلة للتنفيذ."
+        },
+        {
+          "order": 3,
+          "title": "الاعتماد",
+          "action": "راجع الاستجابة واعتمد القرار.",
+          "exitCriterion": "تقرير وقرار معتمدان."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "5–10 أيام عمل.",
+        "planningNote": "تزاد المدة للمراجعة الشاملة."
+      },
+      "finalOutput": "تقرير مراجعة معتمد يحدد التعديل ومبرره وقرار اعتماده.",
+      "evidenceAttachments": [
+        "تقرير المراجعة المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_PROGRAM-REVIEW_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/02-مراجعة-البرامج/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "تقرير المراجعة المعتمد."
+      },
+      "acceptanceCriteria": [
+        "كل تعديل مرتبط بموضع ومبرر.",
+        "قرار الاعتماد موثق."
+      ],
+      "commonErrors": [
+        "اقتراح تعديل بلا مرجع أو موضع."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت المراجعة الدورية والتحسين.",
+        "citationMethod": "يستشهد بـتقرير المراجعة المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "إقفال الملاحظات",
+          "formula": "الملاحظات المغلقة ÷ إجمالي الملاحظات × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "تقرير يربط كل تعديل بموضع وقرار."
+        ],
+        "rejected": [
+          "توصية عامة بلا مرجع."
+        ]
+      },
+      "cadence": {
+        "type": "حسب دورة المراجعة",
+        "trigger": "موعد مراجعة أو فجوة جوهرية",
+        "followUp": "متابعة المفتوح"
+      },
+      "templateIds": [
+        "completion-report",
+        "improvement-report",
+        "minutes"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-learning-outcomes-kpi",
+      "nameAr": "تصميم وقياس نواتج التعلم ومؤشرات الأداء",
+      "definition": "تعريف المؤشر وحسابه وتحليل نتيجته وإجراء التحسين.",
+      "objective": "ملف قياس معتمد يعرض التعريف والحساب والنتيجة وإجراء التحسين.",
+      "scope": "نواتج التعلم ومؤشرات الأداء المقررة.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الجودة أو فريق القياس الداخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "تعريف المؤشر والمستهدف.",
+        "بيانات المصدر المعتمدة."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "تعريف القياس",
+          "action": "ثبت المعادلة والمصدر والمستهدف.",
+          "exitCriterion": "تعريف قابل لإعادة الحساب."
+        },
+        {
+          "order": 2,
+          "title": "الحساب",
+          "action": "احسب النتيجة وراجع عينة مستقلة.",
+          "exitCriterion": "نتيجة متحققة."
+        },
+        {
+          "order": 3,
+          "title": "التحليل",
+          "action": "فسر الفرق وحدد الإجراء واعتمد الملف.",
+          "exitCriterion": "تحليل وإجراء معتمدان."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–7 أيام عمل بعد اكتمال البيانات.",
+        "planningNote": "لا يبدأ الحساب قبل تثبيت المصدر."
+      },
+      "finalOutput": "ملف قياس معتمد يعرض التعريف والحساب والنتيجة وإجراء التحسين.",
+      "evidenceAttachments": [
+        "ملف المؤشرات المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_KPI-LO_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/03-نواتج-التعلم-والمؤشرات/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "ملف المؤشرات المعتمد."
+      },
+      "acceptanceCriteria": [
+        "يمكن إعادة الحساب من المصدر.",
+        "كل فجوة لها إجراء."
+      ],
+      "commonErrors": [
+        "عرض نسبة بلا تعريف أو مقام."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت القياس وإغلاق دائرة التحسين.",
+        "citationMethod": "يستشهد بـملف المؤشرات المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "موثوقية الحساب",
+          "formula": "المؤشرات المتحققة عينيًا ÷ المؤشرات المفحوصة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "مؤشر معرف ومتحقق ومفسر."
+        ],
+        "rejected": [
+          "رقم بلا مصدر أو تحليل."
+        ]
+      },
+      "cadence": {
+        "type": "فصلي وفق خطة القياس",
+        "trigger": "موعد القياس",
+        "followUp": "متابعة إجراء التحسين"
+      },
+      "templateIds": [
+        "kpi-tracker",
+        "operational-plan",
+        "completion-report",
+        "survey-analysis"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-scientific-plan-review",
+      "nameAr": "فحص وتحكيم الخطط العلمية ومتابعة الإقفال",
+      "definition": "فحص مستقل لخطة علمية وتوثيق الملاحظات والتحقق من معالجتها.",
+      "objective": "نموذج فحص معتمد لكل خطة يبين الملاحظات وحالة معالجتها.",
+      "scope": "خطة واحدة داخل لجنة تخصصية مستقلة.",
+      "roles": {
+        "directResponsible": "رئيس لجنة فحص الخطة والمحكمون الداخليون.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "الخطة ورقم نسختها.",
+        "محك الفحص المعتمد."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "الاستلام",
+          "action": "ثبت الخطة والنسخة واللجنة المختصة.",
+          "exitCriterion": "سجل استلام واضح."
+        },
+        {
+          "order": 2,
+          "title": "الفحص",
+          "action": "سجل الحكم والموضع والتعليل لكل ملاحظة.",
+          "exitCriterion": "فحص مكتمل."
+        },
+        {
+          "order": 3,
+          "title": "الإقفال",
+          "action": "تحقق من النسخة المعدلة واعتمد الحالة.",
+          "exitCriterion": "الملاحظات مقفلة أو مرحّلة."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "2–5 أيام للفحص.",
+        "planningNote": "لا تدمج خطط اللجان التخصصية."
+      },
+      "finalOutput": "نموذج فحص معتمد لكل خطة يبين الملاحظات وحالة معالجتها.",
+      "evidenceAttachments": [
+        "نموذج الفحص المقفل للنسخة المعتمدة."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_PLAN-REVIEW_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/04-فحص-الخطط/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "نموذج الفحص المقفل للنسخة المعتمدة."
+      },
+      "acceptanceCriteria": [
+        "كل ملاحظة لها موضع وتعليل.",
+        "الإقفال مبني على نسخة معدلة."
+      ],
+      "commonErrors": [
+        "إغلاق الملاحظة قبل فحص التعديل."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت ضبط مراجعة الخطط.",
+        "citationMethod": "يستشهد بـنموذج الفحص المقفل للنسخة المعتمدة. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "إقفال ملاحظات الخطط",
+          "formula": "الملاحظات المغلقة ÷ إجمالي الملاحظات × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "نموذج فحص موثق للنسخة المحددة."
+        ],
+        "rejected": [
+          "حكم عام بلا موضع."
+        ]
+      },
+      "cadence": {
+        "type": "عند استلام خطة",
+        "trigger": "استلام نسخة مكتملة",
+        "followUp": "متابعة أسبوعية للمفتوح"
+      },
+      "templateIds": [
+        "plan-review",
+        "final-report",
+        "improvement-report"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-academic-scheduling",
+      "nameAr": "إعداد الجدول الدراسي وإدارة التعديلات",
+      "definition": "بناء جدول دراسي من مدخلات مجمدة وفحص تعارضاته واعتماده.",
+      "objective": "جدول دراسي معتمد خالٍ من التعارضات غير المعالجة.",
+      "scope": "الشعب والأوقات والقاعات والتكليفات.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الجداول وفريق الجدولة الداخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "قائمة الشعب والمقررات.",
+        "القاعات والتكليفات والقيود."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "تجميد المدخلات",
+          "action": "ثبت القوائم وتاريخ القطع.",
+          "exitCriterion": "مدخلات مكتملة."
+        },
+        {
+          "order": 2,
+          "title": "بناء الجدول",
+          "action": "أدخل الشعب وافحص القاعة والتكليف والوقت.",
+          "exitCriterion": "لا تعارض غير مفسر."
+        },
+        {
+          "order": 3,
+          "title": "الاعتماد",
+          "action": "راجع الاستثناءات واعتمد النسخة.",
+          "exitCriterion": "جدول معتمد ومرقم."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "5–10 أيام عمل.",
+        "planningNote": "يوثق كل تعديل بعد تاريخ القطع."
+      },
+      "finalOutput": "جدول دراسي معتمد خالٍ من التعارضات غير المعالجة.",
+      "evidenceAttachments": [
+        "الجدول الدراسي المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_ACADEMIC-SCHEDULE_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/05-الجداول-الدراسية/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "الجدول الدراسي المعتمد."
+      },
+      "acceptanceCriteria": [
+        "لا تعارض غير معالج.",
+        "النسخة والتاريخ والاعتماد ظاهرة."
+      ],
+      "commonErrors": [
+        "تعديل الجدول بلا إصدار جديد."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت ضبط الجداول والموارد.",
+        "citationMethod": "يستشهد بـالجدول الدراسي المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "سلامة الجدول",
+          "formula": "الشعب بلا تعارض ÷ إجمالي الشعب × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "جدول معتمد وكل استثناء موثق."
+        ],
+        "rejected": [
+          "جدول بلا فحص تعارض."
+        ]
+      },
+      "cadence": {
+        "type": "مرة كل فصل",
+        "trigger": "فتح التخطيط للفصل",
+        "followUp": "تحديث عند تعديل معتمد"
+      },
+      "templateIds": [
+        "schedule-planner",
+        "decision-matrix",
+        "minutes"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-exam-scheduling-readiness",
+      "nameAr": "تخطيط جداول الاختبارات والمراقبة وفحص الجاهزية",
+      "definition": "إعداد جدول الاختبارات والمراقبة وفحص الجاهزية قبل التنفيذ.",
+      "objective": "نسخة معتمدة من جدول الاختبارات والمراقبة وقائمة الجاهزية.",
+      "scope": "جدولة الاختبارات والقاعات والمراقبة والبدائل.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الاختبارات وفريق الجدولة الداخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "قائمة المقررات والقيود.",
+        "القاعات والمراقبون والبدائل."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "إعداد الجدول",
+          "action": "وزع الاختبارات والقاعات والمراقبة.",
+          "exitCriterion": "مسودة مكتملة."
+        },
+        {
+          "order": 2,
+          "title": "فحص الجاهزية",
+          "action": "افحص التعارضات والبدائل والمتطلبات الحرجة.",
+          "exitCriterion": "لا بند حرج مفتوح."
+        },
+        {
+          "order": 3,
+          "title": "الاعتماد",
+          "action": "راجع واعتمد النسخة النهائية.",
+          "exitCriterion": "نسخة جاهزة للنشر."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "5–8 أيام عمل.",
+        "planningNote": "ينتهي الفحص قبل أول اختبار."
+      },
+      "finalOutput": "نسخة معتمدة من جدول الاختبارات والمراقبة وقائمة الجاهزية.",
+      "evidenceAttachments": [
+        "النسخة المعتمدة من الجدول وقائمة الجاهزية."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_EXAM-READINESS_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/06-الاختبارات-والجاهزية/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "النسخة المعتمدة من الجدول وقائمة الجاهزية."
+      },
+      "acceptanceCriteria": [
+        "لا تعارض غير معالج.",
+        "كل بند حرج له مالك ودليل."
+      ],
+      "commonErrors": [
+        "نشر جدول قبل اكتمال فحص الجاهزية."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت ضبط عمليات التقويم.",
+        "citationMethod": "يستشهد بـالنسخة المعتمدة من الجدول وقائمة الجاهزية. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "اكتمال الجاهزية",
+          "formula": "البنود المكتملة ÷ إجمالي البنود × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "جدول وقائمة جاهزية معتمدان."
+        ],
+        "rejected": [
+          "جدول بلا بدائل أو فحص."
+        ]
+      },
+      "cadence": {
+        "type": "كل فترة اختبارات",
+        "trigger": "اعتماد قائمة المقررات",
+        "followUp": "تحديث الطوارئ"
+      },
+      "templateIds": [
+        "exam-readiness",
+        "schedule-planner",
+        "decision-matrix"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-exam-operations-quality",
+      "nameAr": "تشغيل الاختبارات وضبط الجودة والحفظ",
+      "definition": "توثيق تشغيل الاختبار والوقائع والمعالجة والإقفال.",
+      "objective": "سجل تشغيل اختبار معتمد يثبت الوقائع والمعالجة والإقفال.",
+      "scope": "الاستلام والتنفيذ والوقائع والحفظ.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الاختبارات والمكلفون الداخليون.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "خطة الاختبار والعهدة.",
+        "قائمة الجاهزية المعتمدة."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "الجاهزية",
+          "action": "تحقق من العهدة والموقع والمكلفين.",
+          "exitCriterion": "البدء مصرح."
+        },
+        {
+          "order": 2,
+          "title": "التشغيل",
+          "action": "سجل الوقائع وعالجها وفق الصلاحية.",
+          "exitCriterion": "كل واقعة موثقة."
+        },
+        {
+          "order": 3,
+          "title": "الإقفال",
+          "action": "طابق العهدة وراجع السجل واعتمده.",
+          "exitCriterion": "سجل مقفل."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "خلال الاختبار ويوم للإقفال.",
+        "planningNote": "تسجل الوقائع وقت حدوثها."
+      },
+      "finalOutput": "سجل تشغيل اختبار معتمد يثبت الوقائع والمعالجة والإقفال.",
+      "evidenceAttachments": [
+        "سجل التشغيل المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_EXAM-OPS_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/06-تشغيل-الاختبارات/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "سجل التشغيل المعتمد."
+      },
+      "acceptanceCriteria": [
+        "الوقائع والمعالجات موثقة.",
+        "العهدة والإقفال متحققان."
+      ],
+      "commonErrors": [
+        "إعادة بناء الوقائع من الذاكرة."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت سلامة تشغيل التقويم.",
+        "citationMethod": "يستشهد بـسجل التشغيل المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "إقفال الوقائع",
+          "formula": "الوقائع المغلقة ÷ إجمالي الوقائع × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "سجل مؤرخ ومراجع ومقفل."
+        ],
+        "rejected": [
+          "وصف عام بلا أوقات أو معالجة."
+        ]
+      },
+      "cadence": {
+        "type": "لكل فترة اختبار",
+        "trigger": "بدء الاختبار",
+        "followUp": "إقفال يومي"
+      },
+      "templateIds": [
+        "exam-readiness",
+        "quality-checklist",
+        "completion-report"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-student-identification-support",
+      "nameAr": "حصر الحالات الطلابية وتصميم الدعم وتقويمه",
+      "definition": "حصر الحالة وفق معيار واضح وتقديم الدعم ومتابعة أثره بسرية.",
+      "objective": "سجل دعم مقيد يبين الحالة والإجراء والمتابعة دون كشف غير لازم.",
+      "scope": "الحالات الطلابية التي تتطلب دعمًا أو إحالة.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الإرشاد أو مكلف داخلي مخول.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "بيانات الحد الأدنى اللازمة.",
+        "معيار الدعم ومسار الإحالة."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "الحصر",
+          "action": "طبق المعيار وسجل رمزًا غير كاشف.",
+          "exitCriterion": "قائمة حالات متحققة."
+        },
+        {
+          "order": 2,
+          "title": "الدعم",
+          "action": "حدد الإجراء والمالك والموعد.",
+          "exitCriterion": "خطة دعم مفعلة."
+        },
+        {
+          "order": 3,
+          "title": "المتابعة",
+          "action": "راجع النتيجة وأغلق أو صعّد.",
+          "exitCriterion": "حالة محدثة."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–5 أيام للحصر ثم متابعة.",
+        "planningNote": "الحالة العاجلة تصعّد فورًا."
+      },
+      "finalOutput": "سجل دعم مقيد يبين الحالة والإجراء والمتابعة دون كشف غير لازم.",
+      "evidenceAttachments": [
+        "سجل الدعم المقيد المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_STUDENT-SUPPORT_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/07-دعم-الطلبة-مقيد/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "سجل الدعم المقيد المعتمد."
+      },
+      "acceptanceCriteria": [
+        "البيانات بالحد الأدنى اللازم.",
+        "لكل حالة إجراء ومتابعة."
+      ],
+      "commonErrors": [
+        "نسخ بيانات الطالب في سجل عام."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت فاعلية الإرشاد والدعم.",
+        "citationMethod": "يستشهد بـسجل الدعم المقيد المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تستخدم رموز غير كاشفة وتحفظ بيانات الطالب في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "متابعة الحالات",
+          "formula": "الحالات المحدثة ÷ إجمالي الحالات × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "سجل مقيد برموز وإجراءات محدثة."
+        ],
+        "rejected": [
+          "قائمة أسماء وبيانات حساسة."
+        ]
+      },
+      "cadence": {
+        "type": "فصلي ومستمر",
+        "trigger": "ظهور حالة أو اكتمال البيانات",
+        "followUp": "متابعة حسب الحاجة"
+      },
+      "templateIds": [
+        "decision-matrix",
+        "improvement-report",
+        "survey-analysis"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-academic-advising-operations",
+      "nameAr": "تنظيم الإرشاد الأكاديمي",
+      "definition": "توزيع الطلبة على المرشدين وتوثيق تقديم الخدمة ومتابعتها.",
+      "objective": "سجل إرشاد معتمد يبين التوزيع والمتابعة والإحالات.",
+      "scope": "تنظيم الإرشاد الأكاديمي؛ لا يشمل نشر الساعات المكتبية.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الإرشاد أو منسق البرنامج.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "قائمة الطلبة المصرح بها.",
+        "قائمة المرشدين وآلية الإحالة."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التوزيع",
+          "action": "وزع الطلبة على المرشدين وفق الضابط.",
+          "exitCriterion": "تغطية كاملة."
+        },
+        {
+          "order": 2,
+          "title": "التنفيذ",
+          "action": "سجل تقديم الخدمة والإحالات برموز مقيدة.",
+          "exitCriterion": "سجل محدث."
+        },
+        {
+          "order": 3,
+          "title": "المراجعة",
+          "action": "افحص التغطية وعالج النقص واعتمد السجل.",
+          "exitCriterion": "سجل معتمد."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "يومان للإعداد ثم متابعة دورية.",
+        "planningNote": "تحدث التغييرات فور اعتمادها."
+      },
+      "finalOutput": "سجل إرشاد معتمد يبين التوزيع والمتابعة والإحالات.",
+      "evidenceAttachments": [
+        "سجل الإرشاد المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_ADVISING-SERVICE_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/08-خدمات-الإرشاد/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "سجل الإرشاد المعتمد."
+      },
+      "acceptanceCriteria": [
+        "كل طالب مشمول بتوزيع معتمد.",
+        "الإحالات الحساسة مقيدة."
+      ],
+      "commonErrors": [
+        "نشر أسماء الطلبة أو تفاصيل حالاتهم."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت تنظيم خدمة الإرشاد.",
+        "citationMethod": "يستشهد بـسجل الإرشاد المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحفظ أسماء الطلبة والإحالات في مسار مقيد ولا تعرض في البوابة."
+      },
+      "performanceIndicators": [
+        {
+          "name": "تغطية الإرشاد",
+          "formula": "الطلبة الموزعون ÷ إجمالي الطلبة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "سجل توزيع ومتابعة معتمد ومقيد."
+        ],
+        "rejected": [
+          "قائمة أسماء بلا متابعة."
+        ]
+      },
+      "cadence": {
+        "type": "تهيئة فصلية ومتابعة مستمرة",
+        "trigger": "بدء الفصل أو تغير التوزيع",
+        "followUp": "مراجعة دورية"
+      },
+      "templateIds": [
+        "completion-report",
+        "decision-matrix"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-office-hours-publication",
+      "nameAr": "نشر الساعات المكتبية",
+      "definition": "تجميع ساعات أعضاء هيئة التدريس الموقعة ونشر جدول عام مكتمل.",
+      "objective": "جدول عام مكتمل ومعتمد للساعات المكتبية، منشور للطلاب.",
+      "scope": "تحديد الساعات المكتبية وتجميعها والتحقق من اكتمالها ونشرها.",
+      "roles": {
+        "directResponsible": "العضو يحدد ساعاته ويوقع؛ والمنسق يجمع الجدول العام.",
+        "reviewer": "منسق القسم يتحقق من وجود جميع الأعضاء واكتمال الساعات.",
+        "approver": "رئيس القسم يعتمد الجدول العام قبل النشر."
+      },
+      "inputs": [
+        "الجداول الأسبوعية الموقعة لأعضاء هيئة التدريس."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "تحديد الساعات",
+          "action": "يحدد العضو ساعاته في جدوله الأسبوعي ويوقع.",
+          "exitCriterion": "جدول العضو موقع."
+        },
+        {
+          "order": 2,
+          "title": "التجميع",
+          "action": "يجمع المنسق الساعات في جدول عام ويتأكد من الاكتمال.",
+          "exitCriterion": "جميع الأعضاء مدرجون."
+        },
+        {
+          "order": 3,
+          "title": "النشر",
+          "action": "يعتمد الجدول العام وينشر للطلاب.",
+          "exitCriterion": "الجدول متاح للطلاب."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "يوم عمل بعد اكتمال الجداول.",
+        "planningNote": "يحدث الجدول المنشور عند أي تغيير معتمد."
+      },
+      "finalOutput": "جدول عام مكتمل ومعتمد للساعات المكتبية، منشور للطلاب.",
+      "evidenceAttachments": [
+        "الجدول العام المنشور للساعات المكتبية."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_OFFICE-HOURS_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/08-الساعات-المكتبية/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "تحقق المنسق من الاكتمال",
+          "اعتماد رئيس القسم والنشر"
+        ],
+        "requiredRecord": "الجدول العام المنشور للساعات المكتبية."
+      },
+      "acceptanceCriteria": [
+        "كل عضو حدد ساعاته ووقع.",
+        "الجدول العام مكتمل ومنشور."
+      ],
+      "commonErrors": [
+        "طلب تقارير أو محاضر إضافية مع وجود الجدول المنشور."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت إتاحة الساعات المكتبية للطلاب.",
+        "citationMethod": "يستشهد بـالجدول العام المنشور للساعات المكتبية. ورقم المهمة والإصدار.",
+        "privacyGuard": "ينشر الاسم والساعات الوظيفية فقط؛ لا تدرج بيانات اتصال شخصية."
+      },
+      "performanceIndicators": [
+        {
+          "name": "اكتمال النشر",
+          "formula": "الأعضاء المدرجون في الجدول المنشور ÷ الأعضاء المكلفين × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "جدول عام منشور يضم جميع الأعضاء وساعاتهم الموقعة."
+        ],
+        "rejected": [
+          "جدول غير مكتمل أو غير منشور."
+        ]
+      },
+      "cadence": {
+        "type": "تهيئة كل فصل",
+        "trigger": "اكتمال الجداول الأسبوعية",
+        "followUp": "تحديث عند التغيير"
+      },
+      "templateIds": [
+        "completion-report"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-activity-initiative-impact",
+      "nameAr": "تخطيط وتنفيذ الأنشطة والمبادرات وقياس أثرها",
+      "definition": "تنفيذ نشاط له هدف وأداة قياس ونتيجة قابلة للتحقق.",
+      "objective": "تقرير أثر معتمد يبين التنفيذ والنتيجة والتحسين التالي.",
+      "scope": "الأنشطة والمبادرات والفعاليات.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الأنشطة وفريق التنفيذ الداخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "هدف النشاط والفئة.",
+        "خطة التنفيذ وأداة القياس."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التخطيط",
+          "action": "حدد الهدف والمستهدف والأداة والمسؤول.",
+          "exitCriterion": "خطة قابلة للقياس."
+        },
+        {
+          "order": 2,
+          "title": "التنفيذ",
+          "action": "نفذ النشاط واجمع النتيجة المجمعة.",
+          "exitCriterion": "بيانات نتيجة مكتملة."
+        },
+        {
+          "order": 3,
+          "title": "التحليل",
+          "action": "فسر الأثر واعتمد التحسين.",
+          "exitCriterion": "تقرير أثر معتمد."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "حسب حجم النشاط ويومان للتقرير.",
+        "planningNote": "تستكمل الموافقات قبل التنفيذ."
+      },
+      "finalOutput": "تقرير أثر معتمد يبين التنفيذ والنتيجة والتحسين التالي.",
+      "evidenceAttachments": [
+        "تقرير الأثر المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_ACTIVITY-IMPACT_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/09-الأنشطة-والمبادرات/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "تقرير الأثر المعتمد."
+      },
+      "acceptanceCriteria": [
+        "النتيجة تتجاوز عدد الحضور.",
+        "الخصوصية محفوظة."
+      ],
+      "commonErrors": [
+        "اعتبار الصور دليل أثر كافيًا."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت تنفيذ النشاط وقياس أثره.",
+        "citationMethod": "يستشهد بـتقرير الأثر المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "تحقق مستهدف الأثر",
+          "formula": "المؤشرات المتحققة ÷ المؤشرات المقاسة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "تقرير بنتيجة مجمعة وتحسين محدد."
+        ],
+        "rejected": [
+          "صور وحضور بلا قياس."
+        ]
+      },
+      "cadence": {
+        "type": "لكل فعالية",
+        "trigger": "اعتماد النشاط",
+        "followUp": "تقرير بعد التنفيذ"
+      },
+      "templateIds": [
+        "activity-impact",
+        "survey-analysis",
+        "operational-plan"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-training-workshop",
+      "nameAr": "تصميم وتنفيذ ورشة أو برنامج تطوير مهني",
+      "definition": "تنفيذ تدريب مبني على احتياج وقياس التعلم أو التطبيق.",
+      "objective": "تقرير تدريب معتمد يبين الاحتياج والتنفيذ ونتيجة القياس.",
+      "scope": "الورش وبرامج التطوير المهني.",
+      "roles": {
+        "directResponsible": "رئيس اللجنة ومنسق التدريب الداخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "الاحتياج التدريبي.",
+        "هدف التدريب وأداة القياس."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التصميم",
+          "action": "اربط المحتوى بالاحتياج والهدف.",
+          "exitCriterion": "خطة تدريب واضحة."
+        },
+        {
+          "order": 2,
+          "title": "التنفيذ",
+          "action": "نفذ واجمع قياس التعلم.",
+          "exitCriterion": "نتيجة قياس مكتملة."
+        },
+        {
+          "order": 3,
+          "title": "التقويم",
+          "action": "حلل النتيجة واعتمد الإجراء التالي.",
+          "exitCriterion": "تقرير معتمد."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–7 أيام للتصميم ويومان للتقرير.",
+        "planningNote": "يضاف قياس لاحق عند استهداف ممارسة."
+      },
+      "finalOutput": "تقرير تدريب معتمد يبين الاحتياج والتنفيذ ونتيجة القياس.",
+      "evidenceAttachments": [
+        "تقرير التدريب المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_TRAINING-IMPACT_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/10-التطوير-المهني/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "تقرير التدريب المعتمد."
+      },
+      "acceptanceCriteria": [
+        "الاحتياج والهدف مرتبطان.",
+        "نتيجة القياس موثقة."
+      ],
+      "commonErrors": [
+        "الاكتفاء بالحضور أو الرضا."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت تطوير الكفايات وقياسه.",
+        "citationMethod": "يستشهد بـتقرير التدريب المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "تحقق هدف التدريب",
+          "formula": "المشاركون المحققون للهدف ÷ المشاركين المقاسين × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "تقرير يبين التعلم أو التطبيق."
+        ],
+        "rejected": [
+          "سجل حضور بلا نتيجة."
+        ]
+      },
+      "cadence": {
+        "type": "حسب الاحتياج",
+        "trigger": "فجوة تدريبية موثقة",
+        "followUp": "تقويم بعد التنفيذ"
+      },
+      "templateIds": [
+        "activity-impact",
+        "survey-analysis"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-media-communication",
+      "nameAr": "إعداد ونشر المحتوى الإعلامي وتقويم التواصل",
+      "definition": "إعداد محتوى من مصدر معتمد ومراجعته ونشره والتحقق منه.",
+      "objective": "نسخة منشورة ومعتمدة من المحتوى المطلوب.",
+      "scope": "الأخبار والإعلانات والحملات والقنوات.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الإعلام أو محرر داخلي مكلف.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "المعلومة المعتمدة.",
+        "متطلبات القناة والهوية."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "الإعداد",
+          "action": "حرر المحتوى من المصدر وحدد القناة.",
+          "exitCriterion": "مسودة موثقة."
+        },
+        {
+          "order": 2,
+          "title": "المراجعة",
+          "action": "راجع الدقة واللغة والهوية والإتاحة.",
+          "exitCriterion": "نسخة مصرح بها."
+        },
+        {
+          "order": 3,
+          "title": "النشر",
+          "action": "انشر وتحقق من الرابط والمحتوى.",
+          "exitCriterion": "نسخة منشورة صحيحة."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "1–3 أيام عمل.",
+        "planningNote": "تراجع المعلومة الحساسة بمسار معجل."
+      },
+      "finalOutput": "نسخة منشورة ومعتمدة من المحتوى المطلوب.",
+      "evidenceAttachments": [
+        "رابط النسخة المنشورة المعتمدة."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_MEDIA-CONTENT_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/11-الإعلام-والتواصل/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "رابط النسخة المنشورة المعتمدة."
+      },
+      "acceptanceCriteria": [
+        "المحتوى يطابق المصدر.",
+        "الرابط يعمل بعد النشر."
+      ],
+      "commonErrors": [
+        "نشر مسودة أو معلومة غير معتمدة."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت التواصل المؤسسي.",
+        "citationMethod": "يستشهد بـرابط النسخة المنشورة المعتمدة. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "سلامة النشر",
+          "formula": "المواد المنشورة بلا خطأ ÷ إجمالي المواد × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "رابط منشور مطابق للنسخة المعتمدة."
+        ],
+        "rejected": [
+          "لقطة شاشة بلا رابط أو اعتماد."
+        ]
+      },
+      "cadence": {
+        "type": "حسب الحدث",
+        "trigger": "ورود معلومة معتمدة",
+        "followUp": "تحقق بعد النشر"
+      },
+      "templateIds": [
+        "completion-report",
+        "quality-checklist",
+        "survey-analysis"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-register-database",
+      "nameAr": "إنشاء وتحديث سجل أو قاعدة بيانات تشغيلية",
+      "definition": "إنشاء سجل بحقوق وصول وتعريفات ثابتة وتحديث قابل للتتبع.",
+      "objective": "سجل تشغيلي معتمد ومحدث وفق تاريخ قطع معلوم.",
+      "scope": "السجلات وقواعد البيانات التشغيلية.",
+      "roles": {
+        "directResponsible": "مالك البيانات وأمين سجل داخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "مصدر البيانات المعتمد.",
+        "تعريف الحقول وصلاحياتها."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التعريف",
+          "action": "حدد الحقول والمصدر وتاريخ القطع.",
+          "exitCriterion": "قاموس مختصر معتمد."
+        },
+        {
+          "order": 2,
+          "title": "التحديث",
+          "action": "حمّل البيانات ونظفها ووثق التغيير.",
+          "exitCriterion": "سجل محدث."
+        },
+        {
+          "order": 3,
+          "title": "الفحص",
+          "action": "راجع عينة والصلاحيات واعتمد النسخة.",
+          "exitCriterion": "نسخة صالحة للاستخدام."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–7 أيام للبناء ثم تحديث دوري.",
+        "planningNote": "لا تجمع حقولًا لا يلزمها الغرض."
+      },
+      "finalOutput": "سجل تشغيلي معتمد ومحدث وفق تاريخ قطع معلوم.",
+      "evidenceAttachments": [
+        "السجل التشغيلي المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_DATA-REGISTER_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/12-السجلات-وقواعد-البيانات-مقيد/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "السجل التشغيلي المعتمد."
+      },
+      "acceptanceCriteria": [
+        "المصدر وتاريخ القطع ظاهران.",
+        "الصلاحيات والحقول بالحد الأدنى."
+      ],
+      "commonErrors": [
+        "جمع بيانات بلا غرض أو صلاحية."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت موثوقية السجل التشغيلي.",
+        "citationMethod": "يستشهد بـالسجل التشغيلي المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تقتصر الحقول على الغرض وتحفظ البيانات الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "اكتمال السجل",
+          "formula": "السجلات المكتملة ÷ إجمالي السجلات × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "سجل معرف ومراجع ومؤرخ."
+        ],
+        "rejected": [
+          "ملف بيانات بلا مصدر أو تاريخ قطع."
+        ]
+      },
+      "cadence": {
+        "type": "مستمر مع قطع دوري",
+        "trigger": "ورود مصدر أو موعد تقرير",
+        "followUp": "فحص عند كل تحديث"
+      },
+      "templateIds": [
+        "evidence-register",
+        "decision-matrix"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-academic-evidence-file",
+      "nameAr": "استكمال ملف أكاديمي أو حزمة أدلة اعتماد",
+      "definition": "فهرسة الأدلة وفحص اكتمالها وصلاحيتها للاستشهاد.",
+      "objective": "سجل أدلة معتمد يربط كل متطلب بمرجع صالح.",
+      "scope": "الملفات الأكاديمية وحزم الاعتماد.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الجودة أو مسؤول الملف الداخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "قائمة المتطلبات.",
+        "الأدلة الأصلية ومساراتها."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "الفهرسة",
+          "action": "اربط كل متطلب بدليل ومالك.",
+          "exitCriterion": "فهرس أولي مكتمل."
+        },
+        {
+          "order": 2,
+          "title": "الفحص",
+          "action": "تحقق من المحتوى والإصدار والصلاحية.",
+          "exitCriterion": "الفجوات محددة."
+        },
+        {
+          "order": 3,
+          "title": "الإقفال",
+          "action": "عالج الفجوات واعتمد السجل.",
+          "exitCriterion": "سجل أدلة معتمد."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–7 أيام بعد استلام الأدلة.",
+        "planningNote": "تتابع الفجوات قبل موعد الإقفال."
+      },
+      "finalOutput": "سجل أدلة معتمد يربط كل متطلب بمرجع صالح.",
+      "evidenceAttachments": [
+        "سجل الأدلة المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_EVIDENCE-PACK_v{version2}.xlsx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/13-الملفات-الأكاديمية-والأدلة/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "سجل الأدلة المعتمد."
+      },
+      "acceptanceCriteria": [
+        "لكل متطلب مرجع صالح.",
+        "لا رابط عام لمحتوى مقيد."
+      ],
+      "commonErrors": [
+        "اعتبار اسم الملف أو الرابط وحده دليلًا."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت جاهزية الأدلة وقابليتها للاستشهاد.",
+        "citationMethod": "يستشهد بـسجل الأدلة المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "اكتمال الأدلة",
+          "formula": "الأدلة المقبولة ÷ إجمالي المتطلبات × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "سجل يربط المتطلب بدليل مراجع."
+        ],
+        "rejected": [
+          "مجلد ملفات بلا فهرس."
+        ]
+      },
+      "cadence": {
+        "type": "مستمر وإقفال دوري",
+        "trigger": "ورود متطلب أو دليل",
+        "followUp": "متابعة أسبوعية للفجوات"
+      },
+      "templateIds": [
+        "evidence-register",
+        "quality-checklist",
+        "completion-report"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-analytical-evaluation",
+      "nameAr": "تقييم الفاعلية وإعداد تقرير تحليلي",
+      "definition": "تحليل سؤال محدد من بيانات موثوقة واستخلاص قرار قابل للتنفيذ.",
+      "objective": "تقرير تحليلي معتمد يجيب عن السؤال ويحدد القرار التالي.",
+      "scope": "تقييم فاعلية خدمة أو نشاط أو إجراء.",
+      "roles": {
+        "directResponsible": "رئيس اللجنة أو محلل داخلي مخول.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "سؤال التقييم والمستهدف.",
+        "بيانات المصدر."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التحقق",
+          "action": "ثبت السؤال ونظف البيانات وتحقق منها.",
+          "exitCriterion": "بيانات صالحة."
+        },
+        {
+          "order": 2,
+          "title": "التحليل",
+          "action": "قارن النتيجة بالمستهدف وفسر الفرق والقيود.",
+          "exitCriterion": "استنتاج مدعوم."
+        },
+        {
+          "order": 3,
+          "title": "القرار",
+          "action": "حدد الإجراء واعتمد التقرير.",
+          "exitCriterion": "قرار قابل للمتابعة."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "3–7 أيام بعد اكتمال البيانات.",
+        "planningNote": "تزاد المدة إذا احتاج المصدر تنظيفًا."
+      },
+      "finalOutput": "تقرير تحليلي معتمد يجيب عن السؤال ويحدد القرار التالي.",
+      "evidenceAttachments": [
+        "التقرير التحليلي المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_EVALUATION_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/14-التقارير-التحليلية/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "التقرير التحليلي المعتمد."
+      },
+      "acceptanceCriteria": [
+        "الاستنتاج مدعوم بالبيانات.",
+        "القيود والقرار واضحان."
+      ],
+      "commonErrors": [
+        "وصف الأرقام بلا تفسير أو قرار."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت التقويم المبني على الأدلة.",
+        "citationMethod": "يستشهد بـالتقرير التحليلي المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "قابلية التحقق",
+          "formula": "النتائج القابلة لإعادة الحساب ÷ النتائج المعروضة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "تقرير يجيب عن السؤال ويذكر القيود."
+        ],
+        "rejected": [
+          "جداول بلا استنتاج."
+        ]
+      },
+      "cadence": {
+        "type": "بعد دورة التنفيذ",
+        "trigger": "اكتمال بيانات التقييم",
+        "followUp": "متابعة القرار"
+      },
+      "templateIds": [
+        "completion-report",
+        "survey-analysis",
+        "improvement-report"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-improvement-action",
+      "nameAr": "معالجة ملاحظة أو فرصة تحسين",
+      "definition": "تحليل فجوة وتنفيذ إجراء والتحقق من فاعليته قبل الإقفال.",
+      "objective": "تقرير تحسين معتمد يثبت الإجراء وفاعليته وقرار الإقفال.",
+      "scope": "الملاحظات والنتائج دون المستهدف.",
+      "roles": {
+        "directResponsible": "مالك العملية أو مسؤول داخلي يسميه رئيس اللجنة.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "الملاحظة ودليلها.",
+        "المستهدف أو معيار القبول."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التحليل",
+          "action": "حدد السبب المرجح ودليله.",
+          "exitCriterion": "سبب أو فرضية قابلة للاختبار."
+        },
+        {
+          "order": 2,
+          "title": "المعالجة",
+          "action": "نفذ إجراءً بمسؤول وموعد ومؤشر.",
+          "exitCriterion": "الإجراء منفذ."
+        },
+        {
+          "order": 3,
+          "title": "التحقق",
+          "action": "قس النتيجة واعتمد الإقفال أو التمديد.",
+          "exitCriterion": "قرار فاعلية موثق."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "يومان للخطة ثم حسب الإجراء.",
+        "planningNote": "لا يغلق الإجراء بمجرد تنفيذه."
+      },
+      "finalOutput": "تقرير تحسين معتمد يثبت الإجراء وفاعليته وقرار الإقفال.",
+      "evidenceAttachments": [
+        "تقرير التحسين المقفل."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_IMPROVEMENT_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/15-خطط-التحسين/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "تقرير التحسين المقفل."
+      },
+      "acceptanceCriteria": [
+        "السبب مدعوم أو موسوم فرضية.",
+        "الإقفال مبني على قياس الفاعلية."
+      ],
+      "commonErrors": [
+        "إغلاق الملاحظة قبل قياس النتيجة."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت إغلاق دائرة التحسين.",
+        "citationMethod": "يستشهد بـتقرير التحسين المقفل. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "فاعلية المعالجة",
+          "formula": "الإجراءات الفعالة ÷ الإجراءات المقاسة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "تقرير قبل/بعد وقرار إقفال."
+        ],
+        "rejected": [
+          "إجراء منفذ بلا قياس."
+        ]
+      },
+      "cadence": {
+        "type": "عند ظهور فجوة",
+        "trigger": "نتيجة دون المستهدف",
+        "followUp": "متابعة حتى الإقفال"
+      },
+      "templateIds": [
+        "improvement-report",
+        "operational-plan",
+        "decision-matrix"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-annual-final-report",
+      "nameAr": "إعداد التقرير السنوي للبرنامج أو التقرير الختامي للجنة",
+      "definition": "تجميع نتائج الفترة وتحليلها وترحيل الإجراءات المفتوحة.",
+      "objective": "تقرير ختامي معتمد يعرض النتائج والأدلة والإجراءات المفتوحة.",
+      "scope": "التقرير السنوي للبرنامج أو الختامي للجنة.",
+      "roles": {
+        "directResponsible": "مالك التقرير المحدد رسميًا.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "نتائج المهام والمؤشرات.",
+        "سجل الأدلة والإجراءات المفتوحة."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "التجميع",
+          "action": "ثبت تاريخ القطع واجمع النتائج المعتمدة.",
+          "exitCriterion": "مدخلات مكتملة."
+        },
+        {
+          "order": 2,
+          "title": "التحليل",
+          "action": "لخص النتائج والفجوات والإجراءات المفتوحة.",
+          "exitCriterion": "مسودة مترابطة."
+        },
+        {
+          "order": 3,
+          "title": "الاعتماد",
+          "action": "راجع الأرقام والمصادر واعتمد التقرير.",
+          "exitCriterion": "تقرير نهائي معتمد."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "7–12 يوم عمل.",
+        "planningNote": "يبدأ التجميع قبل نهاية الفترة."
+      },
+      "finalOutput": "تقرير ختامي معتمد يعرض النتائج والأدلة والإجراءات المفتوحة.",
+      "evidenceAttachments": [
+        "التقرير الختامي المعتمد."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_FINAL-REPORT_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/16-التقارير-السنوية-والختامية/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "التقرير الختامي المعتمد."
+      },
+      "acceptanceCriteria": [
+        "الأرقام تطابق مصادرها.",
+        "كل إجراء مفتوح له مسؤول وموعد."
+      ],
+      "commonErrors": [
+        "نسخ التقارير دون تحليل أو تاريخ قطع."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت نتائج الدورة والحوكمة والتحسين.",
+        "citationMethod": "يستشهد بـالتقرير الختامي المعتمد. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "اكتمال التقرير",
+          "formula": "الأقسام المستوفاة ÷ الأقسام المطلوبة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "تقرير معتمد يربط النتائج بأدلتها."
+        ],
+        "rejected": [
+          "ملخص إنشائي بلا مصادر."
+        ]
+      },
+      "cadence": {
+        "type": "سنوي أو فصلي",
+        "trigger": "اكتمال بيانات الفترة",
+        "followUp": "ترحيل الإجراءات"
+      },
+      "templateIds": [
+        "final-report",
+        "kpi-tracker",
+        "evidence-register"
+      ],
+      "noTemplateReason": null
+    },
+    {
+      "id": "guide-research-development",
+      "nameAr": "تخطيط وتنمية البحث العلمي والنشر",
+      "definition": "تحديد أولوية بحثية وتنفيذ مبادرة وقياس نتيجتها.",
+      "objective": "خطة بحثية معتمدة تحدد الأولويات والمبادرات ومؤشرات المتابعة.",
+      "scope": "خطط ومبادرات تنمية البحث والنشر.",
+      "roles": {
+        "directResponsible": "رئيس لجنة الدراسات العليا وفريق بحث داخلي.",
+        "reviewer": "منسق القسم أو مراجع داخلي غير معدّ للمخرج.",
+        "approver": "رئيس القسم، مع التصعيد للمشرف أو العميد عند تجاوز الصلاحية."
+      },
+      "inputs": [
+        "بيانات الإنتاج البحثي.",
+        "أولويات القسم والموارد."
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "تحديد الأولوية",
+          "action": "حلل البيانات وحدد فجوة قابلة للتدخل.",
+          "exitCriterion": "أولوية موثقة."
+        },
+        {
+          "order": 2,
+          "title": "بناء المبادرة",
+          "action": "حدد الإجراء والمالك والموعد والمؤشر.",
+          "exitCriterion": "خطة قابلة للتنفيذ."
+        },
+        {
+          "order": 3,
+          "title": "الاعتماد",
+          "action": "راجع الموارد واعتمد الخطة والمتابعة.",
+          "exitCriterion": "خطة بحثية معتمدة."
+        }
+      ],
+      "expectedDuration": {
+        "estimate": "5–10 أيام للخطة.",
+        "planningNote": "تستخدم مؤشرات مرحلية للنتائج طويلة الأجل."
+      },
+      "finalOutput": "خطة بحثية معتمدة تحدد الأولويات والمبادرات ومؤشرات المتابعة.",
+      "evidenceAttachments": [
+        "الخطة البحثية المعتمدة."
+      ],
+      "fileNamePattern": "{academicYear}-{termCode}_W{week2}_{departmentCode}_{committeeCode}_{taskId}_RESEARCH-DEVELOPMENT_v{version2}.docx",
+      "sharePointFolderPath": "/متابعة-أعمال-اللجان/{academicYear}/{termCode}/{departmentCode}/{committeeCode}/17-تطوير-البحث-العلمي/{taskId}/",
+      "reviewAndApproval": {
+        "reviewFlow": [
+          "مراجعة داخلية مستقلة",
+          "اعتماد صاحب الصلاحية"
+        ],
+        "requiredRecord": "الخطة البحثية المعتمدة."
+      },
+      "acceptanceCriteria": [
+        "الأولوية مدعومة بالبيانات.",
+        "كل مبادرة لها مؤشر ومسؤول."
+      ],
+      "commonErrors": [
+        "قائمة مبادرات بلا فجوة أو مؤشر."
+      ],
+      "selfStudyRelationship": {
+        "useAsEvidence": "يثبت تخطيط وتنمية البحث العلمي.",
+        "citationMethod": "يستشهد بـالخطة البحثية المعتمدة. ورقم المهمة والإصدار.",
+        "privacyGuard": "تحذف البيانات الشخصية غير اللازمة وتحفظ الأصول الحساسة في مسار مقيد."
+      },
+      "performanceIndicators": [
+        {
+          "name": "تنفيذ المبادرات",
+          "formula": "المبادرات المنجزة ÷ المبادرات المستحقة × 100",
+          "proposedTarget": "100%",
+          "direction": "أعلى أفضل"
+        }
+      ],
+      "examples": {
+        "accepted": [
+          "خطة بأولوية موثقة ومبادرات قابلة للقياس."
+        ],
+        "rejected": [
+          "أهداف بحثية عامة."
+        ]
+      },
+      "cadence": {
+        "type": "سنوي مع مراجعة فصلية",
+        "trigger": "دورة التخطيط البحثي",
+        "followUp": "متابعة شهرية"
+      },
+      "templateIds": [
+        "operational-plan",
+        "activity-impact",
+        "evidence-register"
+      ],
+      "noTemplateReason": null
+    }
+  ]
+}
