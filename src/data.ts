@@ -16,141 +16,64 @@ import {
 export type DepartmentName = 'قسم القراءات' | 'قسم الثقافة الإسلامية' | 'قسم الشريعة' | 'قسم الأنظمة'
 export type Department = 'جميع الأقسام' | DepartmentName
 export type DeliveryStatus = 'بانتظار الربط'
-export type PrivacyClass = 'داخلي' | 'مقيد — لا تعرض البيانات داخل البوابة'
 
-export interface CatalogTask {
+interface CatalogTask {
   id: string
   department: DepartmentName
-  coordinator: string
-  departmentHead: string
   sourceWeek: number
-  sourcePeriod: string
   committee: string
   title: string
   steps: string[]
   outputType: string
   deliverable: string
-  phaseType: string
 }
 
-interface TaxonomyTaskType {
-  id: string
-  guideKey: string
-  canonicalTitle: string
-  ownerDomain: string
-  processClass: string
-  artifactKind: string
-  proposedCadence: string
+export interface FunctionalResponsibilities {
+  executionRole: string
+  recordCoordinationRole: string
 }
 
 interface CatalogAudit {
   proposedRenames: Array<{ recordIds: string[]; proposedTitle: string }>
-  proposedTaxonomy: {
-    ownerDomains: Array<{ id: string; label: string }>
-    processClasses: Array<{ id: string; label: string }>
-    cadences: Array<{ id: string; label: string; definition: string }>
-    taskTypes: TaxonomyTaskType[]
-  }
   recordTypeMap: Record<string, string>
-}
-
-export interface TaskGuide {
-  id: string
-  title: string
-  objective: string
-  inputs: string[]
-  steps: string[]
-  evidence: string[]
-  acceptanceCriteria: string[]
-  commonErrors: string[]
-  selfStudyConnections: string[]
-  approvalMethod: string
-  primaryTemplateId: string
-  companionTemplateIds: string[]
 }
 
 interface ProcedureGuide {
   id: string
   nameAr: string
-  definition: string
-  objective: string
-  scope: string
   roles: {
     directResponsible: string
-    reviewer: string
-    approver: string
   }
-  inputs: string[]
-  steps: Array<{ order: number; title: string; action: string; exitCriterion: string }>
-  expectedDuration: { estimate: string; planningNote: string }
   finalOutput: string
   evidenceAttachments: string[]
-  fileNamePattern: string
-  sharePointFolderPath: string
-  reviewAndApproval: { reviewFlow: string[]; requiredRecord: string }
-  acceptanceCriteria: string[]
-  commonErrors: string[]
-  selfStudyRelationship: { useAsEvidence: string; citationMethod: string; privacyGuard: string }
-  performanceIndicators: Array<{ name: string; formula: string; proposedTarget: string; direction: string }>
-  examples: { accepted: string[]; rejected: string[] }
-  cadence: { type: string; trigger: string; followUp: string }
-  templateIds: string[]
-  noTemplateReason: string | null
+  evidenceComponents: string[]
 }
 
 interface GuideAssignment {
   guideId: string
-  primaryTemplateId: string
-  companionTemplateIds: string[]
 }
 
-export interface Task extends CatalogTask {
+export interface Task {
+  id: string
+  department: DepartmentName
+  committee: string
   title: string
+  outputType: string
+  deliverable: string
   week: number
-  period: string
   start: Date
   due: Date
   graceEnd: Date
   temporalStatus: TemporalStatus
   deliveryStatus: DeliveryStatus
   taskTypeId: string
-  guideId: string
   guideTitle: string
-  guideDefinition: string
-  guideScope: string
   quickOutput: string
   quickSteps: string[]
   quickEvidence: string
-  quickTemplateRequired: boolean
-  cadence: string
-  processClass: string
-  objective: string
-  inputs: string[]
-  executionSteps: string[]
-  evidence: string[]
-  acceptanceCriteria: string[]
-  commonErrors: string[]
-  selfStudyConnections: string[]
-  approvalMethod: string
-  approvalFlow: string[]
-  expectedDuration: string
-  planningNote: string
-  finalOutput: string
-  performanceIndicators: Array<{ name: string; formula: string; proposedTarget: string; direction: string }>
-  acceptedExamples: string[]
-  rejectedExamples: string[]
-  executionOwner: string
-  recordCoordinator: string
-  reviewer: string
-  approver: string
-  primaryTemplateId: string
-  companionTemplateIds: string[]
-  fileName: string
-  proposedSharePointPath: string
-  privacyClass: PrivacyClass
-  timingNote: string
+  evidenceComponents: string[]
+  responsibilities: FunctionalResponsibilities
   scheduleAdjusted: boolean
-  earlySubmissionNote: string
 }
 
 export interface TemplateDefinition {
@@ -208,32 +131,19 @@ const committeeCodes: Record<string, string> = {
 const renamedTitleByRecord = new Map(
   audit.proposedRenames.flatMap((group) => group.recordIds.map((id) => [id, group.proposedTitle] as const)),
 )
-const taskTypeById = new Map(audit.proposedTaxonomy.taskTypes.map((type) => [type.id, type]))
-const processClassById = new Map(audit.proposedTaxonomy.processClasses.map((item) => [item.id, item.label]))
 
-function primaryTemplateFor(task: CatalogTask) {
-  const text = `${task.title} ${task.committee}`
-  if (task.committee.includes('فحص الخطط')) return 'plan-review'
-  if (text.includes('مؤشر') || text.includes('مؤشرات')) return 'kpi-tracker'
-  if (text.includes('استبان') || text.includes('رضا') || text.includes('تقييم الدعم')) return 'survey-analysis'
-  if (task.committee.includes('الجداول') || text.includes('جدول دراسي') || text.includes('توزيع الشعب')) return 'schedule-planner'
-  if (task.committee.includes('الاختبارات') || text.includes('اختبار') || text.includes('تصحيح')) return 'exam-readiness'
-  if (text.includes('اعتماد أكاديمي') || text.includes('الأدلة') || text.includes('الشواهد')) return 'evidence-register'
-  if (text.includes('تحسين') || text.includes('فجوات') || text.includes('معالجة')) return 'improvement-report'
-  if (task.phaseType === 'تسليم نهائي' || text.includes('ختامي') || text.includes('نهائي فصلي')) return 'final-report'
-  if (task.outputType === 'خطة') return 'operational-plan'
-  if (task.outputType === 'نشاط وفعالية') return 'activity-impact'
-  if (['جدول', 'قاعدة بيانات', 'قائمة'].includes(task.outputType)) return 'decision-matrix'
-  if (['نموذج', 'ملف أكاديمي'].includes(task.outputType)) return 'quality-checklist'
-  return 'completion-report'
+interface LegacyDetailSet {
+  objective: string
+  inputs: string[]
+  steps: string[]
+  evidenceComponents: string[]
+  acceptanceCriteria: string[]
+  commonErrors: string[]
+  selfStudyConnections: string[]
+  approvalMethod: string
 }
 
-function companionTemplates(primaryTemplateId: string) {
-  const companions = ['minutes', 'evidence-register', 'quality-checklist']
-  return companions.filter((id) => id !== primaryTemplateId)
-}
-
-function detailSet(task: CatalogTask, guideTitle: string): Omit<TaskGuide, 'id' | 'title' | 'primaryTemplateId' | 'companionTemplateIds'> {
+function detailSet(task: CatalogTask, guideTitle: string): LegacyDetailSet {
   const commonInputs = ['التكليف أو الخطة المعتمدة ذات الصلة', 'البيانات والمستندات المصدرية المحدثة', 'النماذج والقرارات السابقة المرتبطة بالمهمة']
   const commonEvidence = ['نسخة المخرج النهائية المعتمدة', 'سجل المراجعة أو محضر القرار', 'قائمة المرفقات وروابطها داخل المستودع المؤسسي']
   const commonAcceptance = ['اكتمال البيانات الوصفية والتاريخ والإصدار', 'اتساق النتيجة مع البيانات والمصدر', 'تحديد مسؤول وموعد لكل إجراء لاحق', 'توثيق المراجعة والاعتماد قبل الإقفال']
@@ -244,7 +154,7 @@ function detailSet(task: CatalogTask, guideTitle: string): Omit<TaskGuide, 'id' 
       objective: `إنتاج ${guideTitle} يربط الهدف بالمؤشر والمستهدف والإجراء والمسؤول والزمن والدليل.`,
       inputs: ['الأهداف الاستراتيجية وخطة القسم', 'نتائج الفترة السابقة وفجواتها', ...commonInputs],
       steps: [...task.steps, 'ربط كل هدف بمؤشر ومستهدف ومبادرة', 'مراجعة الموارد والمخاطر ثم توثيق الاعتماد'],
-      evidence: ['الخطة المعتمدة', 'مصفوفة الأهداف والمؤشرات', ...commonEvidence],
+      evidenceComponents: ['الأهداف والإجراءات', 'المؤشرات والمستهدفات', 'المسؤول والموعد', 'المراجعة والاعتماد'],
       acceptanceCriteria: ['لا يوجد هدف بلا مؤشر ومستهدف', ...commonAcceptance],
       commonErrors: ['استخدام عبارات عامة غير قابلة للقياس', ...commonErrors],
       selfStudyConnections: ['التخطيط التشغيلي ومواءمة أهداف البرنامج', 'متابعة مؤشرات الأداء وإغلاق دائرة التحسين'],
@@ -257,7 +167,7 @@ function detailSet(task: CatalogTask, guideTitle: string): Omit<TaskGuide, 'id' 
       objective: 'تنفيذ فحص معياري مستقل للخطة وتوثيق كل ملاحظة وقرار معالجة حتى الإقفال.',
       inputs: ['نسخة الخطة ورقم إصدارها', 'معايير الفحص المعتمدة', 'سجل الملاحظات أو التحكيم السابق'],
       steps: [...task.steps, 'ربط كل ملاحظة ببند وموضع محدد', 'التحقق من الاستجابة وإثبات الإقفال'],
-      evidence: ['نموذج الفحص المكتمل', 'نسخة الخطة قبل المعالجة وبعدها', 'قرار اللجنة وسجل الإقفال'],
+      evidenceComponents: ['الخطة ونسختها', 'بنود الفحص ونتائجها', 'الملاحظات ومواضعها', 'حالة المعالجة والإقفال'],
       acceptanceCriteria: ['كل ملاحظة محددة الموضع ومعللة', 'بقاء اللجان العلمية المتخصصة مستقلة', ...commonAcceptance],
       commonErrors: ['دمج نتائج لجان التخصصات المختلفة', 'ملاحظة عامة بلا موضع أو تعليل', ...commonErrors],
       selfStudyConnections: ['جودة تصميم البرامج والخطط الأكاديمية', 'سلامة المراجعة والتحسين المستمر'],
@@ -270,7 +180,7 @@ function detailSet(task: CatalogTask, guideTitle: string): Omit<TaskGuide, 'id' 
       objective: 'تنفيذ النشاط وتوثيق المشاركة وقياس الرضا أو الأثر وتحويل النتيجة إلى تحسين قابل للمتابعة.',
       inputs: ['خطة النشاط والفئة المستهدفة', 'أداة قياس أثر أو رضا', ...commonInputs],
       steps: [...task.steps, 'جمع نتيجة أداة القياس وتحليلها', 'توثيق التحسين والمسؤول وموعد المتابعة'],
-      evidence: ['خطة التنفيذ وقائمة الحضور', 'نتائج القياس وتحليلها', 'توثيق يحفظ الخصوصية', ...commonEvidence],
+      evidenceComponents: ['هدف النشاط والفئة والتاريخ', 'ملخص التنفيذ وعدد المستفيدين', 'أداة القياس والنتيجة', 'التحسين التالي والاعتماد'],
       acceptanceCriteria: ['عدد المستفيدين ومصدره واضحان', 'التحسين مبني على نتيجة القياس', ...commonAcceptance],
       commonErrors: ['الاكتفاء بالصور أو عدد الحضور', 'نشر صور أو قوائم حساسة بلا ضابط', ...commonErrors],
       selfStudyConnections: ['الأنشطة والخدمات الداعمة', 'مشاركة المستفيدين وقياس الأثر'],
@@ -282,7 +192,7 @@ function detailSet(task: CatalogTask, guideTitle: string): Omit<TaskGuide, 'id' 
     objective: `إنجاز «${task.title}» كمخرج ${task.outputType} مكتمل وموثق وقابل للمراجعة والاستشهاد.`,
     inputs: commonInputs,
     steps: [...task.steps, 'تحليل النتيجة والفجوات وتحديد الإجراءات', 'فحص الجودة وتوثيق الاعتماد وحفظ الأدلة'],
-    evidence: commonEvidence,
+    evidenceComponents: commonEvidence,
     acceptanceCriteria: commonAcceptance,
     commonErrors,
     selfStudyConnections: ['توثيق الممارسة وموثوقية الأدلة', 'تحليل النتائج والتحسين المستمر'],
@@ -290,19 +200,19 @@ function detailSet(task: CatalogTask, guideTitle: string): Omit<TaskGuide, 'id' 
   }
 }
 
-function privacyFor(task: CatalogTask): PrivacyClass {
+function privacyFor(task: CatalogTask): 'داخلي' | 'مقيد — لا تعرض البيانات داخل البوابة' {
   const sensitivePattern = /طلاب|الطلبة|خريج|متعثر|متفوق|حالات خاصة|أوراق الإجابة|التصحيح العشوائي|قاعدة بيانات/
   return sensitivePattern.test(`${task.title} ${task.deliverable}`) ? 'مقيد — لا تعرض البيانات داخل البوابة' : 'داخلي'
 }
 
-function fileNameFor(task: CatalogTask, term: AcademicTerm, week: number, templateId: string) {
+function fileNameFor(task: CatalogTask, term: AcademicTerm, week: number) {
   const year = term.academicYear.match(/\d{4}/)?.[0] ?? '1448'
   const termCode = term.termType === 'first' ? 'F1' : term.termType === 'second' ? 'F2' : 'SU'
   const weekCode = task.sourceWeek === 16 ? 'EXAM' : `W${String(week).padStart(2, '0')}`
   const departmentCode = departmentCodes[task.department]
   const committeeCode = committeeCodes[task.committee] ?? 'COM'
-  const extension = templateById(templateId).type === 'Word' ? 'docx' : 'xlsx'
-  return `${year}-${termCode}_${weekCode}_${departmentCode}_${committeeCode}_${task.id}_${templateId}_v01.${extension}`
+  const extension = ['جدول', 'قائمة', 'قاعدة بيانات'].includes(task.outputType) ? 'xlsx' : 'docx'
+  return `${year}-${termCode}_${weekCode}_${departmentCode}_${committeeCode}_${task.id}_EVIDENCE_v01.${extension}`
 }
 
 function sharePointPathFor(task: CatalogTask, term: AcademicTerm, pattern?: string) {
@@ -342,7 +252,10 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
   const exams = getExamEvent(term)
 
   return catalog.map((sourceTask) => {
-    const task = { ...sourceTask, title: renamedTitleByRecord.get(sourceTask.id) ?? sourceTask.title }
+    const task: CatalogTask = {
+      ...sourceTask,
+      title: renamedTitleByRecord.get(sourceTask.id) ?? sourceTask.title,
+    }
     const isExams = task.sourceWeek === 16
     const mappedWeekNumber = task.sourceWeek === 0 ? 0 : Math.min(task.sourceWeek, weeks.length)
     const operationalWeek = mappedWeekNumber > 0 ? weeks[mappedWeekNumber - 1] : null
@@ -353,77 +266,34 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
     const graceEnd = isExams ? examsEnd : operationalWeek?.graceEnd ?? preparationDue
     const scheduleAdjusted = !isExams && task.sourceWeek > 0 && task.sourceWeek > weeks.length
     const typeId = audit.recordTypeMap[task.id] ?? 'TYP-UNMAPPED'
-    const taskType = taskTypeById.get(typeId)
     const assignment = guideAssignments[task.id]
     const procedureGuide = assignment ? guideById.get(assignment.guideId) : undefined
     const guideTitle = procedureGuide?.nameAr ?? `دليل ${task.outputType}`
-    const isOfficeHoursAnnouncement = assignment?.guideId === 'guide-office-hours-publication'
-    const primaryTemplateId = assignment?.primaryTemplateId ?? primaryTemplateFor(task)
-    const companionTemplateIds = isOfficeHoursAnnouncement ? [] : assignment?.companionTemplateIds ?? companionTemplates(primaryTemplateId)
-    const fallbackGuide = detailSet(task, guideTitle)
-    const executionSteps = procedureGuide
-      ? procedureGuide.steps.map((step) => `${step.title}: ${step.action} — معيار الخروج: ${step.exitCriterion}`)
-      : fallbackGuide.steps
-    const approvalMethod = procedureGuide
-      ? `${procedureGuide.reviewAndApproval.reviewFlow.join(' ← ')}. السجل المطلوب: ${procedureGuide.reviewAndApproval.requiredRecord}`
-      : fallbackGuide.approvalMethod
-    const timingNote = task.sourceWeek === 0
-      ? 'تهيئة غير مقيمة قبل انطلاق نافذة التنفيذ.'
-      : isExams
-        ? 'مهمة ممتدة داخل فترة الاختبارات المقارنة.'
-        : scheduleAdjusted
-          ? `أعيدت جدولة المهمة من الأسبوع ${task.sourceWeek} إلى آخر أسبوع تشغيلي متاح؛ يمنع النظام بدء أسبوع تشغيلي داخل الاختبارات.`
-          : operationalWeek?.graceShortenedByExams
-            ? 'تنتهي المهلة قبل الاختبارات، ولذلك قد تكون أقصر من المهلة المعتادة.'
-            : `التسليم الأساسي في يوم عمل متاح، ثم مهلة مقدارها ${term.graceWorkDays} أيام تشغيلية ما لم تبدأ الاختبارات.`
 
     return {
-      ...task,
+      id: task.id,
+      department: task.department,
+      committee: task.committee,
+      title: task.title,
+      outputType: task.outputType,
+      deliverable: task.deliverable,
       week: isExams ? 16 : mappedWeekNumber,
-      period: isExams ? 'فترة الاختبارات' : mappedWeekNumber === 0 ? 'أسبوع التهيئة' : `الأسبوع ${mappedWeekNumber}`,
       start,
       due,
       graceEnd,
       temporalStatus: getTemporalState(start, due, graceEnd, today),
       deliveryStatus: 'بانتظار الربط',
       taskTypeId: typeId,
-      guideId: assignment?.guideId ?? taskType?.guideKey ?? `task-guide/${typeId}`,
       guideTitle,
-      guideDefinition: procedureGuide?.definition ?? fallbackGuide.objective,
-      guideScope: procedureGuide?.scope ?? `نطاق المهمة المسجلة: ${task.title}.`,
-      quickOutput: isOfficeHoursAnnouncement ? 'جدول عام مكتمل للساعات المكتبية ومنشور للطلاب.' : `إنجاز «${task.title}» في صورته النهائية.`,
-      quickSteps: isOfficeHoursAnnouncement ? ['يحدد كل عضو ساعاته المكتبية في جدوله الأسبوعي ويوقّعه.', 'يجمع المنسق الجداول ويتحقق من اكتمال جميع الأعضاء.', 'ينشر المنسق الجدول العام للطلاب.'] : task.steps,
-      quickEvidence: isOfficeHoursAnnouncement ? 'الجدول العام المنشور فقط.' : quickEvidenceFor(task),
-      quickTemplateRequired: !isOfficeHoursAnnouncement,
-      cadence: procedureGuide?.cadence.type ?? 'تحتاج اعتمادًا',
-      processClass: processClassById.get(taskType?.processClass ?? '') ?? 'تنفيذ ومتابعة',
-      objective: procedureGuide?.objective ?? fallbackGuide.objective,
-      inputs: procedureGuide?.inputs ?? fallbackGuide.inputs,
-      executionSteps,
-      evidence: procedureGuide?.evidenceAttachments ?? fallbackGuide.evidence,
-      acceptanceCriteria: procedureGuide?.acceptanceCriteria ?? fallbackGuide.acceptanceCriteria,
-      commonErrors: procedureGuide?.commonErrors ?? fallbackGuide.commonErrors,
-      selfStudyConnections: procedureGuide ? [procedureGuide.selfStudyRelationship.useAsEvidence, procedureGuide.selfStudyRelationship.citationMethod, procedureGuide.selfStudyRelationship.privacyGuard] : fallbackGuide.selfStudyConnections,
-      approvalMethod,
-      approvalFlow: procedureGuide?.reviewAndApproval.reviewFlow ?? ['فحص ذاتي', 'مراجعة اللجنة', 'الاعتماد وفق المسار المحلي'],
-      expectedDuration: procedureGuide?.expectedDuration.estimate ?? 'تحدد وفق حجم المهمة ومدخلاتها.',
-      planningNote: procedureGuide?.expectedDuration.planningNote ?? 'توثق أسباب أي تمديد في سجل المهمة.',
-      finalOutput: procedureGuide?.finalOutput ?? task.deliverable,
-      performanceIndicators: procedureGuide?.performanceIndicators ?? [],
-      acceptedExamples: procedureGuide?.examples.accepted ?? [],
-      rejectedExamples: procedureGuide?.examples.rejected ?? [],
-      executionOwner: procedureGuide?.roles.directResponsible ?? task.committee,
-      recordCoordinator: task.coordinator,
-      reviewer: procedureGuide?.roles.reviewer ?? task.departmentHead,
-      approver: procedureGuide?.roles.approver ?? 'وفق قرار التشكيل والمسار المحلي',
-      primaryTemplateId,
-      companionTemplateIds,
-      fileName: fileNameFor(task, term, mappedWeekNumber, primaryTemplateId),
-      proposedSharePointPath: sharePointPathFor(task, term, procedureGuide?.sharePointFolderPath),
-      privacyClass: privacyFor(task),
-      timingNote,
+      quickOutput: procedureGuide?.finalOutput ?? `إنجاز «${task.title}» في صورته النهائية.`,
+      quickSteps: task.steps,
+      quickEvidence: procedureGuide?.evidenceAttachments[0] ?? quickEvidenceFor(task),
+      evidenceComponents: procedureGuide?.evidenceComponents ?? ['هوية الشاهد ونطاقه', 'المحتوى أو النتيجة الأساسية', 'تاريخ الإنجاز', 'المراجعة والاعتماد'],
+      responsibilities: {
+        executionRole: procedureGuide?.roles.directResponsible ?? task.committee,
+        recordCoordinationRole: 'منسق أعمال اللجان بالقسم',
+      },
       scheduleAdjusted,
-      earlySubmissionNote: 'يُحتسب التسليم المبكر فقط بعد وصول تاريخ رفع فعلي من SharePoint؛ لا تستنتجه البوابة من التاريخ.',
     }
   })
 }
@@ -543,17 +413,18 @@ export function taskSearchIndex(task: Task) {
     task.guideTitle,
     task.taskTypeId,
     task.deliverable,
-    task.executionSteps.join(' '),
+    task.quickSteps.join(' '),
+    task.quickEvidence,
+    task.evidenceComponents.join(' '),
   ].join(' '))
 }
 
 export function departmentDetails() {
   return (departments.filter((item): item is DepartmentName => item !== 'جميع الأقسام')).map((department) => {
-    const first = catalog.find((task) => task.department === department)
     return {
       name: department,
-      coordinator: first?.coordinator ?? 'غير محدد',
-      head: first?.departmentHead ?? 'غير محدد',
+      coordinationRole: 'منسق أعمال اللجان بالقسم',
+      reviewRole: 'رئيس القسم',
       code: departmentCodes[department],
     }
   })

@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "1.1.0",
-  "generatedAt": "2026-08-21",
+  "schemaVersion": "1.2.0",
+  "generatedAt": "2026-08-22",
   "language": "ar",
-  "model": "دليل مركزي مختصر: نتيجة واحدة، 2–4 خطوات، وشاهد كافٍ قدر الإمكان.",
+  "model": "دليل مركزي مختصر: نتيجة واحدة، 2–4 خطوات، شاهد واحد، ومكونات عملية واضحة للشاهد.",
   "rolesPolicy": {
     "administrativeHierarchy": [
       "عضو اللجنة المكلف",
@@ -117,12 +117,12 @@
         "trigger": "بداية دورة التخطيط",
         "followUp": "مراجعة شهرية"
       },
-      "templateIds": [
-        "operational-plan",
-        "decision-matrix",
-        "minutes"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "الأهداف والإجراءات المرتبطة بها",
+        "المؤشرات والمستهدفات",
+        "المسؤول والموعد لكل إجراء",
+        "بيانات المراجعة والاعتماد"
+      ]
     },
     {
       "id": "guide-program-curriculum-review",
@@ -209,12 +209,12 @@
         "trigger": "موعد مراجعة أو فجوة جوهرية",
         "followUp": "متابعة المفتوح"
       },
-      "templateIds": [
-        "completion-report",
-        "improvement-report",
-        "minutes"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "البرنامج أو المقرر والنسخة محل المراجعة",
+        "النتائج والملاحظات محددة الموضع",
+        "التوصية ومبررها",
+        "قرار الاعتماد وحالة التنفيذ"
+      ]
     },
     {
       "id": "guide-learning-outcomes-kpi",
@@ -301,13 +301,12 @@
         "trigger": "موعد القياس",
         "followUp": "متابعة إجراء التحسين"
       },
-      "templateIds": [
-        "kpi-tracker",
-        "operational-plan",
-        "completion-report",
-        "survey-analysis"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "تعريف الناتج أو المؤشر ومصدر بياناته",
+        "طريقة الحساب والقيمة الفعلية والمستهدف",
+        "تحليل النتيجة وإجراء التحسين والمسؤول والموعد",
+        "بيانات المراجعة والاعتماد"
+      ]
     },
     {
       "id": "guide-scientific-plan-review",
@@ -394,12 +393,12 @@
         "trigger": "استلام نسخة مكتملة",
         "followUp": "متابعة أسبوعية للمفتوح"
       },
-      "templateIds": [
-        "plan-review",
-        "final-report",
-        "improvement-report"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "اسم الخطة ورقم نسختها",
+        "بنود الفحص ونتيجة كل بند",
+        "الملاحظات واستجابة الجهة وحالة المعالجة",
+        "قرار الإقفال والاعتماد"
+      ]
     },
     {
       "id": "guide-academic-scheduling",
@@ -486,12 +485,12 @@
         "trigger": "فتح التخطيط للفصل",
         "followUp": "تحديث عند تعديل معتمد"
       },
-      "templateIds": [
-        "schedule-planner",
-        "decision-matrix",
-        "minutes"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "المقررات والشعب المشمولة",
+        "الأوقات والقاعات والمكلفون",
+        "نتيجة فحص التعارضات",
+        "التعديلات ونسخة الاعتماد"
+      ]
     },
     {
       "id": "guide-exam-scheduling-readiness",
@@ -578,12 +577,12 @@
         "trigger": "اعتماد قائمة المقررات",
         "followUp": "تحديث الطوارئ"
       },
-      "templateIds": [
-        "exam-readiness",
-        "schedule-planner",
-        "decision-matrix"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "المقررات والشعب ومواعيد الاختبارات",
+        "القاعات والمراقبون والتكليفات",
+        "حالة عناصر الجاهزية والملاحظات",
+        "المعالجات وقرار الاعتماد"
+      ]
     },
     {
       "id": "guide-exam-operations-quality",
@@ -670,12 +669,12 @@
         "trigger": "بدء الاختبار",
         "followUp": "إقفال يومي"
       },
-      "templateIds": [
-        "exam-readiness",
-        "quality-checklist",
-        "completion-report"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "تعريف الاختبار والفترة",
+        "وقائع التشغيل ونتائج الفحص",
+        "الملاحظات والإجراءات والمسؤول وموعد الإقفال",
+        "اعتماد سجل التشغيل"
+      ]
     },
     {
       "id": "guide-student-identification-support",
@@ -762,12 +761,12 @@
         "trigger": "ظهور حالة أو اكتمال البيانات",
         "followUp": "متابعة حسب الحاجة"
       },
-      "templateIds": [
-        "decision-matrix",
-        "improvement-report",
-        "survey-analysis"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "معرف داخلي والحاجة المرصودة دون كشف الهوية",
+        "إجراء الدعم والمسؤول",
+        "نتيجة المتابعة وحالة الإقفال",
+        "ضابط الخصوصية والاعتماد"
+      ]
     },
     {
       "id": "guide-academic-advising-operations",
@@ -854,11 +853,12 @@
         "trigger": "بدء الفصل أو تغير التوزيع",
         "followUp": "مراجعة دورية"
       },
-      "templateIds": [
-        "completion-report",
-        "decision-matrix"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "توزيع الإرشاد ونطاق المتابعة",
+        "الحالات برموز داخلية والإجراء أو الإحالة المنفذة",
+        "نتيجة المتابعة والحالة",
+        "بيانات المراجعة والاعتماد"
+      ]
     },
     {
       "id": "guide-office-hours-publication",
@@ -944,10 +944,12 @@
         "trigger": "اكتمال الجداول الأسبوعية",
         "followUp": "تحديث عند التغيير"
       },
-      "templateIds": [
-        "completion-report"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "أسماء جميع الأعضاء المشمولين",
+        "اليوم ووقت البداية والنهاية لكل عضو",
+        "مكان الساعة المكتبية أو وسيلة التواصل",
+        "تاريخ النشر وقناته"
+      ]
     },
     {
       "id": "guide-activity-initiative-impact",
@@ -1034,12 +1036,12 @@
         "trigger": "اعتماد النشاط",
         "followUp": "تقرير بعد التنفيذ"
       },
-      "templateIds": [
-        "activity-impact",
-        "survey-analysis",
-        "operational-plan"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "هدف النشاط والفئة والتاريخ",
+        "ملخص التنفيذ وعدد المستفيدين الإجمالي",
+        "أداة القياس والنتيجة",
+        "التحسين التالي والمسؤول وبيانات الاعتماد"
+      ]
     },
     {
       "id": "guide-training-workshop",
@@ -1126,11 +1128,12 @@
         "trigger": "فجوة تدريبية موثقة",
         "followUp": "تقويم بعد التنفيذ"
       },
-      "templateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "الاحتياج والأهداف والفئة المستهدفة",
+        "ملخص التنفيذ والحضور الإجمالي",
+        "أداة التقويم ونتيجتها",
+        "إجراء التحسين أو المتابعة وبيانات الاعتماد"
+      ]
     },
     {
       "id": "guide-media-communication",
@@ -1217,12 +1220,12 @@
         "trigger": "ورود معلومة معتمدة",
         "followUp": "تحقق بعد النشر"
       },
-      "templateIds": [
-        "completion-report",
-        "quality-checklist",
-        "survey-analysis"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "المحتوى النهائي المعتمد",
+        "قناة النشر وتاريخه",
+        "الفئة المستهدفة",
+        "رابط النسخة المنشورة أو صورة إثباتها"
+      ]
     },
     {
       "id": "guide-register-database",
@@ -1309,11 +1312,12 @@
         "trigger": "ورود مصدر أو موعد تقرير",
         "followUp": "فحص عند كل تحديث"
       },
-      "templateIds": [
-        "evidence-register",
-        "decision-matrix"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "اسم السجل وتاريخ القطع والإصدار",
+        "الحقول المطلوبة ونسبة اكتمالها",
+        "ملخص التحديثات أو سجل التغيير",
+        "المراجع والمعتمد وصلاحية الوصول"
+      ]
     },
     {
       "id": "guide-academic-evidence-file",
@@ -1400,12 +1404,12 @@
         "trigger": "ورود متطلب أو دليل",
         "followUp": "متابعة أسبوعية للفجوات"
       },
-      "templateIds": [
-        "evidence-register",
-        "quality-checklist",
-        "completion-report"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "المتطلب ومعرف الشاهد وعنوانه",
+        "المصدر والإصدار والتاريخ",
+        "الرابط وصلاحية الوصول",
+        "حالة الصلاحية والاعتماد"
+      ]
     },
     {
       "id": "guide-analytical-evaluation",
@@ -1492,12 +1496,12 @@
         "trigger": "اكتمال بيانات التقييم",
         "followUp": "متابعة القرار"
       },
-      "templateIds": [
-        "completion-report",
-        "survey-analysis",
-        "improvement-report"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "سؤال التقييم ونطاقه ومصدر البيانات",
+        "النتائج الأساسية",
+        "التفسير والقرار التالي",
+        "الإجراء والمسؤول والاعتماد"
+      ]
     },
     {
       "id": "guide-improvement-action",
@@ -1584,12 +1588,12 @@
         "trigger": "نتيجة دون المستهدف",
         "followUp": "متابعة حتى الإقفال"
       },
-      "templateIds": [
-        "improvement-report",
-        "operational-plan",
-        "decision-matrix"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "الملاحظة أو الفجوة وشاهدها وسببها الجذري",
+        "إجراء المعالجة والمسؤول والموعد",
+        "طريقة التحقق من الفاعلية ونتيجتها",
+        "قرار الإقفال والاعتماد"
+      ]
     },
     {
       "id": "guide-annual-final-report",
@@ -1676,12 +1680,12 @@
         "trigger": "اكتمال بيانات الفترة",
         "followUp": "ترحيل الإجراءات"
       },
-      "templateIds": [
-        "final-report",
-        "kpi-tracker",
-        "evidence-register"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "الفترة والنطاق المشمولان",
+        "النتائج مقارنة بالمستهدفات وإحالات شواهدها",
+        "الفجوات والإجراءات المفتوحة",
+        "بيانات المراجعة والاعتماد"
+      ]
     },
     {
       "id": "guide-research-development",
@@ -1768,12 +1772,12 @@
         "trigger": "دورة التخطيط البحثي",
         "followUp": "متابعة شهرية"
       },
-      "templateIds": [
-        "operational-plan",
-        "activity-impact",
-        "evidence-register"
-      ],
-      "noTemplateReason": null
+      "evidenceComponents": [
+        "الأولويات البحثية ومبرراتها",
+        "المبادرات والمسؤولون والمواعيد",
+        "المؤشرات والمستهدفات",
+        "الموارد والمخاطر وبيانات المراجعة والاعتماد"
+      ]
     }
   ]
 }

@@ -15,21 +15,16 @@ import {
   CalendarCheck2,
   CalendarClock,
   CalendarDays,
-  Check,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
-  Clipboard,
   ClipboardCheck,
   Clock3,
-  Download,
   ExternalLink,
   FileCheck2,
-  FileText,
   FolderOpen,
-  Info,
   KeyRound,
   LayoutDashboard,
   ListChecks,
@@ -38,7 +33,6 @@ import {
   Search,
   ShieldCheck,
   SlidersHorizontal,
-  Target,
   UsersRound,
   X,
 } from 'lucide-react'
@@ -71,8 +65,6 @@ import {
   normalizeSearchText,
   Task,
   taskSearchIndex,
-  templateById,
-  templates,
 } from './data'
 
 const sharePointUrl = 'https://taifedusa.sharepoint.com/sites/CommitteeQuality'
@@ -140,7 +132,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
         <div className="access-copy">
           <span className="eyebrow eyebrow-light"><ShieldCheck size={17} /> مرجع التنفيذ والأدلة</span>
           <h1 id="access-title">اعرف مهمتك، ونفّذها بدليلٍ واضح.</h1>
-          <p>مهام اللجان، المواعيد المرنة، أدلة الإجراء، والقوالب المعتمدة للعمل في مكان واحد.</p>
+          <p>مهام اللجان، المواعيد المرنة، خطوات التنفيذ، والشاهد المطلوب بمكوناته في مكان واحد.</p>
         </div>
         <p className="access-footnote">العام الجامعي 1448-1449هـ</p>
       </section>
@@ -233,22 +225,6 @@ function InfoList({ items, ordered = false }: { items: string[]; ordered?: boole
 }
 
 function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
-  const primaryTemplate = templateById(task.primaryTemplateId)
-  const companions = task.companionTemplateIds.map(templateById)
-  const [copied, setCopied] = useState<string | null>(null)
-
-  async function copyText(value: string, key: string) {
-    try {
-      await navigator.clipboard.writeText(value)
-      setCopied(key)
-      window.setTimeout(() => setCopied(null), 1800)
-    } catch {
-      setCopied('تعذر النسخ')
-    }
-  }
-
-  const permanentLink = `${window.location.origin}${window.location.pathname}${window.location.search}#task=${encodeURIComponent(task.id)}`
-
   return (
     <AccessibleDialog onClose={onClose} titleId="task-modal-title" className="task-detail-modal">
       <header className="modal-header simple-modal-header">
@@ -267,57 +243,23 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
         </section>
 
         <div className="quick-meta-grid">
-          <section><span>المنفذ</span><strong>{task.committee}</strong><small>تنسيق السجل: {task.recordCoordinator}</small></section>
+          <section><span>المسؤول الوظيفي</span><strong>{task.responsibilities.executionRole}</strong><small>متابعة السجل: {task.responsibilities.recordCoordinationRole}</small></section>
           <section><span>الموعد</span><strong>{formatGregorian(task.due, true)}</strong><small>{task.temporalStatus}</small></section>
         </div>
 
         <section className="quick-steps-panel"><div className="section-title"><ListChecks size={21} /><h3>أنجزها في {task.quickSteps.length} خطوات</h3></div><InfoList items={task.quickSteps} ordered /></section>
 
-        <section className="quick-evidence-card"><FileCheck2 size={22} /><div><span>الشاهد الكافي</span><strong>{task.quickEvidence}</strong></div></section>
+        <section className="quick-evidence-card"><FileCheck2 size={22} /><div><span>الشاهد المطلوب</span><strong>{task.quickEvidence}</strong></div></section>
 
-        {task.quickTemplateRequired ? <section className="quick-template-card"><div><FileText size={23} /><span><small>ابدأ بهذا القالب</small><strong>{primaryTemplate.name}</strong></span></div><a href={`/templates/${primaryTemplate.file}`} download>تحميل <Download size={18} /></a></section> : <section className="no-template-card"><Check size={21} /><div><strong>لا يحتاج قالبًا إضافيًا</strong><span>استخدم الجدول الأسبوعي للأعضاء ثم انشر الجدول العام.</span></div></section>}
-
-        {task.quickTemplateRequired && <details className="advanced-task-details">
-          <summary>تفاصيل إضافية عند الحاجة <ChevronDown size={19} /></summary>
-          <div className="advanced-task-content">
-            <div className="status-pair" aria-label="حالتا الموعد والتسليم"><div><span>حالة الموعد</span><strong className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</strong></div><div><span>حالة التسليم الفعلية</span><strong className="status-pill delivery-pending">{task.deliveryStatus}</strong><small>لا توجد بيانات رفع حية بعد</small></div></div>
-            <div className="modal-summary"><div><span>بدء التنفيذ</span><strong>{formatGregorian(task.start, true)}</strong></div><div><span>المخرج التفصيلي</span><strong>{task.finalOutput}</strong></div><div><span>نهاية المهلة</span><strong>{formatGregorian(task.graceEnd, true)}</strong></div></div>
-            <div className="timing-callout"><CalendarClock size={20} /><div><strong>قاعدة الموعد</strong><span>{task.timingNote} {task.earlySubmissionNote}</span></div></div>
-            {task.privacyClass.startsWith('مقيد') && <div className="privacy-callout"><ShieldCheck size={20} /><div><strong>تنبيه عند وجود بيانات مقيدة</strong><span>لا تُدرج أسماء الطلبة أو أي بيانات شخصية في اسم الملف أو داخل هذه البوابة.</span></div></div>}
-            <section className="modal-section objective-section"><div className="section-icon"><Target size={20} /></div><div><span className="detail-eyebrow">{task.guideTitle}</span><h3>الهدف والنطاق</h3><p>{task.guideDefinition}</p><p><strong>الهدف:</strong> {task.objective}</p><p><strong>النطاق:</strong> {task.guideScope}</p></div></section>
-            <div className="responsibility-grid"><section><span>المسؤول المباشر</span><strong>{task.executionOwner}</strong></section><section><span>المراجع</span><strong>{task.reviewer}</strong></section><section><span>المعتمد</span><strong>{task.approver}</strong></section><section><span>المدة المتوقعة</span><strong>{task.expectedDuration}</strong></section></div>
-            <div className="detail-columns"><section className="detail-panel"><div className="section-title"><FolderOpen size={20} /><h3>المدخلات</h3></div><InfoList items={task.inputs} /></section><section className="detail-panel"><div className="section-title"><FileCheck2 size={20} /><h3>الأدلة الكاملة</h3></div><InfoList items={task.evidence} /></section></div>
-            <section className="detail-panel full-panel"><div className="section-title"><ListChecks size={20} /><h3>الدليل التفصيلي</h3></div><InfoList items={task.executionSteps} ordered /></section>
-            <div className="detail-columns"><section className="detail-panel"><div className="section-title"><ClipboardCheck size={20} /><h3>معايير القبول</h3></div><InfoList items={task.acceptanceCriteria} /></section><section className="detail-panel error-panel"><div className="section-title"><AlertTriangle size={20} /><h3>أخطاء شائعة</h3></div><InfoList items={task.commonErrors} /></section></div>
-            <div className="detail-columns"><section className="detail-panel"><div className="section-title"><ShieldCheck size={20} /><h3>المراجعة والاعتماد</h3></div><p>{task.approvalMethod}</p></section><section className="detail-panel"><div className="section-title"><BookOpenCheck size={20} /><h3>صلة الدراسة الذاتية</h3></div><InfoList items={task.selfStudyConnections} /></section></div>
-            <section className="delivery-panel" aria-labelledby="delivery-title"><div className="section-title"><FolderOpen size={20} /><h3 id="delivery-title">التسمية والتسليم</h3></div><div className="delivery-field"><span>اسم الملف المقترح</span><code dir="ltr">{task.fileName}</code><button type="button" onClick={() => copyText(task.fileName, 'file')}><Clipboard size={17} /> {copied === 'file' ? 'تم النسخ' : 'نسخ الاسم'}</button></div><div className="delivery-field"><span>مسار مقترح — غير معتمد</span><code>{task.proposedSharePointPath}</code><button type="button" onClick={() => copyText(task.proposedSharePointPath, 'path')}><Clipboard size={17} /> {copied === 'path' ? 'تم النسخ' : 'نسخ المسار'}</button></div><p className="delivery-warning"><Info size={18} /> بنية مجلد المهمة لم تُربط بعد.</p><div className="advanced-links"><button className="soft-button" type="button" onClick={() => copyText(permanentLink, 'link')}><Clipboard size={17} /> {copied === 'link' ? 'تم نسخ الرابط' : 'نسخ رابط المهمة'}</button><a className="soft-button" href={sharePointUrl} target="_blank" rel="noreferrer">فتح جذر SharePoint <ArrowUpLeft size={17} /></a></div></section>
-            <section className="companion-templates"><h3>قوالب مرافقة</h3><div>{companions.map((template) => <a key={template.id} href={`/templates/${template.file}`} download><FileText size={18} /><span>{template.name}</span><Download size={17} /></a>)}</div></section>
-          </div>
-        </details>}
+        <section className="evidence-components-panel">
+          <div className="section-title"><ClipboardCheck size={21} /><h3>مكونات الشاهد</h3></div>
+          <InfoList items={task.evidenceComponents} />
+        </section>
       </div>
 
       <footer className="modal-actions">
-        {task.quickTemplateRequired ? <a className="primary-button" href={`/templates/${primaryTemplate.file}`} download>تحميل القالب والبدء <Download size={18} /></a> : <span className="no-template-note">الشاهد المطلوب: الجدول العام المنشور فقط.</span>}
         <button className="secondary-button" type="button" onClick={onClose}>إغلاق</button>
       </footer>
-    </AccessibleDialog>
-  )
-}
-
-function TemplateModal({ templateId, onClose }: { templateId: string; onClose: () => void }) {
-  const template = templateById(templateId)
-  return (
-    <AccessibleDialog onClose={onClose} titleId="template-modal-title" className="template-modal">
-      <header className="modal-header">
-        <button className="icon-button" type="button" onClick={onClose} aria-label="إغلاق تفاصيل القالب" data-autofocus><X size={22} /></button>
-        <div className="modal-title-copy"><div className="modal-kickers"><span>{template.category}</span><span>إصدار {template.version}</span><span>{template.type}</span></div><h2 id="template-modal-title">{template.name}</h2><p>{template.description}</p></div>
-      </header>
-      <div className="modal-content">
-        <section className="modal-section"><div className="section-icon"><Info size={20} /></div><div><h3>متى يستخدم؟</h3><p>{template.whenToUse}</p></div></section>
-        <section className="detail-panel full-panel"><div className="section-title"><ListChecks size={20} /><h3>طريقة الاستخدام</h3></div><InfoList items={template.steps} ordered /></section>
-        <section className="detail-panel full-panel"><div className="section-title"><ClipboardCheck size={20} /><h3>علامات القالب المكتمل</h3></div><InfoList items={template.qualityChecks} /></section>
-        <a className="primary-button modal-download" href={`/templates/${template.file}`} download><Download size={19} /> تحميل {template.type === 'Word' ? 'ملف Word' : 'ملف Excel'}</a>
-      </div>
     </AccessibleDialog>
   )
 }
@@ -342,7 +284,6 @@ function Dashboard() {
   const [outputFilter, setOutputFilter] = useState('all')
   const [temporalFilter, setTemporalFilter] = useState('all')
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [mobileMenu, setMobileMenu] = useState(false)
   const [visibleCount, setVisibleCount] = useState(40)
   const weekTrackRef = useRef<HTMLDivElement>(null)
@@ -487,7 +428,6 @@ function Dashboard() {
           <a href="#tasks" onClick={() => setMobileMenu(false)}>المهام</a>
           <a href="#committees" onClick={() => setMobileMenu(false)}>اللجان</a>
           <a href="#weekly" onClick={() => setMobileMenu(false)}>التقويم</a>
-          <a href="#templates" onClick={() => setMobileMenu(false)}>القوالب</a>
           <a className="mobile-sharepoint-link" href={sharePointUrl} target="_blank" rel="noreferrer">SharePoint <ArrowUpLeft size={17} /></a>
         </nav>
         <div className="topbar-actions">
@@ -529,7 +469,7 @@ function Dashboard() {
         <section className="metrics-grid" aria-label="ملخص النظام">
           <article><div className="metric-icon mint"><ListChecks size={22} /></div><span>سجلات المهام</span><strong>{allTasks.length || '—'}</strong><small>{term.supportsFullCommitteePlan ? 'جميع السجلات مصنفة' : 'لا خطة صيفية محلية'}</small></article>
           <article><div className="metric-icon blue"><FileCheck2 size={22} /></div><span>أنواع المهام</span><strong>{new Set(allTasks.map((task) => task.taskTypeId)).size || '—'}</strong><small>بدليل مركزي قابل لإعادة الاستخدام</small></article>
-          <article><div className="metric-icon amber"><FileText size={22} /></div><span>القوالب المركزية</span><strong>{templates.length}</strong><small>Word وExcel</small></article>
+          <article><div className="metric-icon amber"><ClipboardCheck size={22} /></div><span>أدلة التنفيذ</span><strong>{guideOptions.length || '—'}</strong><small>شاهد واحد ومكوناته لكل مهمة</small></article>
           <article><div className="metric-icon violet"><CalendarDays size={22} /></div><span>الأسابيع الفعلية</span><strong>{weeks.length}</strong><small>من أصل {term.plannedOperationalWeeks} قبل الاختبارات</small></article>
         </section>
 
@@ -558,7 +498,7 @@ function Dashboard() {
                 <div className="task-card-top"><div><span className="task-code">{task.id}</span>{task.scheduleAdjusted && <span className="adjusted-badge">أعيدت الجدولة</span>}</div></div>
                 <h3>{task.title}</h3>
                 <p>{task.committee} · {task.department}</p>
-                <div className="simple-task-facts"><div><CalendarClock size={19} /><span>الموعد</span><strong>{formatGregorian(task.due)}</strong><small>{task.temporalStatus}</small></div><div><FileCheck2 size={19} /><span>الشاهد الكافي</span><strong>{task.quickEvidence}</strong></div></div>
+                <div className="simple-task-facts"><div><CalendarClock size={19} /><span>الموعد</span><strong>{formatGregorian(task.due)}</strong><small>{task.temporalStatus}</small></div><div><FileCheck2 size={19} /><span>الشاهد المطلوب</span><strong>{task.quickEvidence}</strong></div></div>
                 <button className="details-button" type="button" onClick={() => openTask(task)}>كيف أنجزها؟ <ChevronLeft size={18} /></button>
               </article>)}
             {!filteredTasks.length && <div className="empty-state"><Search size={34} /><h3>لا توجد مهام مطابقة</h3><p>امسح البحث أو أحد الفلاتر، أو اختر فصلًا آخر.</p><button className="secondary-button" type="button" onClick={resetFilters}>مسح البحث والفلاتر</button></div>}
@@ -608,13 +548,8 @@ function Dashboard() {
           <div className="section-heading"><div><span className="section-kicker">نظرة إشرافية</span><h2>الأقسام المشمولة</h2><p>تظهر أعداد السجلات فقط؛ لا تعرض نسب إنجاز غير مرتبطة بمصدر حي.</p></div><a className="text-button" href={powerBiUrl} target="_blank" rel="noreferrer">فتح لوحة المتابعة <ArrowUpLeft size={18} /></a></div>
           <div className="department-grid">{departmentDetails().map((item) => {
             const count = allTasks.filter((task) => task.department === item.name).length
-            return <article className="department-card" key={item.name} style={{ '--department-accent': departmentAccents[item.name] } as CSSProperties}><span className="department-code">{item.code}</span><strong className="department-count">{count}</strong><h3>{item.name}</h3><div><span>تنسيق السجل <strong>{item.coordinator}</strong></span><span>مراجعة القسم <strong>{item.head}</strong></span></div><button type="button" onClick={() => { setDepartment(item.name); document.querySelector('#tasks')?.scrollIntoView({ behavior: 'smooth' }) }}>عرض مهام القسم <ChevronLeft size={18} /></button></article>
+            return <article className="department-card" key={item.name} style={{ '--department-accent': departmentAccents[item.name] } as CSSProperties}><span className="department-code">{item.code}</span><strong className="department-count">{count}</strong><h3>{item.name}</h3><div><span>متابعة السجل <strong>{item.coordinationRole}</strong></span><span>مراجعة القسم <strong>{item.reviewRole}</strong></span></div><button type="button" onClick={() => { setDepartment(item.name); document.querySelector('#tasks')?.scrollIntoView({ behavior: 'smooth' }) }}>عرض مهام القسم <ChevronLeft size={18} /></button></article>
           })}</div>
-        </section>
-
-        <section className="templates-section" id="templates">
-          <div className="templates-intro"><span className="section-kicker section-kicker-light">مكتبة العمل</span><h2>14 قالبًا مركزيًا، لا صفحة فارغة.</h2><p>يعرض كل قالب غرضه وطريقة استخدامه وفحص الجودة. تتولى مكتبة المستندات النهائية حفظ النسخ المعتمدة.</p><a className="light-button" href="#template-library">استعرض المكتبة <ArrowLeft size={18} /></a></div>
-          <div className="templates-grid" id="template-library">{templates.map((template) => <article className="template-card" key={template.id}><div className={`file-icon ${template.type.toLowerCase()}`}><FileText size={23} /></div><button type="button" onClick={() => setSelectedTemplate(template.id)}><span>{template.category} · إصدار {template.version}</span><h3>{template.name}</h3><small>{template.description}</small></button><a href={`/templates/${template.file}`} download aria-label={`تحميل ${template.name}`}><Download size={19} /></a></article>)}</div>
         </section>
 
         <section className="workflow-section">
@@ -625,7 +560,6 @@ function Dashboard() {
 
       <footer className="site-footer"><div className="brand"><div className="brand-mark"><BookOpenCheck size={22} /></div><div><span>كلية الشريعة والأنظمة</span><strong>بوابة أعمال اللجان</strong></div></div><p>{calendarMeta.title} · تبقى حالة التسليم بانتظار الربط</p><a href={sharePointUrl} target="_blank" rel="noreferrer">فتح SharePoint <ExternalLink size={17} /></a></footer>
       {selectedTask && <TaskModal task={selectedTask} onClose={closeTask} />}
-      {selectedTemplate && <TemplateModal templateId={selectedTemplate} onClose={() => setSelectedTemplate(null)} />}
     </div>
   )
 }

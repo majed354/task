@@ -1,2116 +1,812 @@
 {
-  "schemaVersion": "1.0.0",
-  "generatedAt": "2026-08-21",
+  "schemaVersion": "2.0.0",
+  "generatedAt": "2026-08-22",
   "assignmentCount": 268,
-  "note": "يرتبط كل taskId بدليل وقالب أساسي، ولا يضاف قالب مرافق إلا عند الحاجة. مهام نشر الساعات المكتبية تستخدم دليلًا مستقلًا بلا مرافقات؛ فالجدول المنشور شاهدها الكافي.",
+  "note": "يرتبط كل taskId بدليل تنفيذ واحد. القوالب مكتبة اختيارية مستقلة ولا ترتبط بالمهام ولا تعد شرطًا للإنجاز أو الإقفال.",
   "assignments": {
     "QRA-T001": {
-      "guideId": "guide-office-hours-publication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": []
+      "guideId": "guide-office-hours-publication"
     },
     "QRA-T002": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "QRA-T061": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "QRA-T003": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "QRA-T004": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "QRA-T005": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "QRA-T062": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "QRA-T006": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T063": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T007": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "QRA-T008": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "QRA-T009": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "QRA-T010": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "QRA-T011": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "QRA-T012": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "QRA-T013": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "QRA-T014": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "QRA-T064": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "QRA-T015": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T065": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T016": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "QRA-T017": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "QRA-T018": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "QRA-T019": {
-      "guideId": "guide-academic-advising-operations",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-academic-advising-operations"
     },
     "QRA-T020": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "QRA-T021": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "QRA-T022": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "QRA-T023": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "QRA-T024": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "QRA-T025": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "QRA-T026": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "QRA-T027": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "QRA-T028": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "QRA-T029": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "QRA-T030": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "completion-report"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "QRA-T031": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T066": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T032": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "QRA-T033": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "QRA-T034": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "QRA-T035": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "QRA-T036": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "QRA-T037": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "QRA-T038": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T067": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T039": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "QRA-T040": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "QRA-T041": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "QRA-T042": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "QRA-T043": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T068": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T044": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "QRA-T045": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "QRA-T046": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "QRA-T047": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "QRA-T048": {
-      "guideId": "guide-improvement-action",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "operational-plan",
-        "decision-matrix"
-      ]
+      "guideId": "guide-improvement-action"
     },
     "QRA-T049": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "QRA-T050": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "QRA-T051": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "QRA-T052": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "schedule-planner",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "QRA-T053": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "final-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T069": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "final-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "QRA-T070": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "QRA-T054": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "QRA-T055": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "QRA-T056": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "QRA-T057": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "QRA-T058": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "QRA-T059": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "QRA-T060": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "CUL-T001": {
-      "guideId": "guide-office-hours-publication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": []
+      "guideId": "guide-office-hours-publication"
     },
     "CUL-T002": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "CUL-T061": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "CUL-T003": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "CUL-T004": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "CUL-T005": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "CUL-T062": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "CUL-T006": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "CUL-T007": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "CUL-T008": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "CUL-T009": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "CUL-T010": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "CUL-T011": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "CUL-T012": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "CUL-T013": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "CUL-T014": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "CUL-T063": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "CUL-T015": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "CUL-T016": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "CUL-T017": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "CUL-T018": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "CUL-T019": {
-      "guideId": "guide-academic-advising-operations",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-academic-advising-operations"
     },
     "CUL-T020": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "CUL-T021": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "CUL-T022": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "CUL-T023": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "CUL-T024": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "CUL-T025": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "CUL-T026": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "CUL-T027": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "CUL-T028": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "CUL-T029": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "CUL-T030": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "completion-report"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "CUL-T031": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "CUL-T032": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "CUL-T033": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "CUL-T034": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "CUL-T035": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "CUL-T036": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "CUL-T037": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "CUL-T038": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "CUL-T039": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "CUL-T040": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "CUL-T041": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "CUL-T042": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "CUL-T043": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "CUL-T044": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "CUL-T045": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "CUL-T046": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "CUL-T047": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "CUL-T048": {
-      "guideId": "guide-improvement-action",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "operational-plan",
-        "decision-matrix"
-      ]
+      "guideId": "guide-improvement-action"
     },
     "CUL-T049": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "CUL-T050": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "CUL-T051": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "CUL-T052": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "schedule-planner",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "CUL-T053": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "final-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "CUL-T064": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "CUL-T054": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "CUL-T055": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "CUL-T056": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "CUL-T057": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "CUL-T058": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "CUL-T059": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "CUL-T060": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "SHR-T001": {
-      "guideId": "guide-office-hours-publication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": []
+      "guideId": "guide-office-hours-publication"
     },
     "SHR-T002": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "SHR-T061": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "SHR-T003": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "SHR-T004": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "SHR-T005": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "SHR-T062": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "SHR-T006": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T063": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T007": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "SHR-T008": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "SHR-T009": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "SHR-T010": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "SHR-T011": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "SHR-T012": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "SHR-T013": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "SHR-T014": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "SHR-T064": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "SHR-T015": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T065": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T016": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "SHR-T017": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "SHR-T018": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "SHR-T019": {
-      "guideId": "guide-academic-advising-operations",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-academic-advising-operations"
     },
     "SHR-T020": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "SHR-T021": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "SHR-T022": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "SHR-T023": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "SHR-T024": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "SHR-T025": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "SHR-T026": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "SHR-T027": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "SHR-T028": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "SHR-T029": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "SHR-T030": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "completion-report"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "SHR-T031": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T066": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T032": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "SHR-T033": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "SHR-T034": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "SHR-T035": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "SHR-T036": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "SHR-T037": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "SHR-T038": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T067": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T039": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "SHR-T040": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "SHR-T041": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "SHR-T042": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "SHR-T043": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T068": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T044": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "SHR-T045": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "SHR-T046": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "SHR-T047": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "SHR-T048": {
-      "guideId": "guide-improvement-action",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "operational-plan",
-        "decision-matrix"
-      ]
+      "guideId": "guide-improvement-action"
     },
     "SHR-T049": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "SHR-T050": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "SHR-T051": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "SHR-T052": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "schedule-planner",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "SHR-T053": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "final-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T069": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "final-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "SHR-T070": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "SHR-T054": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "SHR-T055": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "SHR-T056": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "SHR-T057": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "SHR-T058": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "SHR-T059": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "SHR-T060": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "LAW-T001": {
-      "guideId": "guide-office-hours-publication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": []
+      "guideId": "guide-office-hours-publication"
     },
     "LAW-T002": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "LAW-T061": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "LAW-T003": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "LAW-T004": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "LAW-T005": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "LAW-T062": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "LAW-T006": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "LAW-T007": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "LAW-T008": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "LAW-T009": {
-      "guideId": "guide-operational-planning",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-operational-planning"
     },
     "LAW-T010": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "LAW-T011": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "LAW-T012": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "LAW-T013": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "LAW-T014": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "LAW-T063": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "LAW-T015": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "LAW-T016": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "LAW-T017": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "LAW-T018": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "LAW-T019": {
-      "guideId": "guide-academic-advising-operations",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-academic-advising-operations"
     },
     "LAW-T020": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "LAW-T021": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "LAW-T022": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "LAW-T023": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "LAW-T024": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "LAW-T025": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "LAW-T026": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "LAW-T027": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "LAW-T028": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "operational-plan"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "LAW-T029": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "LAW-T030": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "completion-report"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "LAW-T031": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "LAW-T032": {
-      "guideId": "guide-register-database",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "decision-matrix"
-      ]
+      "guideId": "guide-register-database"
     },
     "LAW-T033": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "LAW-T034": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "LAW-T035": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "LAW-T036": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "LAW-T037": {
-      "guideId": "guide-media-communication",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "survey-analysis"
-      ]
+      "guideId": "guide-media-communication"
     },
     "LAW-T038": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "plan-review",
-      "companionTemplateIds": [
-        "final-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "LAW-T039": {
-      "guideId": "guide-learning-outcomes-kpi",
-      "primaryTemplateId": "kpi-tracker",
-      "companionTemplateIds": [
-        "completion-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-learning-outcomes-kpi"
     },
     "LAW-T040": {
-      "guideId": "guide-activity-initiative-impact",
-      "primaryTemplateId": "operational-plan",
-      "companionTemplateIds": [
-        "activity-impact",
-        "survey-analysis"
-      ]
+      "guideId": "guide-activity-initiative-impact"
     },
     "LAW-T041": {
-      "guideId": "guide-research-development",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "operational-plan",
-        "evidence-register"
-      ]
+      "guideId": "guide-research-development"
     },
     "LAW-T042": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "LAW-T043": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "improvement-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "LAW-T044": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "LAW-T045": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "exam-readiness",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "LAW-T046": {
-      "guideId": "guide-training-workshop",
-      "primaryTemplateId": "activity-impact",
-      "companionTemplateIds": [
-        "survey-analysis"
-      ]
+      "guideId": "guide-training-workshop"
     },
     "LAW-T047": {
-      "guideId": "guide-program-curriculum-review",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "improvement-report",
-        "minutes"
-      ]
+      "guideId": "guide-program-curriculum-review"
     },
     "LAW-T048": {
-      "guideId": "guide-improvement-action",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "operational-plan",
-        "decision-matrix"
-      ]
+      "guideId": "guide-improvement-action"
     },
     "LAW-T049": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "completion-report",
-      "companionTemplateIds": [
-        "survey-analysis",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "LAW-T050": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "LAW-T051": {
-      "guideId": "guide-analytical-evaluation",
-      "primaryTemplateId": "survey-analysis",
-      "companionTemplateIds": [
-        "completion-report",
-        "improvement-report"
-      ]
+      "guideId": "guide-analytical-evaluation"
     },
     "LAW-T052": {
-      "guideId": "guide-exam-scheduling-readiness",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "schedule-planner",
-        "decision-matrix"
-      ]
+      "guideId": "guide-exam-scheduling-readiness"
     },
     "LAW-T053": {
-      "guideId": "guide-scientific-plan-review",
-      "primaryTemplateId": "improvement-report",
-      "companionTemplateIds": [
-        "plan-review",
-        "final-report"
-      ]
+      "guideId": "guide-scientific-plan-review"
     },
     "LAW-T064": {
-      "guideId": "guide-academic-scheduling",
-      "primaryTemplateId": "schedule-planner",
-      "companionTemplateIds": [
-        "decision-matrix",
-        "minutes"
-      ]
+      "guideId": "guide-academic-scheduling"
     },
     "LAW-T054": {
-      "guideId": "guide-annual-final-report",
-      "primaryTemplateId": "final-report",
-      "companionTemplateIds": [
-        "kpi-tracker",
-        "evidence-register"
-      ]
+      "guideId": "guide-annual-final-report"
     },
     "LAW-T055": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "LAW-T056": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "LAW-T057": {
-      "guideId": "guide-student-identification-support",
-      "primaryTemplateId": "decision-matrix",
-      "companionTemplateIds": [
-        "improvement-report",
-        "survey-analysis"
-      ]
+      "guideId": "guide-student-identification-support"
     },
     "LAW-T058": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "exam-readiness",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-exam-operations-quality"
     },
     "LAW-T059": {
-      "guideId": "guide-academic-evidence-file",
-      "primaryTemplateId": "evidence-register",
-      "companionTemplateIds": [
-        "quality-checklist",
-        "completion-report"
-      ]
+      "guideId": "guide-academic-evidence-file"
     },
     "LAW-T060": {
-      "guideId": "guide-exam-operations-quality",
-      "primaryTemplateId": "quality-checklist",
-      "companionTemplateIds": [
-        "completion-report",
-        "exam-readiness"
-      ]
+      "guideId": "guide-exam-operations-quality"
     }
   }
 }
