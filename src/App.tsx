@@ -7,22 +7,18 @@ import {
   useState,
 } from 'react'
 import {
-  ArrowLeft,
   BookOpenCheck,
   CalendarCheck2,
   CalendarDays,
-  CalendarPlus2,
   CheckCircle2,
   ChevronLeft,
   CircleDot,
   ClipboardCheck,
-  Clock3,
   FileCheck2,
   Download,
   ListChecks,
   Menu,
   Search,
-  Sparkles,
   UsersRound,
   X,
 } from 'lucide-react'
@@ -33,8 +29,6 @@ import {
   compareLocalDates,
   daysUntil,
   formatGregorian,
-  formatHijri,
-  formatLiveTime,
   formatShortDate,
   getCommitteePlanStart,
   getCommitteePreparationDue,
@@ -345,40 +339,35 @@ function Dashboard() {
           <a href="#calendar-export" onClick={() => setMobileMenu(false)}>تحميل التقويم</a>
           <a href="#tasks" onClick={() => setMobileMenu(false)}>المهام</a>
         </nav>
-        <a className="header-action" href="#calendar-export">تحميل التقويم <Download size={18} /></a>
         <button className="menu-button" type="button" aria-label="فتح القائمة" aria-expanded={mobileMenu} onClick={() => setMobileMenu((value) => !value)}><Menu size={23} /></button>
       </header>
 
       <main>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <span className="hero-eyebrow"><Sparkles size={17} /> مرجع مستقل ومباشر</span>
-            <h1 id="hero-title">اللجنة أولًا،<br /><em>ثم الموعد والمهمة.</em></h1>
-            <p>اختر نوع اللجنة، راجع موقعك في الخطة الزمنية، ثم افتح المهمة لمعرفة خطواتها وشاهدها المطلوب. بلا تكرار، وبلا ارتباط بأي منصة خارجية.</p>
-            <div className="hero-actions"><a className="primary-button" href="#committees">استعرض اللجان <UsersRound size={19} /></a><a className="ghost-button" href="#timeline">انتقل للخط الزمني <CalendarDays size={19} /></a></div>
+            <h1 id="hero-title">مهام اللجان،<br /><em>في وقتها.</em></h1>
+            <p>اختر لجنتك، اعرف مهام الأسبوع، وافتح المهمة لمعرفة خطواتها والشاهد المطلوب.</p>
+            <div className="hero-actions"><a className="primary-button" href="#committees">استعرض اللجان <UsersRound size={18} /></a><a className="hero-text-link" href="#timeline">عرض الخطة الزمنية <ChevronLeft size={17} /></a></div>
           </div>
 
-          <aside className="today-panel" aria-label="الوضع الزمني الآن">
-            <div className="today-head"><span><Clock3 size={18} /> الآن</span><strong>{formatLiveTime(now)}</strong></div>
-            <div className="today-date"><strong>{formatGregorian(now, true)}</strong><span>{formatHijri(now)}</span></div>
+          <aside className="today-panel" aria-label="المهمة الأقرب">
+            <div className="today-head"><span>المهمة الأقرب</span>{nextTask && <strong>{formatGregorian(nextTask.due)}</strong>}</div>
             {nextTask && nextMilestone && <div className="next-focus">
+              <section><span>{nextTask.committee}</span><h2>{nextTask.title}</h2><button type="button" onClick={() => openTask(nextTask)}>عرض التفاصيل <ChevronLeft size={16} /></button></section>
               <div><span>{nextMilestone.label}</span><strong>{daysUntil(nextMilestone.date, now)}</strong><small>يومًا</small></div>
-              <section><span>{nextTask.committee}</span><h2>{nextTask.title}</h2><button type="button" onClick={() => openTask(nextTask)}>فتح المهمة <ChevronLeft size={17} /></button></section>
             </div>}
           </aside>
         </section>
 
         <section className="summary-strip" aria-label="ملخص الدليل">
-          <article><strong>{committeeOptions.length}</strong><span>نوع لجنة وجهة عمل</span></article>
-          <article><strong>{allTasks.length}</strong><span>مهمة موحدة بلا تكرار</span></article>
-          <article><strong>{weeks.length}</strong><span>أسبوعًا تشغيليًا</span></article>
-          <article><strong>{formatShortDate(getCommitteePlanStart(term))}</strong><span>بداية أعمال اللجان</span></article>
+          <article><strong>{committeeOptions.length}</strong><span>نوع لجنة</span></article>
+          <article><strong>{allTasks.length}</strong><span>مهمة موحدة</span></article>
         </section>
 
         <section className="content-section committees-section" id="committees">
           <div className="section-heading">
-            <div><span className="section-kicker">ابدأ من اللجنة</span><h2>أنواع اللجان وجهات العمل</h2><p>كل نوع يظهر مرة واحدة، وتحته خطته ومهامه الموحدة.</p></div>
-            <span className="section-count">{committeeOptions.length} نوعًا</span>
+            <h2>أنواع اللجان</h2>
+            <span className="section-count">{committeeOptions.length} لجنة وجهة عمل</span>
           </div>
           <div className="committee-grid">
             {committeeSummaries.map((summary) => (
@@ -395,7 +384,7 @@ function Dashboard() {
         <section className="timeline-section" id="timeline">
           <div className="timeline-wrap">
             <div className="section-heading timeline-heading">
-              <div><span className="section-kicker section-kicker-light">ثم اعرف الموعد</span><h2>الخطة الزمنية للفصل</h2><p>المحطة الحالية تظهر تلقائيًا، ويمكنك الانتقال لأي أسبوع لرؤية مهامه مباشرة.</p></div>
+              <h2>الخطة الزمنية</h2>
               <label className="term-select"><span>الفصل</span><select value={termId} onChange={(event) => changeTerm(event.target.value)}>{academicTerms.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
             </div>
 
@@ -416,27 +405,24 @@ function Dashboard() {
               <div className="timeline-period">
                 <span>{selectedTimeline ? selectedTimeline.label : 'الفصل كاملًا'}</span>
                 <h3>{selectedTimeline ? `${formatGregorian(selectedTimeline.start)} — ${formatGregorian(selectedTimeline.end, true)}` : `${formatGregorian(getCommitteePlanStart(term))} — ${formatGregorian(parseLocalDate(term.end), true)}`}</h3>
-                <p>{selectedTimeline?.note ?? 'عرض جميع المحطات والمهام حسب ترتيبها الزمني.'}</p>
               </div>
               <div className="timeline-preview">
-                <span>{committee === allCommittees ? 'مهام هذه المحطة' : committee}</span>
                 <strong>{selectedTimelineTasks.length}</strong>
-                <small>مهمة مطابقة</small>
-                <a href="#tasks">عرض القائمة <ArrowLeft size={17} /></a>
+                <span>{committee === allCommittees ? 'مهمة في النطاق' : committee}</span>
+                <a href="#tasks">عرض المهام <ChevronLeft size={16} /></a>
               </div>
             </div>
 
             <section className="calendar-export" id="calendar-export" aria-labelledby="calendar-export-title">
               <div className="calendar-export-copy">
-                <span className="calendar-export-icon"><CalendarPlus2 size={25} /></span>
-                <div><span>تقويمك الشخصي</span><h3 id="calendar-export-title">حمّل المواعيد بالطريقة التي تناسبك</h3><p>اختر اللجنة والأسبوع أو الفصل كاملًا، ثم افتح ملف التقويم في Apple Calendar أو Outlook، أو استورده في Google Calendar.</p></div>
+                <h3 id="calendar-export-title">تحميل التقويم</h3><p>ملف أسبوع أو فصل كامل، حسب اللجنة التي تختارها.</p>
               </div>
               <div className="calendar-export-controls">
                 <label><span>اللجنة</span><select value={committee} onChange={(event) => setCommittee(event.target.value)}><option>{allCommittees}</option>{committeeOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
                 <label><span>النطاق الزمني</span><select value={weekFilter} onChange={(event) => setWeekFilter(event.target.value)}><option value="all">الفصل كاملًا</option>{timelineItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
                 <button type="button" onClick={downloadCalendar} disabled={!selectedTimelineTasks.length}><Download size={19} /> تحميل {taskCountLabel(selectedTimelineTasks.length)} <small>.ics</small></button>
               </div>
-              <div className="calendar-compatibility"><span>ملف واحد متوافق مع</span><strong>Google Calendar</strong><strong>تقويم Apple</strong><strong>Outlook</strong></div>
+              <div className="calendar-compatibility">ملف `.ics` متوافق مع Google Calendar وتقويم Apple وOutlook.</div>
               <p className="calendar-notice" aria-live="polite">{calendarNotice}</p>
             </section>
           </div>
@@ -444,7 +430,7 @@ function Dashboard() {
 
         <section className="content-section tasks-section" id="tasks">
           <div className="section-heading">
-            <div><span className="section-kicker">التنفيذ</span><h2>المهام حسب اللجنة والزمن</h2><p>كل مهمة تظهر مرة واحدة، ومعها الموعد والشاهد المطلوب.</p></div>
+            <h2>المهام</h2>
             <span className="section-count"><strong>{filteredTasks.length}</strong> مهمة</span>
           </div>
 
@@ -458,23 +444,18 @@ function Dashboard() {
 
           {filteredTasks.length ? <div className="task-grid">
             {filteredTasks.map((task) => <article className="task-card" key={task.id}>
-              <div className="task-card-head"><span className="task-code">{taskNumber(task.id)}</span><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
-              <span className="task-committee">{task.committee}</span>
+              <div className="task-card-head"><span className="task-committee">{task.committee}</span><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
               <h3>{task.title}</h3>
-              <div className="task-facts"><div><CalendarDays size={17} /><span>الموعد<strong>{formatGregorian(task.due)}</strong></span></div><div><FileCheck2 size={17} /><span>المخرج<strong>{task.outputType}</strong></span></div></div>
+              <div className="task-date"><CalendarDays size={16} /><span>الموعد <strong>{formatGregorian(task.due)}</strong></span></div>
               <div className="task-evidence"><span>الشاهد</span><strong>{task.quickEvidence}</strong></div>
               <button className="task-open" type="button" onClick={() => openTask(task)}>كيف أنجزها؟ <ChevronLeft size={18} /></button>
             </article>)}
           </div> : <div className="empty-state"><Search size={28} /><h3>لا توجد مهام مطابقة</h3><p>جرّب اختيار لجنة أو محطة زمنية أخرى.</p><button type="button" onClick={() => { setCommittee(allCommittees); setWeekFilter('all'); setQuery('') }}>عرض كل المهام</button></div>}
         </section>
 
-        <section className="how-section" id="how-to">
-          <div className="how-copy"><span className="section-kicker">طريقة بسيطة</span><h2>ثلاث قراءات تكفي</h2><p>هذا الموقع مرجع للعمل؛ لا يسجل إنجازًا ولا يتصل بمنصة أخرى.</p></div>
-          <div className="how-steps"><article><span>01</span><UsersRound size={21} /><h3>اختر اللجنة</h3><p>ابدأ من نوع اللجنة التي تعمل معها.</p></article><article><span>02</span><CalendarDays size={21} /><h3>حدد الأسبوع</h3><p>انتقل إلى المحطة الزمنية المطلوبة.</p></article><article><span>03</span><ClipboardCheck size={21} /><h3>نفّذ واحفظ الشاهد</h3><p>اتبع الخطوات الثلاث واكتفِ بالشاهد المحدد.</p></article></div>
-        </section>
       </main>
 
-      <footer className="site-footer"><div className="brand"><span className="brand-mark"><BookOpenCheck size={21} /></span><span><small>كلية الشريعة والأنظمة</small><strong>دليل أعمال اللجان</strong></span></div><p>مرجع مستقل لأنواع اللجان ومهامها وخطتها الزمنية.</p></footer>
+      <footer className="site-footer"><strong>دليل أعمال اللجان</strong><span>كلية الشريعة والأنظمة</span></footer>
       {selectedTask && <TaskModal task={selectedTask} onClose={closeTask} />}
     </div>
   )
