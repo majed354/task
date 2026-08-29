@@ -1,4 +1,4 @@
-import { readFile, stat } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const root = process.cwd()
@@ -10,6 +10,8 @@ const guideDocument = await readJson('src/generated/taskGuides.json')
 const assignmentDocument = await readJson('src/generated/taskGuideAssignments.json')
 const calendar = await readJson('src/config/academicCalendar.json')
 const dataSource = await readFile(path.join(root, 'src/data.ts'), 'utf8')
+const appSource = await readFile(path.join(root, 'src/App.tsx'), 'utf8')
+const calendarExportSource = await readFile(path.join(root, 'src/calendarExport.ts'), 'utf8')
 
 const failures = []
 const checks = []
@@ -20,25 +22,7 @@ const assert = (condition, message) => {
 const unique = (values) => new Set(values)
 const date = (value) => new Date(`${value}T12:00:00Z`)
 
-const templates = [
-  ['minutes', 'قالب_محضر_اجتماع_لجنة.docx'],
-  ['operational-plan', 'قالب_خطة_تشغيلية_للجنة.docx'],
-  ['completion-report', 'قالب_تقرير_إنجاز_وتحليل_مهمة.docx'],
-  ['activity-impact', 'قالب_تقرير_نشاط_وقياس_أثر.docx'],
-  ['improvement-report', 'قالب_تقرير_معالجة_ملاحظة_وفرصة_تحسين.docx'],
-  ['final-report', 'قالب_التقرير_الختامي_للجنة.docx'],
-  ['decision-matrix', 'مصفوفة_متابعة_القرارات.xlsx'],
-  ['quality-checklist', 'قائمة_فحص_جودة_الملف.xlsx'],
-  ['plan-review', 'نموذج_فحص_الخطط_العلمية.xlsx'],
-  ['kpi-tracker', 'تقرير_متابعة_مؤشرات_الأداء.xlsx'],
-  ['survey-analysis', 'تقرير_تحليل_نتائج_استبانة.xlsx'],
-  ['evidence-register', 'سجل_الأدلة_والمرفقات.xlsx'],
-  ['schedule-planner', 'نموذج_إعداد_ومراجعة_الجدول_الدراسي.xlsx'],
-  ['exam-readiness', 'قائمة_جاهزية_الاختبارات.xlsx'],
-]
-const templateIds = unique(templates.map(([id]) => id))
-
-assert(Array.isArray(catalog) && catalog.length === 268, 'الكتالوج يحتوي 268 مهمة')
+assert(Array.isArray(catalog) && catalog.length === 268, 'الكتالوج المصدر يحتوي 268 سجلًا')
 assert(unique(catalog.map((task) => task.id)).size === catalog.length, 'معرّفات المهام فريدة')
 assert(catalog.every((task) => /^[A-Z]{3}-T\d{3}$/.test(task.id)), 'صيغة جميع معرّفات المهام صحيحة')
 assert(unique(catalog.map((task) => task.department)).size === 4, 'الأقسام الأربعة ممثلة')
@@ -64,6 +48,23 @@ assert(taskTypes.length === 64, 'أنواع المهام المركزية عدد
 assert(Object.keys(audit?.recordTypeMap ?? {}).length === 268, 'كل المهام مرتبطة بنوع مركزي')
 assert(catalog.every((task) => audit.recordTypeMap[task.id]), 'لا توجد مهمة بلا نوع مركزي')
 
+const normalizeCommittee = (value) => value === 'جميع اللجان'
+  ? 'مهام مشتركة لجميع اللجان'
+  : value === 'منسقو برامج الدراسات العليا'
+    ? 'تنسيق برامج الدراسات العليا'
+    : value.replace(/\s*–\s*تخصص .+$/, '')
+const recordsByType = new Map()
+for (const task of catalog) {
+  const typeId = audit.recordTypeMap[task.id]
+  const records = recordsByType.get(typeId) ?? []
+  records.push(task)
+  recordsByType.set(typeId, records)
+}
+assert(recordsByType.size === 64, 'الواجهة تختزل السجلات إلى 64 مهمة موحدة')
+assert([...recordsByType.values()].every((records) => unique(records.map((task) => task.sourceWeek)).size === 1), 'موعد كل مهمة موحدة متسق بين السجلات المصدرية')
+assert([...recordsByType.values()].every((records) => unique(records.map((task) => normalizeCommittee(task.committee))).size === 1), 'نوع اللجنة متسق لكل مهمة موحدة')
+assert(unique(catalog.map((task) => normalizeCommittee(task.committee))).size === 11, 'الواجهة تعرض 11 نوع لجنة وجهة عمل')
+
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))
 const assignments = assignmentDocument.assignments ?? {}
@@ -84,7 +85,7 @@ assert(Object.values(assignments).every((assignment) => Object.keys(assignment).
 
 const requiredGuideFields = [
   'definition', 'objective', 'scope', 'roles', 'inputs', 'steps', 'expectedDuration', 'finalOutput',
-  'evidenceAttachments', 'fileNamePattern', 'sharePointFolderPath', 'reviewAndApproval',
+  'evidenceAttachments', 'fileNamePattern', 'reviewAndApproval',
   'acceptanceCriteria', 'commonErrors', 'selfStudyRelationship', 'performanceIndicators', 'examples',
 ]
 assert(
@@ -113,22 +114,16 @@ const officeHoursGuide = guides.find((guide) => guide.id === 'guide-office-hours
 assert(officeHoursGuide?.evidenceAttachments?.[0] === 'الجدول العام المنشور للساعات المكتبية.', 'شاهد الساعات المكتبية هو الجدول العام المنشور فقط')
 assert(officeHoursGuide?.evidenceComponents?.length === 4, 'مكونات جدول الساعات المكتبية محددة بوضوح')
 
-assert(templates.length === 14 && templateIds.size === 14, 'مكتبة القوالب تحتوي 14 قالبًا فريدًا')
-for (const [id, file] of templates) {
-  const fullPath = path.join(root, 'public/templates', file)
-  try {
-    const fileStat = await stat(fullPath)
-    const bytes = await readFile(fullPath)
-    assert(fileStat.size > 10_000, `${id}: ملف القالب غير فارغ`)
-    assert(bytes[0] === 0x50 && bytes[1] === 0x4b, `${id}: ملف Office صالح مبدئيًا`)
-    assert(dataSource.includes(`id: '${id}'`) && dataSource.includes(`file: '${file}'`), `${id}: رابط القالب مسجل في التطبيق`)
-  } catch {
-    failures.push(`${id}: ملف القالب مفقود (${file})`)
-  }
-}
-
 assert(!/(quickTemplateRequired|primaryTemplateId|companionTemplateIds)/.test(dataSource), 'عقد المهمة لا يفرض قالبًا أو يربطه بالتنفيذ')
 assert(!/(?:sourceTask|task)\.(?:coordinator|departmentHead)|recordCoordinator/.test(dataSource), 'بيانات العرض لا تستهلك أسماء المنسقين أو رؤساء الأقسام')
+assert(!/(AccessGate|committee-portal-access|1429|type="password")/.test(appSource), 'الموقع يفتح مباشرة بلا كلمة مرور أو تسجيل دخول')
+assert(!/(SharePoint|sharepoint|powerbi|مساحة التسليم|بانتظار الربط)/i.test(appSource), 'الواجهة مستقلة ولا تعرض ربطًا بمنصة خارجية')
+assert(!/(Department|department|الأقسام|قسمي|رئيس القسم)/.test(appSource), 'الواجهة لا تعرض الأقسام أو فلاترها')
+assert(/تحميل التقويم/.test(appSource) && /calendar-export/.test(appSource), 'خيار تحميل التقويم ظاهر في الواجهة')
+assert(/BEGIN:VCALENDAR/.test(calendarExportSource) && /END:VCALENDAR/.test(calendarExportSource), 'ملف التصدير يستخدم بنية iCalendar القياسية')
+assert(/text\/calendar;charset=utf-8/.test(calendarExportSource), 'تنزيل التقويم يعلن نوع الملف الصحيح')
+assert(/BEGIN:VALARM/.test(calendarExportSource) && /TRIGGER:-P1D/.test(calendarExportSource), 'كل موعد يتضمن تنبيهًا قبل يوم')
+assert(/Google Calendar/.test(appSource) && /تقويم Apple/.test(appSource) && /Outlook/.test(appSource), 'الواجهة توضح تطبيقات التقويم المتوافقة')
 
 assert(calendar.title === 'التقويم التشغيلي للمنظومة', 'عنوان التقويم التشغيلي واضح')
 assert(calendar.displayTitle === calendar.title, 'عنوان التقويم الظاهر مطابق للإعداد التشغيلي')
@@ -170,6 +165,6 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`)
   process.exitCode = 1
 } else {
-  console.log(`نجح التحقق: ${catalog.length} مهمة، ${taskTypes.length} نوعًا مركزيًا، ${guides.length} دليلًا، ${templates.length} قالبًا اختياريًا مستقلاً.`)
+  console.log(`نجح التحقق: ${catalog.length} سجلًا مصدرية تختزل إلى ${taskTypes.length} مهمة موحدة، و11 نوع لجنة، و${guides.length} دليلًا.`)
   console.log(`إجمالي التأكيدات المنفذة: ${checks.length}`)
 }

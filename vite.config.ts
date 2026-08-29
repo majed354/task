@@ -25,17 +25,23 @@ function portalSafeGeneratedData(): Plugin {
     load(id) {
       if (id === taskCatalogId) {
         const sourceCatalog = JSON.parse(readFileSync(taskCatalogPath, 'utf8')) as Array<Record<string, unknown>>
-        const portalCatalog = sourceCatalog.map(({ coordinator: _coordinator, departmentHead: _departmentHead, ...task }) => task)
+        const portalCatalog = sourceCatalog.map(({ coordinator: _coordinator, departmentHead: _departmentHead, department: _department, ...task }) => task)
         return `export default ${JSON.stringify(portalCatalog)}`
       }
 
       if (id === catalogAuditId) {
         const sourceAudit = JSON.parse(readFileSync(catalogAuditPath, 'utf8')) as {
           proposedRenames: unknown
+          proposedTaxonomy: {
+            taskTypes: Array<{ id: string; canonicalTitle: string; artifactKind: string }>
+          }
           recordTypeMap: unknown
         }
         const portalAudit = {
           proposedRenames: sourceAudit.proposedRenames,
+          proposedTaxonomy: {
+            taskTypes: sourceAudit.proposedTaxonomy.taskTypes.map(({ id, canonicalTitle, artifactKind }) => ({ id, canonicalTitle, artifactKind })),
+          },
           recordTypeMap: sourceAudit.recordTypeMap,
         }
         return `export default ${JSON.stringify(portalAudit)}`
