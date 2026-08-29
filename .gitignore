@@ -6,3 +6,6 @@ vite.config.d.ts
 .DS_Store
 .env*
 !.env.example
+
+# Local Netlify folder
+.netlify
