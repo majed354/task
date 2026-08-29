@@ -345,9 +345,10 @@ function Dashboard() {
       <main>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <h1 id="hero-title">مهام اللجان،<br /><em>في وقتها.</em></h1>
-            <p>اختر لجنتك، اعرف مهام الأسبوع، وافتح المهمة لمعرفة خطواتها والشاهد المطلوب.</p>
-            <div className="hero-actions"><a className="primary-button" href="#committees">استعرض اللجان <UsersRound size={18} /></a><a className="hero-text-link" href="#timeline">عرض الخطة الزمنية <ChevronLeft size={17} /></a></div>
+            <h1 id="hero-title">مهام اللجان <em>في وقتها</em></h1>
+            <p>اختر لجنتك واعرف مهمة الأسبوع وخطواتها والشاهد المطلوب.</p>
+            <div className="hero-actions"><a className="primary-button" href="#committees">اللجان <UsersRound size={17} /></a><a className="hero-text-link" href="#timeline">الخطة الزمنية <ChevronLeft size={16} /></a></div>
+            <div className="hero-stats" aria-label="ملخص الدليل"><span><strong>{committeeOptions.length}</strong> نوع لجنة</span><span><strong>{allTasks.length}</strong> مهمة موحدة</span></div>
           </div>
 
           <aside className="today-panel" aria-label="المهمة الأقرب">
@@ -357,11 +358,6 @@ function Dashboard() {
               <div><span>{nextMilestone.label}</span><strong>{daysUntil(nextMilestone.date, now)}</strong><small>يومًا</small></div>
             </div>}
           </aside>
-        </section>
-
-        <section className="summary-strip" aria-label="ملخص الدليل">
-          <article><strong>{committeeOptions.length}</strong><span>نوع لجنة</span></article>
-          <article><strong>{allTasks.length}</strong><span>مهمة موحدة</span></article>
         </section>
 
         <section className="content-section committees-section" id="committees">
