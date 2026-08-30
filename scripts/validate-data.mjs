@@ -53,6 +53,19 @@ const normalizeCommittee = (value) => value === 'جميع اللجان'
   : value === 'منسقو برامج الدراسات العليا'
     ? 'تنسيق برامج الدراسات العليا'
     : value.replace(/\s*–\s*تخصص .+$/, '')
+const sourceCalendarIds = new Set(Array.from({ length: 60 }, (_, index) => `QRA-T${String(index + 1).padStart(3, '0')}`))
+const sourceCalendarRecords = catalog.filter((task) => sourceCalendarIds.has(task.id))
+const sourceWeekCounts = Object.fromEntries(sourceCalendarRecords.reduce((counts, task) => {
+  counts.set(task.sourceWeek, (counts.get(task.sourceWeek) ?? 0) + 1)
+  return counts
+}, new Map()))
+const expectedSourceWeekCounts = { 0: 2, 1: 3, 2: 3, 3: 4, 4: 2, 5: 3, 6: 3, 7: 3, 8: 4, 9: 3, 10: 3, 11: 3, 12: 3, 13: 3, 14: 3, 15: 9, 16: 6 }
+assert(sourceCalendarRecords.length === 60, 'المصدر المنشور يطابق مهام ملف التقويم وعددها 60')
+assert(sourceCalendarIds.size === 60 && [...sourceCalendarIds].every((id) => sourceCalendarRecords.some((task) => task.id === id)), 'جميع سجلات التقويم QRA-T001 إلى QRA-T060 موجودة بلا نقص')
+assert(JSON.stringify(sourceWeekCounts) === JSON.stringify(expectedSourceWeekCounts), 'توزيع المهام على الأسبوع التمهيدي والأسابيع وفترة الاختبارات مطابق للمصدر')
+assert(unique(sourceCalendarRecords.map((task) => normalizeCommittee(task.committee))).size === 10, 'المصدر المنشور يعرض 10 لجان وجهات عمل بعد توحيد المسميات')
+assert(!sourceCalendarRecords.some((task) => task.committee === 'لجنة الجداول'), 'لا تُضاف لجنة الجداول إلى التقويم لأنها غير واردة في الملف المصدر')
+assert(/sourceCalendarRecordIds/.test(dataSource) && /length: 60/.test(dataSource), 'طبقة العرض مقيدة بسجلات ملف التقويم المرفق')
 const recordsByType = new Map()
 for (const task of catalog) {
   const typeId = audit.recordTypeMap[task.id]
@@ -60,10 +73,10 @@ for (const task of catalog) {
   records.push(task)
   recordsByType.set(typeId, records)
 }
-assert(recordsByType.size === 64, 'الواجهة تختزل السجلات إلى 64 مهمة موحدة')
+assert(recordsByType.size === 64, 'الكتالوج الكامل يختزل السجلات إلى 64 نوع مهمة')
 assert([...recordsByType.values()].every((records) => unique(records.map((task) => task.sourceWeek)).size === 1), 'موعد كل مهمة موحدة متسق بين السجلات المصدرية')
 assert([...recordsByType.values()].every((records) => unique(records.map((task) => normalizeCommittee(task.committee))).size === 1), 'نوع اللجنة متسق لكل مهمة موحدة')
-assert(unique(catalog.map((task) => normalizeCommittee(task.committee))).size === 11, 'الواجهة تعرض 11 نوع لجنة وجهة عمل')
+assert(unique(catalog.map((task) => normalizeCommittee(task.committee))).size === 11, 'الكتالوج الكامل يحتوي 11 نوع لجنة وجهة عمل')
 
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))
@@ -165,6 +178,6 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`)
   process.exitCode = 1
 } else {
-  console.log(`نجح التحقق: ${catalog.length} سجلًا مصدرية تختزل إلى ${taskTypes.length} مهمة موحدة، و11 نوع لجنة، و${guides.length} دليلًا.`)
+  console.log(`نجح التحقق: طابقت الواجهة 60 مهمة واردة في التقويم، و10 لجان وجهات عمل، مع ${guides.length} دليلًا.`)
   console.log(`إجمالي التأكيدات المنفذة: ${checks.length}`)
 }

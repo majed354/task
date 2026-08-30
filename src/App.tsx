@@ -27,7 +27,6 @@ import {
   addDays,
   buildOperationalWeeks,
   compareLocalDates,
-  daysUntil,
   formatGregorian,
   formatShortDate,
   getCommitteePlanStart,
@@ -280,16 +279,10 @@ function Dashboard() {
   }), [allTasks, committeeOptions, now])
 
   const scopedTasks = allTasks.filter((task) => committee === allCommittees || task.committee === committee)
-  const nextTask = [...scopedTasks]
+  const upcomingTasks = [...scopedTasks]
     .filter((task) => compareLocalDates(now, task.graceEnd) <= 0)
-    .sort((a, b) => a.start.getTime() - b.start.getTime() || a.due.getTime() - b.due.getTime())[0] ?? scopedTasks[0]
-  const nextMilestone = nextTask
-    ? compareLocalDates(now, nextTask.start) < 0
-      ? { label: 'يبدأ التنفيذ بعد', date: nextTask.start }
-      : compareLocalDates(now, nextTask.due) <= 0
-        ? { label: 'موعد التسليم بعد', date: nextTask.due }
-        : { label: 'تنتهي المهلة بعد', date: nextTask.graceEnd }
-    : null
+    .sort((a, b) => a.due.getTime() - b.due.getTime() || a.start.getTime() - b.start.getTime() || a.id.localeCompare(b.id))
+  const nearestTasks = (upcomingTasks.length ? upcomingTasks : [...scopedTasks].sort((a, b) => b.due.getTime() - a.due.getTime())).slice(0, 10)
 
   const selectedTimeline = weekFilter === 'all' ? null : timelineItems.find((item) => item.key === weekFilter) ?? null
   const selectedTimelineTasks = allTasks.filter((task) => (weekFilter === 'all' || task.week === Number(weekFilter)) && (committee === allCommittees || task.committee === committee))
@@ -351,12 +344,18 @@ function Dashboard() {
             <div className="hero-stats" aria-label="ملخص الدليل"><span><strong>{committeeOptions.length}</strong> نوع لجنة</span><span><strong>{allTasks.length}</strong> مهمة موحدة</span></div>
           </div>
 
-          <aside className="today-panel" aria-label="المهمة الأقرب">
-            <div className="today-head"><span>المهمة الأقرب</span>{nextTask && <strong>{formatGregorian(nextTask.due)}</strong>}</div>
-            {nextTask && nextMilestone && <div className="next-focus">
-              <section><span>{nextTask.committee}</span><h2>{nextTask.title}</h2><button type="button" onClick={() => openTask(nextTask)}>عرض التفاصيل <ChevronLeft size={16} /></button></section>
-              <div><span>{nextMilestone.label}</span><strong>{daysUntil(nextMilestone.date, now)}</strong><small>يومًا</small></div>
-            </div>}
+          <aside className="nearest-panel" aria-label="أقرب عشر مهام">
+            <div className="nearest-head"><strong>أقرب 10 مهام</strong><span>اضغط على المهمة لعرض التفاصيل</span></div>
+            <div className="nearest-list">
+              {nearestTasks.map((task, index) => (
+                <button className="nearest-task" type="button" key={task.id} onClick={() => openTask(task)}>
+                  <span className="nearest-rank" aria-hidden="true">{index + 1}</span>
+                  <span className="nearest-main"><strong>{task.title}</strong><small>{task.committee}</small></span>
+                  <span className="nearest-date"><CalendarDays size={13} />{formatShortDate(task.due)}</span>
+                  <ChevronLeft className="nearest-chevron" size={15} aria-hidden="true" />
+                </button>
+              ))}
+            </div>
           </aside>
         </section>
 

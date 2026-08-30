@@ -71,6 +71,7 @@ const guides = (rawGuides as { guides: ProcedureGuide[] }).guides
 const guideById = new Map(guides.map((guide) => [guide.id, guide]))
 const guideAssignments = (rawGuideAssignments as { assignments: Record<string, GuideAssignment> }).assignments
 const taskTypeById = new Map(audit.proposedTaxonomy.taskTypes.map((type) => [type.id, type]))
+const sourceCalendarRecordIds = new Set(Array.from({ length: 60 }, (_, index) => `QRA-T${String(index + 1).padStart(3, '0')}`))
 
 export function normalizeCommitteeName(value: string) {
   if (value === 'جميع اللجان') return 'مهام مشتركة لجميع اللجان'
@@ -81,6 +82,7 @@ export function normalizeCommitteeName(value: string) {
 const canonicalCatalog = (() => {
   const firstRecordByType = new Map<string, CatalogTask>()
   for (const record of catalog) {
+    if (!sourceCalendarRecordIds.has(record.id)) continue
     const typeId = audit.recordTypeMap[record.id]
     if (typeId && !firstRecordByType.has(typeId)) firstRecordByType.set(typeId, record)
   }
@@ -127,7 +129,7 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
     const guide = assignment ? guideById.get(assignment.guideId) : undefined
 
     return {
-      id: typeId,
+      id: record.id,
       committee: normalizeCommitteeName(record.committee),
       title,
       outputType,
