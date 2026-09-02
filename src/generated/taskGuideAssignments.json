@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0.0",
-  "generatedAt": "2026-08-22",
-  "assignmentCount": 268,
+  "generatedAt": "2026-09-02",
+  "assignmentCount": 316,
   "note": "يرتبط كل taskId بدليل تنفيذ واحد. القوالب مكتبة اختيارية مستقلة ولا ترتبط بالمهام ولا تعد شرطًا للإنجاز أو الإقفال.",
   "assignments": {
     "QRA-T001": {
@@ -807,6 +807,150 @@
     },
     "LAW-T060": {
       "guideId": "guide-exam-operations-quality"
+    },
+    "QRA-T071": {
+      "guideId": "guide-operational-planning"
+    },
+    "QRA-T072": {
+      "guideId": "guide-academic-evidence-file"
+    },
+    "QRA-T073": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "QRA-T074": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "QRA-T075": {
+      "guideId": "guide-learning-outcomes-kpi"
+    },
+    "QRA-T076": {
+      "guideId": "guide-training-workshop"
+    },
+    "QRA-T077": {
+      "guideId": "guide-program-curriculum-review"
+    },
+    "QRA-T078": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "QRA-T079": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "QRA-T080": {
+      "guideId": "guide-activity-initiative-impact"
+    },
+    "QRA-T081": {
+      "guideId": "guide-improvement-action"
+    },
+    "QRA-T082": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "SHR-T071": {
+      "guideId": "guide-operational-planning"
+    },
+    "SHR-T072": {
+      "guideId": "guide-academic-evidence-file"
+    },
+    "SHR-T073": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "SHR-T074": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "SHR-T075": {
+      "guideId": "guide-learning-outcomes-kpi"
+    },
+    "SHR-T076": {
+      "guideId": "guide-training-workshop"
+    },
+    "SHR-T077": {
+      "guideId": "guide-program-curriculum-review"
+    },
+    "SHR-T078": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "SHR-T079": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "SHR-T080": {
+      "guideId": "guide-activity-initiative-impact"
+    },
+    "SHR-T081": {
+      "guideId": "guide-improvement-action"
+    },
+    "SHR-T082": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "CUL-T065": {
+      "guideId": "guide-operational-planning"
+    },
+    "CUL-T066": {
+      "guideId": "guide-academic-evidence-file"
+    },
+    "CUL-T067": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "CUL-T068": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "CUL-T069": {
+      "guideId": "guide-learning-outcomes-kpi"
+    },
+    "CUL-T070": {
+      "guideId": "guide-training-workshop"
+    },
+    "CUL-T071": {
+      "guideId": "guide-program-curriculum-review"
+    },
+    "CUL-T072": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "CUL-T073": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "CUL-T074": {
+      "guideId": "guide-activity-initiative-impact"
+    },
+    "CUL-T075": {
+      "guideId": "guide-improvement-action"
+    },
+    "CUL-T076": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "LAW-T065": {
+      "guideId": "guide-operational-planning"
+    },
+    "LAW-T066": {
+      "guideId": "guide-academic-evidence-file"
+    },
+    "LAW-T067": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "LAW-T068": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "LAW-T069": {
+      "guideId": "guide-learning-outcomes-kpi"
+    },
+    "LAW-T070": {
+      "guideId": "guide-training-workshop"
+    },
+    "LAW-T071": {
+      "guideId": "guide-program-curriculum-review"
+    },
+    "LAW-T072": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "LAW-T073": {
+      "guideId": "guide-analytical-evaluation"
+    },
+    "LAW-T074": {
+      "guideId": "guide-activity-initiative-impact"
+    },
+    "LAW-T075": {
+      "guideId": "guide-improvement-action"
+    },
+    "LAW-T076": {
+      "guideId": "guide-analytical-evaluation"
     }
   }
 }

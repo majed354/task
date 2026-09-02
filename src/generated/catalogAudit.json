@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21",
+  "generatedAt": "2026-09-02",
   "language": "ar",
   "sourceFiles": [
     "src/generated/taskCatalog.json",
@@ -18,50 +18,50 @@
     "caveat": "التشابه بين الأقسام متوقع؛ لا يعد ازدواجًا خاطئًا إلا إذا تكرر داخل القسم واللجنة أو تعارضت الملكية أو المخرجات."
   },
   "counts": {
-    "records": 268,
-    "uniqueIds": 268,
+    "records": 316,
+    "uniqueIds": 316,
     "fields": 12,
     "departments": {
-      "قسم القراءات": 70,
-      "قسم الشريعة": 70,
-      "قسم الثقافة الإسلامية": 64,
-      "قسم الأنظمة": 64
+      "قسم القراءات": 82,
+      "قسم الثقافة الإسلامية": 76,
+      "قسم الشريعة": 82,
+      "قسم الأنظمة": 76
     },
     "committees": {
-      "لجنة الجودة والاعتماد الأكاديمي": 36,
-      "لجنة الاختبارات والنتائج": 36,
-      "لجنة الدراسات العليا": 32,
-      "لجنة الإرشاد الأكاديمي": 28,
-      "لجنة تطوير المناهج والبرامج الأكاديمية": 28,
+      "لجنة الإرشاد الأكاديمي": 40,
       "لجنة العلاقات العامة والإعلام": 24,
-      "لجنة الأنشطة الطلابية": 20,
       "لجنة الجداول": 16,
-      "لجنة فحص الخطط العلمية": 12,
-      "منسقو برامج الدراسات العليا": 8,
+      "لجنة الجودة والاعتماد الأكاديمي": 56,
+      "لجنة الدراسات العليا": 32,
+      "لجنة تطوير المناهج والبرامج الأكاديمية": 40,
       "لجنة فحص الخطط العلمية – تخصص القراءات": 6,
       "لجنة فحص الخطط العلمية – تخصص الدراسات القرآنية": 6,
+      "لجنة الأنشطة الطلابية": 20,
+      "لجنة الاختبارات والنتائج": 40,
+      "منسقو برامج الدراسات العليا": 8,
+      "جميع اللجان": 4,
+      "لجنة فحص الخطط العلمية": 12,
       "لجنة فحص الخطط العلمية – تخصص الفقه": 6,
-      "لجنة فحص الخطط العلمية – تخصص أصول الفقه": 6,
-      "جميع اللجان": 4
+      "لجنة فحص الخطط العلمية – تخصص أصول الفقه": 6
     },
     "weeks": {
-      "0": 12,
-      "1": 16,
-      "2": 14,
+      "0": 16,
+      "1": 20,
+      "2": 18,
       "3": 16,
-      "4": 12,
-      "5": 14,
-      "6": 12,
-      "7": 12,
-      "8": 16,
+      "4": 16,
+      "5": 18,
+      "6": 16,
+      "7": 16,
+      "8": 20,
       "9": 12,
       "10": 14,
       "11": 12,
-      "12": 14,
-      "13": 12,
-      "14": 14,
+      "12": 18,
+      "13": 16,
+      "14": 18,
       "15": 42,
-      "16": 24
+      "16": 28
     },
     "outputTypes": {
       "تقرير": 72,
@@ -1926,10 +1926,10 @@
       {
         "id": "TYP-043",
         "guideKey": "task-guide/TYP-043",
-        "canonicalTitle": "اقتراح مبادرات لتفعيل الشراكات المجتمعية",
+        "canonicalTitle": "اقتراح مبادرات الشراكة المجتمعية وتنفيذها وقياس أثرها",
         "ownerDomain": "STUDENT_ACTIVITIES",
-        "processClass": "PLANNING",
-        "artifactKind": "خطة",
+        "processClass": "IMPLEMENTATION",
+        "artifactKind": "نشاط وفعالية",
         "proposedCadence": "TERM",
         "phaseType": "مهمة أسبوعية",
         "sourceWeek": 13,
@@ -2396,6 +2396,258 @@
           "SHR-T060",
           "LAW-T060"
         ]
+      },
+      {
+        "id": "TYP-065",
+        "guideKey": "task-guide/TYP-065",
+        "canonicalTitle": "إعداد مصفوفة المسؤوليات وسجل مخاطر البرنامج",
+        "ownerDomain": "QUALITY",
+        "processClass": "DOCUMENTATION",
+        "artifactKind": "نموذج",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 1,
+        "committees": [
+          "لجنة الجودة والاعتماد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T071",
+          "SHR-T071",
+          "CUL-T065",
+          "LAW-T065"
+        ]
+      },
+      {
+        "id": "TYP-066",
+        "guideKey": "task-guide/TYP-066",
+        "canonicalTitle": "مراجعة دليل نظام إدارة الجودة بالقسم وتحديثه",
+        "ownerDomain": "QUALITY",
+        "processClass": "DOCUMENTATION",
+        "artifactKind": "نموذج",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 5,
+        "committees": [
+          "لجنة الجودة والاعتماد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T072",
+          "SHR-T072",
+          "CUL-T066",
+          "LAW-T066"
+        ]
+      },
+      {
+        "id": "TYP-067",
+        "guideKey": "task-guide/TYP-067",
+        "canonicalTitle": "إعداد تقرير كفاية المرافق والتجهيزات وتقنية المعلومات",
+        "ownerDomain": "QUALITY",
+        "processClass": "ANALYSIS_REPORT",
+        "artifactKind": "تقرير",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 6,
+        "committees": [
+          "لجنة الجودة والاعتماد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T073",
+          "SHR-T073",
+          "CUL-T067",
+          "LAW-T067"
+        ]
+      },
+      {
+        "id": "TYP-068",
+        "guideKey": "task-guide/TYP-068",
+        "canonicalTitle": "متابعة إنجاز الخطة التشغيلية ورصد الانحرافات",
+        "ownerDomain": "QUALITY",
+        "processClass": "ANALYSIS_REPORT",
+        "artifactKind": "تقرير",
+        "proposedCadence": "CONTINUOUS",
+        "phaseType": "مرحلة متابعة",
+        "sourceWeek": 8,
+        "committees": [
+          "لجنة الجودة والاعتماد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T074",
+          "SHR-T074",
+          "CUL-T068",
+          "LAW-T068"
+        ]
+      },
+      {
+        "id": "TYP-069",
+        "guideKey": "task-guide/TYP-069",
+        "canonicalTitle": "إعداد تقرير نتائج قياس نواتج التعلم وإجراءات التحسين",
+        "ownerDomain": "QUALITY",
+        "processClass": "ANALYSIS_REPORT",
+        "artifactKind": "تقرير",
+        "proposedCadence": "ANNUAL",
+        "phaseType": "تسليم نهائي",
+        "sourceWeek": 14,
+        "committees": [
+          "لجنة الجودة والاعتماد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T075",
+          "SHR-T075",
+          "CUL-T069",
+          "LAW-T069"
+        ]
+      },
+      {
+        "id": "TYP-070",
+        "guideKey": "task-guide/TYP-070",
+        "canonicalTitle": "تحديد الاحتياجات التدريبية وتهيئة الأعضاء الجدد وإعداد خطة التطوير المهني",
+        "ownerDomain": "CURRICULUM",
+        "processClass": "PLANNING",
+        "artifactKind": "خطة",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 2,
+        "committees": [
+          "لجنة تطوير المناهج والبرامج الأكاديمية"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T076",
+          "SHR-T076",
+          "CUL-T070",
+          "LAW-T070"
+        ]
+      },
+      {
+        "id": "TYP-071",
+        "guideKey": "task-guide/TYP-071",
+        "canonicalTitle": "مراجعة توصيفات المقررات ومراجعها وحصر احتياج مصادر التعلم",
+        "ownerDomain": "CURRICULUM",
+        "processClass": "DOCUMENTATION",
+        "artifactKind": "نموذج",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 4,
+        "committees": [
+          "لجنة تطوير المناهج والبرامج الأكاديمية"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T077",
+          "SHR-T077",
+          "CUL-T071",
+          "LAW-T071"
+        ]
+      },
+      {
+        "id": "TYP-072",
+        "guideKey": "task-guide/TYP-072",
+        "canonicalTitle": "عقد لقاء اللجنة الاستشارية وتوثيق آراء أصحاب المصلحة",
+        "ownerDomain": "CURRICULUM",
+        "processClass": "ANALYSIS_REPORT",
+        "artifactKind": "تقرير",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 7,
+        "committees": [
+          "لجنة تطوير المناهج والبرامج الأكاديمية"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T078",
+          "SHR-T078",
+          "CUL-T072",
+          "LAW-T072"
+        ]
+      },
+      {
+        "id": "TYP-073",
+        "guideKey": "task-guide/TYP-073",
+        "canonicalTitle": "تحليل نتائج الطلبة وتوزيع الدرجات على مستوى البرنامج",
+        "ownerDomain": "EXAMS",
+        "processClass": "ANALYSIS_REPORT",
+        "artifactKind": "تقرير",
+        "proposedCadence": "TERM",
+        "phaseType": "تسليم نهائي",
+        "sourceWeek": 16,
+        "committees": [
+          "لجنة الاختبارات والنتائج"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T079",
+          "SHR-T079",
+          "CUL-T073",
+          "LAW-T073"
+        ]
+      },
+      {
+        "id": "TYP-074",
+        "guideKey": "task-guide/TYP-074",
+        "canonicalTitle": "تنفيذ اللقاء التعريفي للطلبة المستجدين وتهيئتهم",
+        "ownerDomain": "ACADEMIC_ADVISING",
+        "processClass": "IMPLEMENTATION",
+        "artifactKind": "نشاط وفعالية",
+        "proposedCadence": "TERM",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 0,
+        "committees": [
+          "لجنة الإرشاد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T080",
+          "SHR-T080",
+          "CUL-T074",
+          "LAW-T074"
+        ]
+      },
+      {
+        "id": "TYP-075",
+        "guideKey": "task-guide/TYP-075",
+        "canonicalTitle": "تشغيل سجل الشكاوى والتظلمات الطلابية ومتابعة معالجتها",
+        "ownerDomain": "ACADEMIC_ADVISING",
+        "processClass": "MONITORING",
+        "artifactKind": "إجراء تشغيلي",
+        "proposedCadence": "CONTINUOUS",
+        "phaseType": "مرحلة متابعة",
+        "sourceWeek": 12,
+        "committees": [
+          "لجنة الإرشاد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T081",
+          "SHR-T081",
+          "CUL-T075",
+          "LAW-T075"
+        ]
+      },
+      {
+        "id": "TYP-076",
+        "guideKey": "task-guide/TYP-076",
+        "canonicalTitle": "إعداد تقرير متابعة الخريجين وتوظيفهم",
+        "ownerDomain": "ACADEMIC_ADVISING",
+        "processClass": "ANALYSIS_REPORT",
+        "artifactKind": "تقرير",
+        "proposedCadence": "ANNUAL",
+        "phaseType": "مهمة أسبوعية",
+        "sourceWeek": 13,
+        "committees": [
+          "لجنة الإرشاد الأكاديمي"
+        ],
+        "recordCount": 4,
+        "recordIds": [
+          "QRA-T082",
+          "SHR-T082",
+          "CUL-T076",
+          "LAW-T076"
+        ]
       }
     ]
   },
@@ -2667,7 +2919,55 @@
     "QRA-T060": "TYP-064",
     "CUL-T060": "TYP-064",
     "SHR-T060": "TYP-064",
-    "LAW-T060": "TYP-064"
+    "LAW-T060": "TYP-064",
+    "QRA-T071": "TYP-065",
+    "SHR-T071": "TYP-065",
+    "CUL-T065": "TYP-065",
+    "LAW-T065": "TYP-065",
+    "QRA-T072": "TYP-066",
+    "SHR-T072": "TYP-066",
+    "CUL-T066": "TYP-066",
+    "LAW-T066": "TYP-066",
+    "QRA-T073": "TYP-067",
+    "SHR-T073": "TYP-067",
+    "CUL-T067": "TYP-067",
+    "LAW-T067": "TYP-067",
+    "QRA-T074": "TYP-068",
+    "SHR-T074": "TYP-068",
+    "CUL-T068": "TYP-068",
+    "LAW-T068": "TYP-068",
+    "QRA-T075": "TYP-069",
+    "SHR-T075": "TYP-069",
+    "CUL-T069": "TYP-069",
+    "LAW-T069": "TYP-069",
+    "QRA-T076": "TYP-070",
+    "SHR-T076": "TYP-070",
+    "CUL-T070": "TYP-070",
+    "LAW-T070": "TYP-070",
+    "QRA-T077": "TYP-071",
+    "SHR-T077": "TYP-071",
+    "CUL-T071": "TYP-071",
+    "LAW-T071": "TYP-071",
+    "QRA-T078": "TYP-072",
+    "SHR-T078": "TYP-072",
+    "CUL-T072": "TYP-072",
+    "LAW-T072": "TYP-072",
+    "QRA-T079": "TYP-073",
+    "SHR-T079": "TYP-073",
+    "CUL-T073": "TYP-073",
+    "LAW-T073": "TYP-073",
+    "QRA-T080": "TYP-074",
+    "SHR-T080": "TYP-074",
+    "CUL-T074": "TYP-074",
+    "LAW-T074": "TYP-074",
+    "QRA-T081": "TYP-075",
+    "SHR-T081": "TYP-075",
+    "CUL-T075": "TYP-075",
+    "LAW-T075": "TYP-075",
+    "QRA-T082": "TYP-076",
+    "SHR-T082": "TYP-076",
+    "CUL-T076": "TYP-076",
+    "LAW-T076": "TYP-076"
   },
   "renameSummary": {
     "proposalGroups": 19,

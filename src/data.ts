@@ -72,6 +72,9 @@ const guideById = new Map(guides.map((guide) => [guide.id, guide]))
 const guideAssignments = (rawGuideAssignments as { assignments: Record<string, GuideAssignment> }).assignments
 const taskTypeById = new Map(audit.proposedTaxonomy.taskTypes.map((type) => [type.id, type]))
 const sourceCalendarRecordIds = new Set(Array.from({ length: 60 }, (_, index) => `QRA-T${String(index + 1).padStart(3, '0')}`))
+// مهام تغطية أدلة الدراسة الذاتية المضافة بعد المصدر الأصلي
+const selfStudyCoverageRecordIds = ['QRA-T071', 'QRA-T072', 'QRA-T073', 'QRA-T074', 'QRA-T075', 'QRA-T076', 'QRA-T077', 'QRA-T078', 'QRA-T079', 'QRA-T080', 'QRA-T081', 'QRA-T082']
+for (const id of selfStudyCoverageRecordIds) sourceCalendarRecordIds.add(id)
 
 export function normalizeCommitteeName(value: string) {
   if (value === 'جميع اللجان') return 'مهام مشتركة لجميع اللجان'
