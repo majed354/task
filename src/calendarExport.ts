@@ -56,6 +56,7 @@ function eventDescription(task: Task) {
     `المطلوب: ${task.quickOutput}`,
     `المسؤول الوظيفي: ${task.responsibilities.executionRole}`,
     `المتابعة: ${task.responsibilities.recordCoordinationRole}`,
+    `نطاق التنفيذ: ${task.scope.label}`,
     `المحطة: ${calendarWeekLabel(task)}`,
     `خطوات التنفيذ:\n${steps}`,
     `الشاهد المطلوب: ${task.quickEvidence}`,

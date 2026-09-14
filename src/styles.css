@@ -147,6 +147,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .status-grace { color: #855c1e; background: #f7e9cd; }
 .status-ended { color: #97474c; background: #f7e1e1; }
 .task-committee { overflow: hidden; color: var(--green); font-size: 9px; font-weight: 900; white-space: nowrap; text-overflow: ellipsis; }
+.task-scope, .scope-pill { display: inline-flex; width: fit-content; align-items: center; min-height: 23px; padding: 0 7px; border: 1px solid #d8e5df; border-radius: 999px; color: #416a61; background: #f0f6f3; font-size: 8px; font-weight: 800; }
+.task-scope { margin-top: 7px; }
 .task-card h3 { margin: 10px 0 11px; font-size: 14px; line-height: 1.55; }
 .task-date { display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 7px 8px; border-radius: 8px; color: var(--muted); background: #f3f4f0; font-size: 9px; }
 .task-date strong { color: var(--ink); }

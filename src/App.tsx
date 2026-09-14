@@ -156,7 +156,7 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
       <header className="modal-header">
         <button className="icon-button" type="button" onClick={onClose} aria-label="إغلاق تفاصيل المهمة" data-autofocus><X size={22} /></button>
         <div>
-          <div className="modal-kickers"><span>{taskNumber(task.id)}</span><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
+          <div className="modal-kickers"><span>{taskNumber(task.sourceId)}</span><span className="scope-pill">{task.scope.shortLabel}</span><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
           <h2 id="task-modal-title">{task.title}</h2>
           <p>{task.committee}</p>
         </div>
@@ -341,7 +341,7 @@ function Dashboard() {
             <h1 id="hero-title">مهام اللجان <em>في وقتها</em></h1>
             <p>اختر لجنتك واعرف مهمة الأسبوع وخطواتها والشاهد المطلوب.</p>
             <div className="hero-actions"><a className="primary-button" href="#committees">اللجان <UsersRound size={17} /></a><a className="hero-text-link" href="#timeline">الخطة الزمنية <ChevronLeft size={16} /></a></div>
-            <div className="hero-stats" aria-label="ملخص الدليل"><span><strong>{committeeOptions.length}</strong> نوع لجنة</span><span><strong>{allTasks.length}</strong> مهمة موحدة</span></div>
+            <div className="hero-stats" aria-label="ملخص الدليل"><span><strong>{committeeOptions.length}</strong> لجان</span><span><strong>{allTasks.length}</strong> مهمة مجدولة</span></div>
           </div>
 
           <aside className="nearest-panel" aria-label="أقرب عشر مهام">
@@ -350,7 +350,7 @@ function Dashboard() {
               {nearestTasks.map((task, index) => (
                 <button className="nearest-task" type="button" key={task.id} onClick={() => openTask(task)}>
                   <span className="nearest-rank" aria-hidden="true">{index + 1}</span>
-                  <span className="nearest-main"><strong>{task.title}</strong><small>{task.committee}</small></span>
+                  <span className="nearest-main"><strong>{task.title}</strong><small>{task.committee} · {task.scope.shortLabel}</small></span>
                   <span className="nearest-date"><CalendarDays size={13} />{formatShortDate(task.due)}</span>
                   <ChevronLeft className="nearest-chevron" size={15} aria-hidden="true" />
                 </button>
@@ -440,6 +440,7 @@ function Dashboard() {
           {filteredTasks.length ? <div className="task-grid">
             {filteredTasks.map((task) => <article className="task-card" key={task.id}>
               <div className="task-card-head"><span className="task-committee">{task.committee}</span><span className={`status-pill ${temporalClass[task.temporalStatus]}`}>{task.temporalStatus}</span></div>
+              <span className="task-scope">{task.scope.label}</span>
               <h3>{task.title}</h3>
               <div className="task-date"><CalendarDays size={16} /><span>الموعد <strong>{formatGregorian(task.due)}</strong></span></div>
               <div className="task-evidence"><span>الشاهد</span><strong>{task.quickEvidence}</strong></div>

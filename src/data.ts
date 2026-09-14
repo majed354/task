@@ -45,6 +45,7 @@ interface GuideAssignment {
 
 export interface Task {
   id: string
+  sourceId: string
   committee: string
   title: string
   outputType: string
@@ -61,6 +62,11 @@ export interface Task {
   responsibilities: {
     executionRole: string
     recordCoordinationRole: string
+  }
+  scope: {
+    id: 'department' | 'each-program' | 'bachelor-program' | 'postgraduate-program'
+    label: string
+    shortLabel: string
   }
   scheduleAdjusted: boolean
 }
@@ -81,7 +87,37 @@ const excludedDisplayCommittees = new Set(['منسقو برامج الدراسا
 export function normalizeCommitteeName(value: string) {
   if (value === 'جميع اللجان') return 'مهام مشتركة لجميع اللجان'
   if (value === 'منسقو برامج الدراسات العليا') return 'تنسيق برامج الدراسات العليا'
+  if (value === 'لجنة الدراسات العليا') return 'لجنة الدراسات العليا والبحث العلمي'
   return value.replace(/\s*–\s*تخصص .+$/, '')
+}
+
+const qualityCommittee = 'لجنة الجودة والاعتماد الأكاديمي'
+const bachelorQualityCommittee = 'لجنة الجودة والاعتماد لبرامج البكالوريوس'
+const postgraduateQualityCommittee = 'لجنة الجودة والاعتماد لبرامج الدراسات العليا'
+
+const qualityProgramTitleOverrides: Record<string, string> = {
+  'QRA-T003': 'إعداد الخطة التشغيلية للبرنامج',
+  'QRA-T072': 'مراجعة دليل نظام إدارة الجودة للبرنامج وتحديثه',
+}
+
+const scopes = {
+  department: { id: 'department', label: 'يُنفذ مرة واحدة على مستوى القسم', shortLabel: 'على مستوى القسم' },
+  eachProgram: { id: 'each-program', label: 'يُكرر لكل برنامج أكاديمي', shortLabel: 'لكل برنامج' },
+  bachelorProgram: { id: 'bachelor-program', label: 'يُنفذ لكل برنامج بكالوريوس', shortLabel: 'لكل برنامج بكالوريوس' },
+  postgraduateProgram: { id: 'postgraduate-program', label: 'يُنفذ لكل برنامج دراسات عليا', shortLabel: 'لكل برنامج دراسات عليا' },
+} as const
+
+// المهام التي تنتج شواهد مستقلة لكل برنامج، وإن نفذتها لجنة موحدة.
+const eachProgramRecordIds = new Set([
+  'QRA-T005', 'QRA-T012', 'QRA-T013', 'QRA-T014', 'QRA-T017', 'QRA-T024', 'QRA-T026',
+  'QRA-T027', 'QRA-T030', 'QRA-T032', 'QRA-T033', 'QRA-T035', 'QRA-T047', 'QRA-T060',
+  'QRA-T078', 'QRA-T079', 'QRA-T080', 'QRA-T082',
+])
+
+function scopeFor(record: CatalogTask) {
+  if (record.committee.includes('فحص الخطط العلمية')) return scopes.postgraduateProgram
+  if (eachProgramRecordIds.has(record.id)) return scopes.eachProgram
+  return scopes.department
 }
 
 const canonicalCatalog = (() => {
@@ -119,7 +155,7 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
   const preparationDue = getCommitteePreparationDue(term)
   const exams = getExamEvent(term)
 
-  return canonicalCatalog.map(({ typeId, record }) => {
+  return canonicalCatalog.flatMap(({ typeId, record }) => {
     const taskType = taskTypeById.get(typeId)
     const outputType = taskType?.artifactKind ?? record.outputType
     const title = taskType?.canonicalTitle ?? record.title
@@ -134,10 +170,19 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
     const assignment = guideAssignments[record.id]
     const guide = assignment ? guideById.get(assignment.guideId) : undefined
 
-    return {
-      id: record.id,
-      committee: normalizeCommitteeName(record.committee),
-      title,
+    const baseCommittee = normalizeCommitteeName(record.committee)
+    const variants = record.committee === qualityCommittee
+      ? [
+          { suffix: 'BACH', committee: bachelorQualityCommittee, scope: scopes.bachelorProgram },
+          { suffix: 'PG', committee: postgraduateQualityCommittee, scope: scopes.postgraduateProgram },
+        ]
+      : [{ suffix: '', committee: baseCommittee, scope: scopeFor(record) }]
+
+    return variants.map((variant) => ({
+      id: variant.suffix ? `${record.id}-${variant.suffix}` : record.id,
+      sourceId: record.id,
+      committee: variant.committee,
+      title: record.committee === qualityCommittee ? qualityProgramTitleOverrides[record.id] ?? title : title,
       outputType,
       week: isExams ? 16 : mappedWeek,
       start,
@@ -146,15 +191,20 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
       temporalStatus: getTemporalState(start, due, graceEnd, today),
       guideTitle: guide?.nameAr ?? `دليل ${outputType}`,
       quickOutput: guide?.finalOutput ?? record.deliverable ?? `إنجاز «${title}».`,
-      quickSteps: record.steps,
+      quickSteps: record.committee === qualityCommittee && record.id === 'QRA-T003'
+        ? record.steps.map((step) => step.replace('أهداف القسم', 'أهداف البرنامج'))
+        : record.steps,
       quickEvidence: guide?.evidenceAttachments[0] ?? fallbackEvidence(outputType),
       evidenceComponents: guide?.evidenceComponents ?? ['هوية الشاهد ونطاقه', 'النتيجة الأساسية', 'تاريخ الإنجاز', 'المراجعة والاعتماد'],
       responsibilities: {
-        executionRole: guide?.roles.directResponsible ?? normalizeCommitteeName(record.committee),
+        executionRole: record.committee === qualityCommittee
+          ? variant.committee
+          : normalizeCommitteeName(guide?.roles.directResponsible ?? record.committee),
         recordCoordinationRole: 'منسق أعمال اللجنة',
       },
+      scope: variant.scope,
       scheduleAdjusted: !isExams && record.sourceWeek > weeks.length,
-    }
+    }))
   })
 }
 
@@ -179,6 +229,7 @@ export function taskSearchIndex(task: Task) {
     task.committee,
     task.outputType,
     task.guideTitle,
+    task.scope.label,
     task.quickSteps.join(' '),
     task.quickEvidence,
     task.evidenceComponents.join(' '),

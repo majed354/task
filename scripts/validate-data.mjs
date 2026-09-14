@@ -52,7 +52,9 @@ const normalizeCommittee = (value) => value === 'جميع اللجان'
   ? 'مهام مشتركة لجميع اللجان'
   : value === 'منسقو برامج الدراسات العليا'
     ? 'تنسيق برامج الدراسات العليا'
-    : value.replace(/\s*–\s*تخصص .+$/, '')
+    : value === 'لجنة الدراسات العليا'
+      ? 'لجنة الدراسات العليا والبحث العلمي'
+      : value.replace(/\s*–\s*تخصص .+$/, '')
 const sourceCalendarIds = new Set(Array.from({ length: 60 }, (_, index) => `QRA-T${String(index + 1).padStart(3, '0')}`))
 const sourceCalendarRecords = catalog.filter((task) => sourceCalendarIds.has(task.id))
 const selfStudyCoverageIds = new Set(Array.from({ length: 12 }, (_, index) => `QRA-T${String(index + 71).padStart(3, '0')}`))
@@ -92,11 +94,18 @@ const visibleRecords = [...visibleRecordByType.entries()].map(([typeId, task]) =
   ...task,
   canonicalTitle: taskTypes.find((type) => type.id === typeId)?.canonicalTitle ?? task.title,
 }))
-assert(visibleRecords.length === 69, 'الواجهة تعرض 69 مهمة بعد حذف مهام التنسيق والمهام المشتركة')
-assert(unique(visibleRecords.map((task) => normalizeCommittee(task.committee))).size === 8, 'الواجهة تعرض 8 لجان فقط')
+assert(visibleRecords.length === 69, 'مصدر العرض يحتوي 69 تعريف مهمة بعد الاستبعادات')
+assert(unique(visibleRecords.map((task) => normalizeCommittee(task.committee))).size === 8, 'تعريفات المهام الأصلية موزعة على 8 لجان')
 assert(visibleRecords.every((task) => !excludedDisplayCommittees.has(task.committee)), 'لا تظهر مهام تنسيق الدراسات العليا أو المهام المشتركة')
 const annualReportTasks = visibleRecords.filter((task) => task.canonicalTitle === 'إعداد التقرير السنوي للبرنامج')
-assert(annualReportTasks.length === 1 && annualReportTasks[0].committee === 'لجنة الجودة والاعتماد الأكاديمي', 'التقرير السنوي للبرنامج يتبع لجنة الجودة فقط')
+assert(annualReportTasks.length === 1 && annualReportTasks[0].committee === 'لجنة الجودة والاعتماد الأكاديمي', 'للتقرير السنوي تعريف مصدري واحد تحت الجودة')
+const qualityDefinitions = visibleRecords.filter((task) => task.committee === 'لجنة الجودة والاعتماد الأكاديمي')
+assert(qualityDefinitions.length === 14, 'مهام الجودة الأساسية عددها 14')
+assert(visibleRecords.length + qualityDefinitions.length === 83, 'توسيع مهام الجودة لمساري البكالوريوس والدراسات العليا ينتج 83 مهمة مجدولة')
+assert(/bachelorQualityCommittee/.test(dataSource) && /postgraduateQualityCommittee/.test(dataSource) && /canonicalCatalog\.flatMap/.test(dataSource), 'طبقة العرض تنشئ لجنتي الجودة المستقلتين')
+assert(/scopeFor/.test(dataSource) && /يُنفذ مرة واحدة على مستوى القسم/.test(dataSource) && /يُكرر لكل برنامج أكاديمي/.test(dataSource), 'كل مهمة تحمل نطاق تنفيذ واضحًا')
+assert(/لجنة الدراسات العليا والبحث العلمي/.test(dataSource), 'مسمى لجنة الدراسات العليا يشمل البحث العلمي')
+assert(/task\.scope\.label/.test(appSource) && /task\.scope\.shortLabel/.test(appSource), 'نطاق التنفيذ ظاهر في بطاقات المهام وتفاصيلها')
 
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))
@@ -156,6 +165,7 @@ assert(/تحميل التقويم/.test(appSource) && /calendar-export/.test(app
 assert(/BEGIN:VCALENDAR/.test(calendarExportSource) && /END:VCALENDAR/.test(calendarExportSource), 'ملف التصدير يستخدم بنية iCalendar القياسية')
 assert(/text\/calendar;charset=utf-8/.test(calendarExportSource), 'تنزيل التقويم يعلن نوع الملف الصحيح')
 assert(/BEGIN:VALARM/.test(calendarExportSource) && /TRIGGER:-P1D/.test(calendarExportSource), 'كل موعد يتضمن تنبيهًا قبل يوم')
+assert(/نطاق التنفيذ/.test(calendarExportSource) && /task\.scope\.label/.test(calendarExportSource), 'ملف التقويم يضمن نطاق تنفيذ المهمة')
 assert(/Google Calendar/.test(appSource) && /تقويم Apple/.test(appSource) && /Outlook/.test(appSource), 'الواجهة توضح تطبيقات التقويم المتوافقة')
 
 assert(calendar.title === 'التقويم التشغيلي للمنظومة', 'عنوان التقويم التشغيلي واضح')
@@ -198,6 +208,6 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`)
   process.exitCode = 1
 } else {
-  console.log(`نجح التحقق: تعرض الواجهة 69 مهمة (57 من ملف التقويم و12 لتغطية أدلة الدراسة الذاتية)، و8 لجان، مع ${guides.length} دليلًا.`)
+  console.log(`نجح التحقق: تعرض الواجهة 83 مهمة مجدولة عبر 9 لجان، بعد فصل الجودة بين البكالوريوس والدراسات العليا، مع ${guides.length} دليلًا.`)
   console.log(`إجمالي التأكيدات المنفذة: ${checks.length}`)
 }
