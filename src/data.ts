@@ -121,6 +121,11 @@ const taskTitleOverrides: Record<string, string> = {
   'QRA-T001': 'نشر الجدول العام للساعات المكتبية',
 }
 
+const scientificActivityWebsiteChecks = [
+  { id: 'MEDIA-T001', week: 8, period: 'منتصف الفصل' },
+  { id: 'MEDIA-T002', week: 14, period: 'نهاية الفصل' },
+] as const
+
 const scopes = {
   department: { id: 'department', label: 'يُنفذ مرة واحدة على مستوى القسم', shortLabel: 'على مستوى القسم' },
   eachProgram: { id: 'each-program', label: 'يُكرر لكل برنامج أكاديمي', shortLabel: 'لكل برنامج' },
@@ -176,18 +181,26 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
   const preparationDue = getCommitteePreparationDue(term)
   const exams = getExamEvent(term)
 
-  return canonicalCatalog.flatMap(({ typeId, record }) => {
-    const taskType = taskTypeById.get(typeId)
-    const outputType = taskType?.artifactKind ?? record.outputType
-    const title = taskType?.canonicalTitle ?? record.title
-    const isExams = record.sourceWeek === 16
-    const mappedWeek = record.sourceWeek === 0 ? 0 : Math.min(record.sourceWeek, weeks.length)
+  function resolveSchedule(sourceWeek: number) {
+    const isExams = sourceWeek === 16
+    const mappedWeek = sourceWeek === 0 ? 0 : Math.min(sourceWeek, weeks.length)
     const operationalWeek = mappedWeek > 0 ? weeks[mappedWeek - 1] : null
     const examsStart = exams ? parseLocalDate(exams.start) : parseLocalDate(term.end)
     const examsEnd = exams ? parseLocalDate(exams.end) : parseLocalDate(term.end)
-    const start = isExams ? examsStart : operationalWeek?.start ?? preparationStart
-    const due = isExams ? examsEnd : operationalWeek?.due ?? preparationDue
-    const graceEnd = isExams ? examsEnd : operationalWeek?.graceEnd ?? preparationDue
+    return {
+      week: isExams ? 16 : mappedWeek,
+      start: isExams ? examsStart : operationalWeek?.start ?? preparationStart,
+      due: isExams ? examsEnd : operationalWeek?.due ?? preparationDue,
+      graceEnd: isExams ? examsEnd : operationalWeek?.graceEnd ?? preparationDue,
+      scheduleAdjusted: !isExams && sourceWeek > weeks.length,
+    }
+  }
+
+  const catalogTasks = canonicalCatalog.flatMap(({ typeId, record }) => {
+    const taskType = taskTypeById.get(typeId)
+    const outputType = taskType?.artifactKind ?? record.outputType
+    const title = taskType?.canonicalTitle ?? record.title
+    const schedule = resolveSchedule(record.sourceWeek)
     const assignment = guideAssignments[record.id]
     const guide = assignment ? guideById.get(assignment.guideId) : undefined
 
@@ -207,11 +220,11 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
         ? qualityProgramTitleOverrides[record.id] ?? title
         : taskTitleOverrides[record.id] ?? title,
       outputType,
-      week: isExams ? 16 : mappedWeek,
-      start,
-      due,
-      graceEnd,
-      temporalStatus: getTemporalState(start, due, graceEnd, today),
+      week: schedule.week,
+      start: schedule.start,
+      due: schedule.due,
+      graceEnd: schedule.graceEnd,
+      temporalStatus: getTemporalState(schedule.start, schedule.due, schedule.graceEnd, today),
       guideTitle: guide?.nameAr ?? `دليل ${outputType}`,
       quickOutput: guide?.finalOutput ?? record.deliverable ?? `إنجاز «${title}».`,
       quickSteps: record.committee === qualityCommittee && record.id === 'QRA-T003'
@@ -226,9 +239,42 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
         recordCoordinationRole: 'منسق أعمال اللجنة',
       },
       scope: variant.scope,
-      scheduleAdjusted: !isExams && record.sourceWeek > weeks.length,
+      scheduleAdjusted: schedule.scheduleAdjusted,
     }))
   })
+
+  const websiteCheckTasks: Task[] = scientificActivityWebsiteChecks.map((definition) => {
+    const schedule = resolveSchedule(definition.week)
+    return {
+      id: definition.id,
+      sourceId: definition.id,
+      committee: mediaCommittee,
+      title: `التأكد من تحديث موقع النشاط العلمي للأعضاء — ${definition.period}`,
+      outputType: 'سجل تحقق',
+      week: schedule.week,
+      start: schedule.start,
+      due: schedule.due,
+      graceEnd: schedule.graceEnd,
+      temporalStatus: getTemporalState(schedule.start, schedule.due, schedule.graceEnd, today),
+      guideTitle: 'دليل التحقق من تحديث الموقع',
+      quickOutput: `سجل تحقق مختصر ومعتمد لتحديث موقع النشاط العلمي في ${definition.period}.`,
+      quickSteps: [
+        'تذكير الأعضاء بتحديث الأنشطة والمنجزات العلمية في الموقع',
+        'مراجعة اكتمال التحديث وحصر ما يحتاج إلى استكمال',
+        'توثيق رابط الموقع وتاريخ التحقق وإقفال الملاحظات',
+      ],
+      quickEvidence: 'رابط موقع النشاط العلمي مرفقًا بسجل التحقق وتاريخ المراجعة.',
+      evidenceComponents: ['رابط الموقع', 'تاريخ التحقق', 'حالة التحديث', 'الملاحظات المستكملة'],
+      responsibilities: {
+        executionRole: `${mediaCommittee} بالتنسيق مع الأعضاء`,
+        recordCoordinationRole: 'منسق أعمال اللجنة',
+      },
+      scope: scopes.department,
+      scheduleAdjusted: schedule.scheduleAdjusted,
+    }
+  })
+
+  return [...catalogTasks, ...websiteCheckTasks]
 }
 
 export function normalizeSearchText(value: string) {

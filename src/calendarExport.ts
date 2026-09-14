@@ -19,6 +19,11 @@ function utcStamp(date: Date) {
   return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
 }
 
+// 08:00 صباحًا بتوقيت الرياض (UTC+3) ليظهر التنبيه في وقت عمل مناسب على الجوال.
+function riyadhMorningUtcStamp(date: Date) {
+  return utcStamp(new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 5)))
+}
+
 function escapeCalendarText(value: string) {
   return value
     .replace(/\\/g, '\\\\')
@@ -77,13 +82,15 @@ export function createTaskCalendar(tasks: Task[], options: CalendarExportOptions
   ]
 
   for (const task of orderedTasks) {
+    const startDate = calendarDate(task.start)
     const dueDate = calendarDate(task.due)
     const endDate = calendarDate(new Date(task.due.getFullYear(), task.due.getMonth(), task.due.getDate() + 1))
+    const dayBeforeDue = new Date(task.due.getFullYear(), task.due.getMonth(), task.due.getDate() - 1)
     lines.push(
       'BEGIN:VEVENT',
       `UID:${task.id}-${dueDate}@committee-work-guide.local`,
       `DTSTAMP:${utcStamp(generatedAt)}`,
-      `DTSTART;VALUE=DATE:${dueDate}`,
+      `DTSTART;VALUE=DATE:${startDate}`,
       `DTEND;VALUE=DATE:${endDate}`,
       `SUMMARY:${escapeCalendarText(task.title)}`,
       `DESCRIPTION:${escapeCalendarText(eventDescription(task))}`,
@@ -91,9 +98,14 @@ export function createTaskCalendar(tasks: Task[], options: CalendarExportOptions
       'STATUS:CONFIRMED',
       'TRANSP:TRANSPARENT',
       'BEGIN:VALARM',
-      'TRIGGER:-P1D',
+      `TRIGGER;VALUE=DATE-TIME:${riyadhMorningUtcStamp(task.start)}`,
       'ACTION:DISPLAY',
-      `DESCRIPTION:${escapeCalendarText(`غدًا موعد: ${task.title}`)}`,
+      `DESCRIPTION:${escapeCalendarText(`تبدأ اليوم: ${task.title}`)}`,
+      'END:VALARM',
+      'BEGIN:VALARM',
+      `TRIGGER;VALUE=DATE-TIME:${riyadhMorningUtcStamp(dayBeforeDue)}`,
+      'ACTION:DISPLAY',
+      `DESCRIPTION:${escapeCalendarText(`غدًا موعد تسليم: ${task.title}`)}`,
       'END:VALARM',
       'END:VEVENT',
     )

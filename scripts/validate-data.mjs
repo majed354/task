@@ -103,7 +103,7 @@ const annualReportTasks = visibleRecords.filter((task) => task.canonicalTitle ==
 assert(annualReportTasks.length === 1 && annualReportTasks[0].committee === 'لجنة الجودة والاعتماد الأكاديمي', 'للتقرير السنوي تعريف مصدري واحد تحت الجودة')
 const qualityDefinitions = visibleRecords.filter((task) => task.committee === 'لجنة الجودة والاعتماد الأكاديمي')
 assert(qualityDefinitions.length === 14, 'مهام الجودة الأساسية عددها 14')
-assert(visibleRecords.length + qualityDefinitions.length === 83, 'توسيع مهام الجودة لمساري البكالوريوس والدراسات العليا ينتج 83 مهمة مجدولة')
+assert(visibleRecords.length + qualityDefinitions.length + 2 === 85, 'توسيع مهام الجودة وإضافة مراجعتي النشاط العلمي ينتج 85 مهمة مجدولة')
 assert(/bachelorQualityCommittee/.test(dataSource) && /postgraduateQualityCommittee/.test(dataSource) && /canonicalCatalog\.flatMap/.test(dataSource), 'طبقة العرض تنشئ لجنتي الجودة المستقلتين')
 assert(/scopeFor/.test(dataSource) && /يُنفذ مرة واحدة على مستوى القسم/.test(dataSource) && /يُكرر لكل برنامج أكاديمي/.test(dataSource), 'كل مهمة تحمل نطاق تنفيذ واضحًا')
 assert(/لجنة الدراسات العليا والبحث العلمي/.test(dataSource), 'مسمى لجنة الدراسات العليا يشمل البحث العلمي')
@@ -132,12 +132,16 @@ const expectedUiCommitteeCounts = {
   'لجنة الجودة والاعتماد لبرامج البكالوريوس': 14,
   'لجنة الجودة والاعتماد لبرامج الدراسات العليا': 14,
   'لجنة الدراسات العليا والبحث العلمي': 8,
-  'لجنة العلاقات العامة والإعلام': 7,
+  'لجنة العلاقات العامة والإعلام': 9,
   'لجنة تطوير المناهج والبرامج الأكاديمية': 10,
   'لجنة فحص الخطط العلمية': 6,
 }
+uiCommitteeCounts.set('لجنة العلاقات العامة والإعلام', (uiCommitteeCounts.get('لجنة العلاقات العامة والإعلام') ?? 0) + 2)
 assert(uiCommitteeCounts.size === 9 && Object.entries(expectedUiCommitteeCounts).every(([committee, count]) => uiCommitteeCounts.get(committee) === count), 'توزيع المهام بين اللجان مطابق للهيكل المعتمد')
 assert(/QRA-T001['"]:\s*mediaCommittee/.test(dataSource) && /QRA-T032['"]:\s*studentAffairsCommittee/.test(dataSource), 'نقل مهام النشر والخريجين مثبت في طبقة العرض')
+assert(/scientificActivityWebsiteChecks/.test(dataSource) && /MEDIA-T001/.test(dataSource) && /MEDIA-T002/.test(dataSource), 'مراجعتا موقع النشاط العلمي مستقلتان وفريدتان')
+assert(/week: 8, period: 'منتصف الفصل'/.test(dataSource) && /week: 14, period: 'نهاية الفصل'/.test(dataSource), 'موعدا المراجعتين في منتصف الفصل ونهايته')
+assert(/رابط موقع النشاط العلمي مرفقًا بسجل التحقق/.test(dataSource), 'شاهد مراجعة النشاط العلمي محدد بالرابط وسجل التحقق')
 
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))
@@ -196,9 +200,12 @@ assert(!/(Department|department|الأقسام|قسمي|رئيس القسم)/.te
 assert(/تحميل التقويم/.test(appSource) && /calendar-export/.test(appSource), 'خيار تحميل التقويم ظاهر في الواجهة')
 assert(/BEGIN:VCALENDAR/.test(calendarExportSource) && /END:VCALENDAR/.test(calendarExportSource), 'ملف التصدير يستخدم بنية iCalendar القياسية')
 assert(/text\/calendar;charset=utf-8/.test(calendarExportSource), 'تنزيل التقويم يعلن نوع الملف الصحيح')
-assert(/BEGIN:VALARM/.test(calendarExportSource) && /TRIGGER:-P1D/.test(calendarExportSource), 'كل موعد يتضمن تنبيهًا قبل يوم')
+assert((calendarExportSource.match(/'BEGIN:VALARM'/g) ?? []).length === 2, 'كل مهمة تتضمن تنبيهين')
+assert(/DTSTART;VALUE=DATE:\$\{startDate\}/.test(calendarExportSource) && /DTEND;VALUE=DATE:\$\{endDate\}/.test(calendarExportSource), 'حدث التقويم يمتد من بداية المهمة إلى موعد التسليم')
+assert((calendarExportSource.match(/TRIGGER;VALUE=DATE-TIME/g) ?? []).length === 2 && /riyadhMorningUtcStamp\(task\.start\)/.test(calendarExportSource) && /riyadhMorningUtcStamp\(dayBeforeDue\)/.test(calendarExportSource), 'التنبيهان عند البداية وقبل التسليم بيوم صباحًا بتوقيت الرياض')
 assert(/نطاق التنفيذ/.test(calendarExportSource) && /task\.scope\.label/.test(calendarExportSource), 'ملف التقويم يضمن نطاق تنفيذ المهمة')
 assert(/Google Calendar/.test(appSource) && /تقويم Apple/.test(appSource) && /Outlook/.test(appSource), 'الواجهة توضح تطبيقات التقويم المتوافقة')
+assert(/تنبيه عند بداية المهمة وقبل التسليم بيوم/.test(appSource), 'الواجهة تشرح توقيتي التنبيه')
 
 assert(calendar.title === 'التقويم التشغيلي للمنظومة', 'عنوان التقويم التشغيلي واضح')
 assert(calendar.displayTitle === calendar.title, 'عنوان التقويم الظاهر مطابق للإعداد التشغيلي')
@@ -240,6 +247,6 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`)
   process.exitCode = 1
 } else {
-  console.log(`نجح التحقق: تعرض الواجهة 83 مهمة مجدولة عبر 9 لجان، بعد فصل الجودة بين البكالوريوس والدراسات العليا، مع ${guides.length} دليلًا.`)
+  console.log(`نجح التحقق: تعرض الواجهة 85 مهمة مجدولة عبر 9 لجان، مع ${guides.length} دليلًا.`)
   console.log(`إجمالي التأكيدات المنفذة: ${checks.length}`)
 }

@@ -417,7 +417,7 @@ function Dashboard() {
                 <label><span>النطاق الزمني</span><select value={weekFilter} onChange={(event) => setWeekFilter(event.target.value)}><option value="all">الفصل كاملًا</option>{timelineItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
                 <button type="button" onClick={downloadCalendar} disabled={!selectedTimelineTasks.length}><Download size={19} /> تحميل {taskCountLabel(selectedTimelineTasks.length)} <small>.ics</small></button>
               </div>
-              <div className="calendar-compatibility">ملف `.ics` متوافق مع Google Calendar وتقويم Apple وOutlook.</div>
+              <div className="calendar-compatibility">ملف `.ics` متوافق مع Google Calendar وتقويم Apple وOutlook، مع تنبيه عند بداية المهمة وقبل التسليم بيوم.</div>
               <p className="calendar-notice" aria-live="polite">{calendarNotice}</p>
             </section>
           </div>
