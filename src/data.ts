@@ -75,6 +75,8 @@ const sourceCalendarRecordIds = new Set(Array.from({ length: 60 }, (_, index) =>
 // مهام تغطية أدلة الدراسة الذاتية المضافة بعد المصدر الأصلي
 const selfStudyCoverageRecordIds = ['QRA-T071', 'QRA-T072', 'QRA-T073', 'QRA-T074', 'QRA-T075', 'QRA-T076', 'QRA-T077', 'QRA-T078', 'QRA-T079', 'QRA-T080', 'QRA-T081', 'QRA-T082']
 for (const id of selfStudyCoverageRecordIds) sourceCalendarRecordIds.add(id)
+// يستبقي الكتالوج سجلات المصدر للتدقيق، لكن لا تعرض الواجهة جهات التنسيق أو المهام العامة المشتركة.
+const excludedDisplayCommittees = new Set(['منسقو برامج الدراسات العليا', 'جميع اللجان'])
 
 export function normalizeCommitteeName(value: string) {
   if (value === 'جميع اللجان') return 'مهام مشتركة لجميع اللجان'
@@ -86,6 +88,7 @@ const canonicalCatalog = (() => {
   const firstRecordByType = new Map<string, CatalogTask>()
   for (const record of catalog) {
     if (!sourceCalendarRecordIds.has(record.id)) continue
+    if (excludedDisplayCommittees.has(record.committee)) continue
     const typeId = audit.recordTypeMap[record.id]
     if (typeId && !firstRecordByType.has(typeId)) firstRecordByType.set(typeId, record)
   }

@@ -55,6 +55,9 @@ const normalizeCommittee = (value) => value === 'جميع اللجان'
     : value.replace(/\s*–\s*تخصص .+$/, '')
 const sourceCalendarIds = new Set(Array.from({ length: 60 }, (_, index) => `QRA-T${String(index + 1).padStart(3, '0')}`))
 const sourceCalendarRecords = catalog.filter((task) => sourceCalendarIds.has(task.id))
+const selfStudyCoverageIds = new Set(Array.from({ length: 12 }, (_, index) => `QRA-T${String(index + 71).padStart(3, '0')}`))
+const displayRecordIds = new Set([...sourceCalendarIds, ...selfStudyCoverageIds])
+const excludedDisplayCommittees = new Set(['منسقو برامج الدراسات العليا', 'جميع اللجان'])
 const sourceWeekCounts = Object.fromEntries(sourceCalendarRecords.reduce((counts, task) => {
   counts.set(task.sourceWeek, (counts.get(task.sourceWeek) ?? 0) + 1)
   return counts
@@ -63,9 +66,10 @@ const expectedSourceWeekCounts = { 0: 2, 1: 3, 2: 3, 3: 4, 4: 2, 5: 3, 6: 3, 7: 
 assert(sourceCalendarRecords.length === 60, 'المصدر المنشور يطابق مهام ملف التقويم وعددها 60')
 assert(sourceCalendarIds.size === 60 && [...sourceCalendarIds].every((id) => sourceCalendarRecords.some((task) => task.id === id)), 'جميع سجلات التقويم QRA-T001 إلى QRA-T060 موجودة بلا نقص')
 assert(JSON.stringify(sourceWeekCounts) === JSON.stringify(expectedSourceWeekCounts), 'توزيع المهام على الأسبوع التمهيدي والأسابيع وفترة الاختبارات مطابق للمصدر')
-assert(unique(sourceCalendarRecords.map((task) => normalizeCommittee(task.committee))).size === 10, 'المصدر المنشور يعرض 10 لجان وجهات عمل بعد توحيد المسميات')
+assert(unique(sourceCalendarRecords.map((task) => normalizeCommittee(task.committee))).size === 10, 'ملف المصدر الأصلي يحتوي 10 لجان وجهات عمل بعد توحيد المسميات')
 assert(!sourceCalendarRecords.some((task) => task.committee === 'لجنة الجداول'), 'لا تُضاف لجنة الجداول إلى التقويم لأنها غير واردة في الملف المصدر')
 assert(/sourceCalendarRecordIds/.test(dataSource) && /length: 60/.test(dataSource) && /selfStudyCoverageRecordIds/.test(dataSource), 'طبقة العرض تعرض سجلات ملف التقويم ومهام تغطية أدلة الدراسة الذاتية')
+assert(/excludedDisplayCommittees/.test(dataSource), 'طبقة العرض تستبعد جهات التنسيق والمهام العامة المشتركة')
 const recordsByType = new Map()
 for (const task of catalog) {
   const typeId = audit.recordTypeMap[task.id]
@@ -77,6 +81,22 @@ assert(recordsByType.size === 76, 'الكتالوج الكامل يختزل ال
 assert([...recordsByType.values()].every((records) => unique(records.map((task) => task.sourceWeek)).size === 1), 'موعد كل مهمة موحدة متسق بين السجلات المصدرية')
 assert([...recordsByType.values()].every((records) => unique(records.map((task) => normalizeCommittee(task.committee))).size === 1), 'نوع اللجنة متسق لكل مهمة موحدة')
 assert(unique(catalog.map((task) => normalizeCommittee(task.committee))).size === 11, 'الكتالوج الكامل يحتوي 11 نوع لجنة وجهة عمل')
+
+const visibleRecordByType = new Map()
+for (const task of catalog) {
+  if (!displayRecordIds.has(task.id) || excludedDisplayCommittees.has(task.committee)) continue
+  const typeId = audit.recordTypeMap[task.id]
+  if (typeId && !visibleRecordByType.has(typeId)) visibleRecordByType.set(typeId, task)
+}
+const visibleRecords = [...visibleRecordByType.entries()].map(([typeId, task]) => ({
+  ...task,
+  canonicalTitle: taskTypes.find((type) => type.id === typeId)?.canonicalTitle ?? task.title,
+}))
+assert(visibleRecords.length === 69, 'الواجهة تعرض 69 مهمة بعد حذف مهام التنسيق والمهام المشتركة')
+assert(unique(visibleRecords.map((task) => normalizeCommittee(task.committee))).size === 8, 'الواجهة تعرض 8 لجان فقط')
+assert(visibleRecords.every((task) => !excludedDisplayCommittees.has(task.committee)), 'لا تظهر مهام تنسيق الدراسات العليا أو المهام المشتركة')
+const annualReportTasks = visibleRecords.filter((task) => task.canonicalTitle === 'إعداد التقرير السنوي للبرنامج')
+assert(annualReportTasks.length === 1 && annualReportTasks[0].committee === 'لجنة الجودة والاعتماد الأكاديمي', 'التقرير السنوي للبرنامج يتبع لجنة الجودة فقط')
 
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))
@@ -178,6 +198,6 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`)
   process.exitCode = 1
 } else {
-  console.log(`نجح التحقق: تعرض الواجهة 72 مهمة (60 من ملف التقويم و12 لتغطية أدلة الدراسة الذاتية)، و10 لجان وجهات عمل، مع ${guides.length} دليلًا.`)
+  console.log(`نجح التحقق: تعرض الواجهة 69 مهمة (57 من ملف التقويم و12 لتغطية أدلة الدراسة الذاتية)، و8 لجان، مع ${guides.length} دليلًا.`)
   console.log(`إجمالي التأكيدات المنفذة: ${checks.length}`)
 }
