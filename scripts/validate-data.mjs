@@ -198,6 +198,7 @@ assert(!/(AccessGate|committee-portal-access|1429|type="password")/.test(appSour
 assert(!/(SharePoint|sharepoint|powerbi|مساحة التسليم|بانتظار الربط)/i.test(appSource), 'الواجهة مستقلة ولا تعرض ربطًا بمنصة خارجية')
 assert(!/(Department|department|الأقسام|قسمي|رئيس القسم)/.test(appSource), 'الواجهة لا تعرض الأقسام أو فلاترها')
 assert(/تحميل التقويم/.test(appSource) && /calendar-export/.test(appSource), 'خيار تحميل التقويم ظاهر في الواجهة')
+assert(/const \[weekFilter, setWeekFilter\] = useState\('all'\)/.test(appSource) && /function changeTerm[\s\S]*?setWeekFilter\('all'\)/.test(appSource), 'الفصل كاملًا هو النطاق الافتراضي عند الفتح وتغيير الفصل')
 assert(/BEGIN:VCALENDAR/.test(calendarExportSource) && /END:VCALENDAR/.test(calendarExportSource), 'ملف التصدير يستخدم بنية iCalendar القياسية')
 assert(/text\/calendar;charset=utf-8/.test(calendarExportSource), 'تنزيل التقويم يعلن نوع الملف الصحيح')
 assert((calendarExportSource.match(/'BEGIN:VALARM'/g) ?? []).length === 2, 'كل مهمة تتضمن تنبيهين')

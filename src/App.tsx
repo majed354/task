@@ -208,7 +208,7 @@ function Dashboard() {
   const weeks = useMemo(() => buildOperationalWeeks(term), [term])
   const allTasks = useMemo(() => buildTasksForTerm(term, now), [term, now])
   const [committee, setCommittee] = useState(allCommittees)
-  const [weekFilter, setWeekFilter] = useState(() => timelineKeyFor(initialTerm, now))
+  const [weekFilter, setWeekFilter] = useState('all')
   const [query, setQuery] = useState('')
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [mobileMenu, setMobileMenu] = useState(false)
@@ -303,10 +303,9 @@ function Dashboard() {
   }
 
   function changeTerm(nextId: string) {
-    const nextTerm = academicTerms.find((item) => item.id === nextId) ?? initialTerm
     setTermId(nextId)
     setCommittee(allCommittees)
-    setWeekFilter(timelineKeyFor(nextTerm, now))
+    setWeekFilter('all')
     setQuery('')
   }
 
