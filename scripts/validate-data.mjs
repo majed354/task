@@ -54,7 +54,9 @@ const normalizeCommittee = (value) => value === 'جميع اللجان'
     ? 'تنسيق برامج الدراسات العليا'
     : value === 'لجنة الدراسات العليا'
       ? 'لجنة الدراسات العليا والبحث العلمي'
-      : value.replace(/\s*–\s*تخصص .+$/, '')
+      : value === 'لجنة الأنشطة الطلابية'
+        ? 'لجنة الأنشطة والشؤون الطلابية'
+        : value.replace(/\s*–\s*تخصص .+$/, '')
 const sourceCalendarIds = new Set(Array.from({ length: 60 }, (_, index) => `QRA-T${String(index + 1).padStart(3, '0')}`))
 const sourceCalendarRecords = catalog.filter((task) => sourceCalendarIds.has(task.id))
 const selfStudyCoverageIds = new Set(Array.from({ length: 12 }, (_, index) => `QRA-T${String(index + 71).padStart(3, '0')}`))
@@ -106,6 +108,36 @@ assert(/bachelorQualityCommittee/.test(dataSource) && /postgraduateQualityCommit
 assert(/scopeFor/.test(dataSource) && /يُنفذ مرة واحدة على مستوى القسم/.test(dataSource) && /يُكرر لكل برنامج أكاديمي/.test(dataSource), 'كل مهمة تحمل نطاق تنفيذ واضحًا')
 assert(/لجنة الدراسات العليا والبحث العلمي/.test(dataSource), 'مسمى لجنة الدراسات العليا يشمل البحث العلمي')
 assert(/task\.scope\.label/.test(appSource) && /task\.scope\.shortLabel/.test(appSource), 'نطاق التنفيذ ظاهر في بطاقات المهام وتفاصيلها')
+
+const redistributedCommitteeByTask = {
+  'QRA-T001': 'لجنة العلاقات العامة والإعلام',
+  'QRA-T032': 'لجنة الأنشطة والشؤون الطلابية',
+  'QRA-T080': 'لجنة الأنشطة والشؤون الطلابية',
+  'QRA-T082': 'لجنة الأنشطة والشؤون الطلابية',
+}
+const uiCommitteeCounts = new Map()
+const addUiTask = (committee) => uiCommitteeCounts.set(committee, (uiCommitteeCounts.get(committee) ?? 0) + 1)
+for (const task of visibleRecords) {
+  if (task.committee === 'لجنة الجودة والاعتماد الأكاديمي') {
+    addUiTask('لجنة الجودة والاعتماد لبرامج البكالوريوس')
+    addUiTask('لجنة الجودة والاعتماد لبرامج الدراسات العليا')
+  } else {
+    addUiTask(redistributedCommitteeByTask[task.id] ?? normalizeCommittee(task.committee))
+  }
+}
+const expectedUiCommitteeCounts = {
+  'لجنة الاختبارات والنتائج': 10,
+  'لجنة الإرشاد الأكاديمي': 6,
+  'لجنة الأنشطة والشؤون الطلابية': 8,
+  'لجنة الجودة والاعتماد لبرامج البكالوريوس': 14,
+  'لجنة الجودة والاعتماد لبرامج الدراسات العليا': 14,
+  'لجنة الدراسات العليا والبحث العلمي': 8,
+  'لجنة العلاقات العامة والإعلام': 7,
+  'لجنة تطوير المناهج والبرامج الأكاديمية': 10,
+  'لجنة فحص الخطط العلمية': 6,
+}
+assert(uiCommitteeCounts.size === 9 && Object.entries(expectedUiCommitteeCounts).every(([committee, count]) => uiCommitteeCounts.get(committee) === count), 'توزيع المهام بين اللجان مطابق للهيكل المعتمد')
+assert(/QRA-T001['"]:\s*mediaCommittee/.test(dataSource) && /QRA-T032['"]:\s*studentAffairsCommittee/.test(dataSource), 'نقل مهام النشر والخريجين مثبت في طبقة العرض')
 
 const guides = guideDocument.guides ?? []
 const guideIds = unique(guides.map((guide) => guide.id))

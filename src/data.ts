@@ -88,16 +88,37 @@ export function normalizeCommitteeName(value: string) {
   if (value === 'جميع اللجان') return 'مهام مشتركة لجميع اللجان'
   if (value === 'منسقو برامج الدراسات العليا') return 'تنسيق برامج الدراسات العليا'
   if (value === 'لجنة الدراسات العليا') return 'لجنة الدراسات العليا والبحث العلمي'
+  if (value === 'لجنة الأنشطة الطلابية') return 'لجنة الأنشطة والشؤون الطلابية'
   return value.replace(/\s*–\s*تخصص .+$/, '')
 }
 
 const qualityCommittee = 'لجنة الجودة والاعتماد الأكاديمي'
 const bachelorQualityCommittee = 'لجنة الجودة والاعتماد لبرامج البكالوريوس'
 const postgraduateQualityCommittee = 'لجنة الجودة والاعتماد لبرامج الدراسات العليا'
+const studentAffairsCommittee = 'لجنة الأنشطة والشؤون الطلابية'
+const mediaCommittee = 'لجنة العلاقات العامة والإعلام'
+
+const committeeOverrides: Record<string, string> = {
+  'QRA-T001': mediaCommittee,
+  'QRA-T032': studentAffairsCommittee,
+  'QRA-T080': studentAffairsCommittee,
+  'QRA-T082': studentAffairsCommittee,
+}
+
+const executionRoleOverrides: Record<string, string> = {
+  'QRA-T001': 'الأعضاء ومنسق أعمال اللجنة، وتتولى لجنة العلاقات العامة والإعلام النشر',
+  'QRA-T032': studentAffairsCommittee,
+  'QRA-T080': studentAffairsCommittee,
+  'QRA-T082': studentAffairsCommittee,
+}
 
 const qualityProgramTitleOverrides: Record<string, string> = {
   'QRA-T003': 'إعداد الخطة التشغيلية للبرنامج',
   'QRA-T072': 'مراجعة دليل نظام إدارة الجودة للبرنامج وتحديثه',
+}
+
+const taskTitleOverrides: Record<string, string> = {
+  'QRA-T001': 'نشر الجدول العام للساعات المكتبية',
 }
 
 const scopes = {
@@ -170,7 +191,7 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
     const assignment = guideAssignments[record.id]
     const guide = assignment ? guideById.get(assignment.guideId) : undefined
 
-    const baseCommittee = normalizeCommitteeName(record.committee)
+    const baseCommittee = committeeOverrides[record.id] ?? normalizeCommitteeName(record.committee)
     const variants = record.committee === qualityCommittee
       ? [
           { suffix: 'BACH', committee: bachelorQualityCommittee, scope: scopes.bachelorProgram },
@@ -182,7 +203,9 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
       id: variant.suffix ? `${record.id}-${variant.suffix}` : record.id,
       sourceId: record.id,
       committee: variant.committee,
-      title: record.committee === qualityCommittee ? qualityProgramTitleOverrides[record.id] ?? title : title,
+      title: record.committee === qualityCommittee
+        ? qualityProgramTitleOverrides[record.id] ?? title
+        : taskTitleOverrides[record.id] ?? title,
       outputType,
       week: isExams ? 16 : mappedWeek,
       start,
@@ -199,7 +222,7 @@ export function buildTasksForTerm(term: AcademicTerm, today = new Date()): Task[
       responsibilities: {
         executionRole: record.committee === qualityCommittee
           ? variant.committee
-          : normalizeCommitteeName(guide?.roles.directResponsible ?? record.committee),
+          : executionRoleOverrides[record.id] ?? normalizeCommitteeName(guide?.roles.directResponsible ?? baseCommittee),
         recordCoordinationRole: 'منسق أعمال اللجنة',
       },
       scope: variant.scope,
