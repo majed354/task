@@ -9,6 +9,7 @@ import importlib.util
 import json
 import os
 import subprocess
+import unicodedata
 from pathlib import Path
 
 
@@ -100,8 +101,9 @@ def write_synced_snapshot(rows: list[list[str | int]], detail_rows: list[list[st
     SYNC_SNAPSHOT.parent.mkdir(parents=True, exist_ok=True)
     # A cloud-side replacement can leave a local conflict copy. Stop instead of
     # silently refreshing that copy while the flow reads the older original.
+    expected_name = unicodedata.normalize('NFC', SYNC_SNAPSHOT.name)
     conflicts = [path for path in SYNC_SNAPSHOT.parent.glob('*تقارير-المقررات*.json')
-                 if path.name != SYNC_SNAPSHOT.name and 'Mac' in path.name]
+                 if unicodedata.normalize('NFC', path.name) != expected_name]
     if conflicts:
         raise RuntimeError(f'OneDrive conflict copy requires reconciliation: {conflicts[0]}')
     payload = json.dumps({"aggregateRows": rows, "courseRows": detail_rows}, ensure_ascii=False,
