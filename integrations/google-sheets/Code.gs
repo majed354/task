@@ -1,5 +1,6 @@
 // Bound to the private workbook. Only the 41 aggregate rows are written to the public workbook.
 const TIME_ZONE = 'Asia/Riyadh'
+const DRIVE_SNAPSHOT_FILE_ID = '1GUhwFDsa6I53Qx6134R2WjTwvPNhWqQO'
 
 function aggregateCommitteeMetrics(items, groups, today, updatedAt) {
   if (!Array.isArray(items) || items.length < 340) throw new Error('سجل SharePoint لم يُزامن كاملًا بعد.')
@@ -41,18 +42,16 @@ function aggregateCommitteeMetrics(items, groups, today, updatedAt) {
 
 function refreshCommitteeMetrics() {
   const settings = PropertiesService.getScriptProperties()
-  const privateId = settings.getProperty('PRIVATE_SPREADSHEET_ID')
   const publicId = settings.getProperty('PUBLIC_SPREADSHEET_ID')
-  if (!privateId || !publicId) throw new Error('معرّفات الجداول غير مضبوطة في خصائص النص البرمجي.')
-  const privateSheet = SpreadsheetApp.openById(privateId).getSheetByName('بيانات خاصة')
+  if (!publicId) throw new Error('معرّف جدول المؤشرات غير مضبوط في خصائص النص البرمجي.')
+  const snapshot = DriveApp.getFileById(DRIVE_SNAPSHOT_FILE_ID)
   const publicSheet = SpreadsheetApp.openById(publicId).getSheetByName('مؤشرات اللجان')
-  if (!privateSheet || !publicSheet) throw new Error('تعذّر العثور على ورقة المؤشرات.')
-  const [payload, sourceUpdatedAt] = privateSheet.getRange('A2:B2').getValues()[0]
-  const sourceTime = new Date(String(sourceUpdatedAt))
+  if (!publicSheet) throw new Error('تعذّر العثور على ورقة المؤشرات.')
+  const sourceTime = snapshot.getLastUpdated()
   if (Number.isNaN(sourceTime.getTime()) || Date.now() - sourceTime.getTime() > 3 * 60 * 60 * 1000) {
     throw new Error('انقطعت مزامنة SharePoint أو لم تُشغّل بعد.')
   }
-  const items = JSON.parse(String(payload))
+  const items = JSON.parse(snapshot.getBlob().getDataAsString('UTF-8'))
   const groups = publicSheet.getRange(2, 1, 41, 2).getValues()
   const now = new Date()
   const today = Utilities.formatDate(now, TIME_ZONE, 'yyyy-MM-dd')
