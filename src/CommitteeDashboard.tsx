@@ -76,9 +76,10 @@ export default function CommitteeDashboard() {
   return <div className="app-shell monitoring-shell" dir="rtl">
     <header className="topbar" id="top">
       <a className="brand" href="/" aria-label="دليل أعمال اللجان"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>أعمال اللجان</strong></span></a>
-      <nav className="topnav monitor-topnav" aria-label="قسما الموقع">
+      <nav className="topnav monitor-topnav" aria-label="أقسام الموقع">
         <a className="portal-tab" href="/">دليل أعمال اللجان</a>
-        <a className="portal-tab is-current" href="/?view=dashboard" aria-current="page">لوحة المتابعة</a>
+        <a className="portal-tab is-current" href="/?view=dashboard" aria-current="page">لوحة متابعة اللجان</a>
+        <a className="portal-tab" href="/?view=course-reports">تقارير المقررات</a>
       </nav>
       <a className="monitor-header-link" href={guideFolder} target="_blank" rel="noreferrer">مجلد اللجان <ArrowUpLeft size={15} /></a>
     </header>

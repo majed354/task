@@ -366,9 +366,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .monitor-table-wrap td small { display: block; color: var(--muted); }
 .monitor-table-wrap td a { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .monitor-table-wrap > p, .monitor-empty { margin: 15px 0 0; color: var(--muted); font-size: 11px; }
+.course-summary, .course-metrics { display: grid; gap: 12px; }
+.course-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 18px; }
+.course-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 12px; }
+.course-summary > div, .course-metric { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); box-shadow: 0 8px 28px rgba(15,47,42,.04); }
+.course-summary > div > span, .course-metric > span { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 800; }
+.course-summary strong, .course-metric strong { display: block; margin: 10px 0 2px; color: var(--green-deep); font-size: 32px; line-height: 1.25; }
+.course-metric strong small { color: var(--muted); font-size: 13px; font-weight: 700; }
+.course-summary small, .course-metric > small { display: block; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.course-summary-progress { border-color: #d6e8de !important; background: #f2faf5 !important; }
+.course-summary-progress strong { color: var(--green) !important; }
+.course-metric .monitor-mini-track { height: 9px; margin: 14px 0 8px; }
+.course-table { min-width: 760px; }
 
 @media (max-width: 1000px) {
   .monitor-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .course-summary, .course-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monitor-kpis.is-aggregate { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monitor-departments { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -382,6 +395,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .monitor-story-grid, .monitor-leaderboard { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
+  .course-summary, .course-metrics { grid-template-columns: 1fr; }
+  .monitor-topnav { gap: 14px; overflow-x: auto; }
+  .monitor-topnav a { flex: none; font-size: 10px; }
   .monitor-header-link { font-size: 10px; }
   .monitor-intro p { font-size: 11px; }
   .monitor-gate { padding: 21px; }
