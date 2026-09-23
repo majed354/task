@@ -35,6 +35,7 @@ def main() -> None:
         "EnvironmentVariables": {
             "COURSE_REPORT_SCANNER": str(INSTALL_DIR / "course-delivery-scanner.py"),
             "COURSE_REPORT_OUTPUT": str(INSTALL_DIR / "course-report-public-sheet.csv"),
+            "COURSE_REPORT_DETAIL_OUTPUT": str(INSTALL_DIR / "course-report-detail-public-sheet.csv"),
         },
         "StandardOutPath": str(INSTALL_DIR / "refresh.log"),
         "StandardErrorPath": str(INSTALL_DIR / "refresh-error.log"),

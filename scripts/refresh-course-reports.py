@@ -98,6 +98,12 @@ def write_synced_snapshot(rows: list[list[str | int]], detail_rows: list[list[st
     if subprocess.run(["pgrep", "-x", "OneDrive"], capture_output=True, check=False).returncode != 0:
         raise RuntimeError("OneDrive is not running; refusing to publish a fresh scan timestamp")
     SYNC_SNAPSHOT.parent.mkdir(parents=True, exist_ok=True)
+    # A cloud-side replacement can leave a local conflict copy. Stop instead of
+    # silently refreshing that copy while the flow reads the older original.
+    conflicts = [path for path in SYNC_SNAPSHOT.parent.glob('*تقارير-المقررات*.json')
+                 if path.name != SYNC_SNAPSHOT.name and 'Mac' in path.name]
+    if conflicts:
+        raise RuntimeError(f'OneDrive conflict copy requires reconciliation: {conflicts[0]}')
     payload = json.dumps({"aggregateRows": rows, "courseRows": detail_rows}, ensure_ascii=False,
                          separators=(",", ":")) + "\n"
     # Update the existing File Provider item in place. Replacing its inode can leave
@@ -120,6 +126,7 @@ def main() -> None:
         writer = csv.writer(handle)
         writer.writerow(HEADER)
         writer.writerows(rows)
+    DETAIL_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with DETAIL_OUTPUT.open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(DETAIL_HEADER)
