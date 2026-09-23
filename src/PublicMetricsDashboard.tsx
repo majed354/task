@@ -30,7 +30,7 @@ export default function PublicMetricsDashboard() {
   const current = rows.find((row) => row.department === department && row.committee === committee)
   const progress = current?.total ? Math.round(current.completed * 100 / current.total) : 0
   const dated = current?.updatedAt?.slice(0, 10)
-  const sourceTime = current?.updatedAt ? Date.parse(`${current.updatedAt.slice(0, 19)}+03:00`) : NaN
+  const sourceTime = current?.updatedAt ? Date.parse(`${current.updatedAt.slice(0, 19).replace(' ', 'T')}+03:00`) : NaN
   const stale = Number.isFinite(sourceTime) && Date.now() - sourceTime > 3 * 60 * 60 * 1000
 
   return <div className="app-shell monitoring-shell" dir="rtl">
@@ -46,7 +46,7 @@ export default function PublicMetricsDashboard() {
       <div className="monitor-intro">
         <span className="monitor-eyebrow"><LayoutDashboard size={17} /> المتابعة التشغيلية</span>
         <h1>لوحة متابعة اللجان</h1>
-        <p>مؤشرات مجمّعة من سجل مهام اللجان في SharePoint. يُحدّثها التدفق الآلي في Google Sheets، وتُعرض هنا دون نشر أسماء المهام أو ملفاتها.</p>
+        <p>مؤشرات مجمّعة من سجل مهام اللجان في SharePoint، تُحسب من البيانات المختصرة في Google Sheets وتُعرض هنا دون نشر أسماء المهام أو ملفاتها.</p>
       </div>
       <div className="monitor-toolbar"><span className="monitor-account">{dated ? `تاريخ بيانات المؤشرات: ${dated}` : 'بانتظار أول قراءة للمؤشرات'}</span><div><button type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} /> {busy ? 'جارٍ التحديث' : 'تحديث البيانات'}</button></div></div>
       {error && <p className="monitor-error" role="alert">{error}</p>}
