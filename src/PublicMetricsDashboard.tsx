@@ -46,7 +46,7 @@ export default function PublicMetricsDashboard() {
       <div className="monitor-intro">
         <span className="monitor-eyebrow"><LayoutDashboard size={17} /> المتابعة التشغيلية</span>
         <h1>لوحة متابعة اللجان</h1>
-        <p>مؤشرات مجمّعة من سجل مهام اللجان في SharePoint، تُحسب من البيانات المختصرة في Google Sheets وتُعرض هنا دون نشر أسماء المهام أو ملفاتها.</p>
+        <p>مؤشرات مجمّعة من سجل مهام اللجان في SharePoint، تُحسب من ملف خاص في Google Drive وتُعرض هنا دون نشر أسماء المهام أو ملفاتها.</p>
       </div>
       <div className="monitor-toolbar"><span className="monitor-account">{dated ? `تاريخ بيانات المؤشرات: ${dated}` : 'بانتظار أول قراءة للمؤشرات'}</span><div><button type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} /> {busy ? 'جارٍ التحديث' : 'تحديث البيانات'}</button></div></div>
       {error && <p className="monitor-error" role="alert">{error}</p>}
