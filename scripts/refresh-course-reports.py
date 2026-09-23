@@ -13,12 +13,18 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCANNER = ROOT / "أدوات-متابعة-التقارير" / "متابعة_تسليم_الشعب.py"
+SCANNER = Path(os.environ.get(
+    "COURSE_REPORT_SCANNER",
+    ROOT / "أدوات-متابعة-التقارير" / "متابعة_تسليم_الشعب.py",
+))
 TEAM_FOLDER = Path(
     "/Users/majd/Library/CloudStorage/OneDrive-TaifUniversity/"
     "كلية الشريعة والأنظمة — الجودة والاعتماد - متابعة تقارير المقررات"
 )
-OUTPUT = ROOT / "outputs" / "course-report-public-sheet.csv"
+OUTPUT = Path(os.environ.get(
+    "COURSE_REPORT_OUTPUT",
+    ROOT / "outputs" / "course-report-public-sheet.csv",
+))
 SYNC_SNAPSHOT = TEAM_FOLDER / "2-المتابعة" / "مؤشرات-تقارير-المقررات.json"
 TERMS = ("٤٦١", "٤٦٢", "٤٧١", "٤٧٢")
 DEPARTMENTS = {

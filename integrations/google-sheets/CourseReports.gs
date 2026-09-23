@@ -15,7 +15,7 @@ function validateCourseReportRows(rows) {
       if (![sections, reports, measurements, courses, combined].every((value) => Number.isSafeInteger(value) && value >= 0)) throw new Error('Invalid count')
       if (reports > sections || measurements > sections || combined > courses) throw new Error('Count exceeds total')
       const date = new Date(checkedAt)
-      if (Number.isNaN(date.getTime()) || date.getTime() > Date.now() + 5 * 60 * 1000) throw new Error('Invalid scan time')
+      if (Number.isNaN(date.getTime()) || date.getTime() > Date.now() + 5 * 60 * 1000 || Date.now() - date.getTime() > 3 * 60 * 60 * 1000) throw new Error('Invalid or stale scan time')
     }
     for (const term of COURSE_REPORT_TERMS) {
       const group = rows.filter((row) => row[0] === term)
