@@ -5,7 +5,7 @@ import { courseReportScope, courseReportSheet, courseReportTerms, currentCourseR
 const number = new Intl.NumberFormat('ar-SA-u-nu-latn')
 const digits = (value: string) => value.replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)])
 const termLabel = (term: string) => term === 'all' ? 'جميع الفصول' : `الفصل ${digits(term)}`
-const percentage = (done: number, total: number) => total ? Math.round(done * 100 / total) : 0
+const percentage = (done: number, total: number) => total ? Math.round(done * 1000 / total) / 10 : 0
 const sharePointFolder = (term: string) => {
   const base = '/sites/msteams_3b4354/Shared Documents/متابعة تقارير المقررات/1-التقارير'
   const path = term === 'all' ? base : `${base}/${digits(term)}`
