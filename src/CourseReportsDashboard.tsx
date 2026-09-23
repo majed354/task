@@ -76,7 +76,7 @@ export default function CourseReportsDashboard() {
   const lastChecked = rows.reduce((latest, row) => row.checkedAt > latest ? row.checkedAt : latest, '')
   const checkedTime = lastChecked ? Date.parse(lastChecked) : NaN
   const checkedLabel = Number.isFinite(checkedTime) ? new Intl.DateTimeFormat('ar-SA-u-ca-gregory', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Riyadh' }).format(checkedTime) : '—'
-  const oldData = Number.isFinite(checkedTime) && Date.now() - checkedTime > 24 * 60 * 60 * 1000
+  const oldData = Number.isFinite(checkedTime) && Date.now() - checkedTime > 3 * 60 * 60 * 1000
   const totalEvidence = departmentCourses.reduce((total, course) => total + course.required, 0)
   const submittedEvidence = departmentCourses.reduce((total, course) => total + course.done, 0)
   const overallProgress = percentage(submittedEvidence, totalEvidence)
@@ -87,7 +87,7 @@ export default function CourseReportsDashboard() {
     <main className="monitor-main">
       <section className="monitor-hero"><div><span className="monitor-eyebrow"><LayoutDashboard size={17} /> متابعة تقارير المقررات</span><h1>من الشعبة إلى التقرير المجمع</h1><p>نحسب تقرير كل شعبة وقياس مخرجاتها، ثم التقرير والقياس المجمعين للمقرر. تظهر التقارير الجزئية للشعب التي تغطيها فعلاً، ويبقى ما لم تُحدد شعبه بانتظار المطابقة.</p></div><div className="monitor-hero-badge"><span>الفصل الجاري متابعته</span><strong>٤٧٢</strong><small>الاختيار الافتراضي</small></div></section>
       <div className="monitor-toolbar"><span className="monitor-account">آخر فحص للمجلدات: {checkedLabel}</span><button type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} /> {busy ? 'جارٍ التحديث' : 'تحديث العرض'}</button></div>
-      {error && <p className="monitor-error" role="alert">{error}</p>}{oldData && <p className="monitor-error" role="status">آخر فحص للمجلدات أقدم من يوم. الأرقام المعروضة هي آخر ما نُشر في ورقة المؤشرات.</p>}
+      {error && <p className="monitor-error" role="alert">{error}</p>}{oldData && <p className="monitor-error" role="status">آخر فحص للمجلدات أقدم من ثلاث ساعات. الأرقام المعروضة هي آخر ما نُشر في ورقة المؤشرات.</p>}
       <section className="monitor-control-panel" aria-label="تصفية تقارير المقررات"><div className="monitor-panel-head"><h2>نطاق العرض</h2><span>يمكن الجمع بين الفصول أو عرض قسم واحد</span></div><div className="monitor-filters"><label>الفصل<select value={term} onChange={(event) => { setTerm(event.target.value); setDepartment('كل الأقسام'); setVisible(40) }}><option value="all">جميع الفصول</option>{courseReportTerms.map((code) => <option key={code} value={code}>{termLabel(code)}</option>)}</select></label><label>القسم<select value={department} onChange={(event) => { setDepartment(event.target.value); setVisible(40) }}><option>كل الأقسام</option>{departmentRows.map((row) => <option key={row.department}>{row.department}</option>)}</select></label></div><p className="monitor-source-line">المصدر العام: <a href={courseReportSheet} target="_blank" rel="noreferrer">مؤشرات تقارير المقررات</a> · <a href={sharePointFolder(term)} target="_blank" rel="noreferrer">مجلد {termLabel(term)} في SharePoint</a> · ٤٨١ هيكل جاهز، وتبدأ بيانات التدريس المتاحة من ٤٦١ إلى ٤٧٢.</p></section>
       {!rows.length && !error && <div className="monitor-gate">جارٍ تحميل بيانات تقارير المقررات…</div>}
       {current && <>
