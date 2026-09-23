@@ -6,6 +6,7 @@ export interface CourseReportRow {
   measurements: number
   courses: number
   combined: number
+  combinedWithMissingSections: number
   checkedAt: string
 }
 
@@ -14,7 +15,7 @@ export const currentCourseReportTerm = '472'
 export const courseReportSheet = 'https://docs.google.com/spreadsheets/d/1yJTkplb3IyP89RK-zv-AK42NOuk_C_4u8bTiPyz6Qhk/edit?gid=1497658740#gid=1497658740'
 const publishedCsv = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROMId3BOGaEpK7sEOITC3CIs0HLsuGbmbDdcW4OpUPsNRAuAz9lBtr1CY98hsYAp5tAcwQh401ERfJ/pub?gid=1497658740&single=true&output=csv'
 const departments = ['كل الأقسام', 'قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية']
-const header = ['الفصل', 'القسم', 'الشعب', 'تقارير الشعب المسلمة', 'قياسات المخرجات المسلمة', 'المقررات', 'التقارير المجمعة المسلمة', 'وقت الفحص']
+const header = ['الفصل', 'القسم', 'الشعب', 'تقارير الشعب المسلمة', 'قياسات المخرجات المسلمة', 'المقررات', 'التقارير المجمعة المسلمة', 'المجمعة مع نقص تقارير الشعب', 'وقت الفحص']
 
 function westernDigits(value: string): string {
   return value.replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
@@ -59,17 +60,17 @@ export function parseCourseReportCsv(csv: string): CourseReportRow[] {
     if (!courseReportTerms.some((code) => code === term) || !departments.includes(department)) {
       throw new Error('الفصل أو القسم في مؤشرات التقارير غير معروف.')
     }
-    const counts = fields.slice(2, 7).map((field) => Number(westernDigits(field.trim())))
-    if (fields.slice(2, 7).some((field) => !/^\d+$/.test(westernDigits(field.trim()))) || counts.some((count) => !Number.isSafeInteger(count))) {
+    const counts = fields.slice(2, 8).map((field) => Number(westernDigits(field.trim())))
+    if (fields.slice(2, 8).some((field) => !/^\d+$/.test(westernDigits(field.trim()))) || counts.some((count) => !Number.isSafeInteger(count))) {
       throw new Error('أحد أعداد تقارير المقررات غير صالح.')
     }
-    const [sections, reports, measurements, courses, combined] = counts
-    if (reports > sections || measurements > sections || combined > courses) {
+    const [sections, reports, measurements, courses, combined, combinedWithMissingSections] = counts
+    if (reports > sections || measurements > sections || combined > courses || combinedWithMissingSections > combined) {
       throw new Error('تجاوزت التسليمات العدد المتوقع في مؤشرات التقارير.')
     }
-    const checkedAt = fields[7].trim()
+    const checkedAt = fields[8].trim()
     if (!Number.isFinite(Date.parse(checkedAt))) throw new Error('وقت فحص تقارير المقررات غير صالح.')
-    return { term, department, sections, reports, measurements, courses, combined, checkedAt }
+    return { term, department, sections, reports, measurements, courses, combined, combinedWithMissingSections, checkedAt }
   })
   for (const term of courseReportTerms) {
     const termRows = rows.filter((row) => row.term === term)
@@ -98,6 +99,7 @@ export function courseReportScope(rows: CourseReportRow[], term: string): Course
       found.measurements += row.measurements
       found.courses += row.courses
       found.combined += row.combined
+      found.combinedWithMissingSections += row.combinedWithMissingSections
       if (row.checkedAt > found.checkedAt) found.checkedAt = row.checkedAt
     }
   }

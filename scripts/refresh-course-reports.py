@@ -12,10 +12,10 @@ import subprocess
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SCANNER = Path(os.environ.get(
     "COURSE_REPORT_SCANNER",
-    ROOT / "أدوات-متابعة-التقارير" / "متابعة_تسليم_الشعب.py",
+    Path(__file__).resolve().parent / "course-delivery-scanner.py",
 ))
 TEAM_FOLDER = Path(
     "/Users/majd/Library/CloudStorage/OneDrive-TaifUniversity/"
@@ -34,10 +34,11 @@ DEPARTMENTS = {
     "ISC": "قسم الثقافة الإسلامية",
 }
 HEADER = ("الفصل", "القسم", "الشعب", "تقارير الشعب المسلمة",
-          "قياسات المخرجات المسلمة", "المقررات", "التقارير المجمعة المسلمة", "وقت الفحص")
+          "قياسات المخرجات المسلمة", "المقررات", "التقارير المجمعة المسلمة",
+          "المجمعة مع نقص تقارير الشعب", "وقت الفحص")
 
 
-def scan() -> list[list[str | int]]:
+def scan(sync_details: bool = False) -> list[list[str | int]]:
     spec = importlib.util.spec_from_file_location("course_delivery", SCANNER)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Cannot load {SCANNER}")
@@ -47,17 +48,22 @@ def scan() -> list[list[str | int]]:
         raise FileNotFoundError(TEAM_FOLDER)
     rows: list[list[str | int]] = []
     for term in TERMS:
-        _, summary = module.inspect(TEAM_FOLDER, term)
+        internal, summary = module.inspect(TEAM_FOLDER, term)
+        if sync_details:
+            detail_path = TEAM_FOLDER / "2-المتابعة" / term / "حالة-التسليم-داخلية.json"
+            detail_path.parent.mkdir(parents=True, exist_ok=True)
+            detail_path.write_text(json.dumps(internal, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         total = summary["الإجمالي"]
         checked = summary["وقت_الفحص"]
         rows.append([term, "كل الأقسام", total["الشعب"], total["تقارير_الشعب_المسلمة"],
                      total["قياسات_المخرجات_المسلمة"], total["المقررات_الفريدة"],
-                     total["التقارير_المجمعة_المسلمة"], checked])
+                     total["التقارير_المجمعة_المسلمة"], total["المجمعة_مع_نقص_تقارير_الشعب"], checked])
         for department in summary["الأقسام"]:
             rows.append([term, DEPARTMENTS[department["القسم"]], department["الشعب"],
                          department["تقارير_الشعب_المسلمة"], department["قياسات_المخرجات_المسلمة"],
                          department["المقررات_التي_يدرسها_القسم"],
-                         department["التقارير_المجمعة_المسلمة"], checked])
+                         department["التقارير_المجمعة_المسلمة"],
+                         department["المجمعة_مع_نقص_تقارير_الشعب"], checked])
     if len(rows) != 20:
         raise RuntimeError("Expected 20 term/department rows")
     return rows
@@ -76,7 +82,9 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sync", action="store_true", help="Write the aggregate snapshot into the synced SharePoint folder")
     args = parser.parse_args()
-    rows = scan()
+    if args.sync and subprocess.run(["pgrep", "-x", "OneDrive"], capture_output=True, check=False).returncode != 0:
+        raise RuntimeError("OneDrive is not running; refusing to publish a fresh scan timestamp")
+    rows = scan(sync_details=args.sync)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT.open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.writer(handle)

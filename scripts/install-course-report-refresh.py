@@ -13,8 +13,7 @@ from pathlib import Path
 
 LABEL = "edu.taif.sharia.course-report-dashboard-refresh"
 REPO = Path(__file__).resolve().parents[1]
-WORKSPACE = REPO.parent
-SOURCE_SCANNER = WORKSPACE / "أدوات-متابعة-التقارير" / "متابعة_تسليم_الشعب.py"
+SOURCE_SCANNER = REPO / "scripts" / "course-delivery-scanner.py"
 INSTALL_DIR = Path.home() / "Library/Application Support/tu-course-reports/dashboard-sync"
 PLIST = Path.home() / "Library/LaunchAgents" / f"{LABEL}.plist"
 PYTHON = Path.home() / "Library/Application Support/tu-course-reports/venv/bin/python3.14"
@@ -26,7 +25,7 @@ def main() -> None:
     INSTALL_DIR.mkdir(parents=True, exist_ok=True)
     PLIST.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(REPO / "scripts/refresh-course-reports.py", INSTALL_DIR / "refresh-course-reports.py")
-    shutil.copy2(SOURCE_SCANNER, INSTALL_DIR / "متابعة_تسليم_الشعب.py")
+    shutil.copy2(SOURCE_SCANNER, INSTALL_DIR / "course-delivery-scanner.py")
     python = str(PYTHON if PYTHON.is_file() else Path(sys.executable))
     config = {
         "Label": LABEL,
@@ -34,7 +33,7 @@ def main() -> None:
         "RunAtLoad": True,
         "StartInterval": 3600,
         "EnvironmentVariables": {
-            "COURSE_REPORT_SCANNER": str(INSTALL_DIR / "متابعة_تسليم_الشعب.py"),
+            "COURSE_REPORT_SCANNER": str(INSTALL_DIR / "course-delivery-scanner.py"),
             "COURSE_REPORT_OUTPUT": str(INSTALL_DIR / "course-report-public-sheet.csv"),
         },
         "StandardOutPath": str(INSTALL_DIR / "refresh.log"),

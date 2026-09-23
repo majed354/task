@@ -6,14 +6,14 @@ function validateCourseReportRows(rows) {
     if (!Array.isArray(rows) || rows.length !== 20) throw new Error('Expected 20 aggregate rows')
     const seen = new Set()
     for (const row of rows) {
-      if (!Array.isArray(row) || row.length !== 8) throw new Error('Invalid row width')
-      const [term, department, sections, reports, measurements, courses, combined, checkedAt] = row
+      if (!Array.isArray(row) || row.length !== 9) throw new Error('Invalid row width')
+      const [term, department, sections, reports, measurements, courses, combined, combinedWithMissingSections, checkedAt] = row
       if (!COURSE_REPORT_TERMS.includes(term) || !COURSE_REPORT_DEPARTMENTS.includes(department)) throw new Error('Invalid group')
       const key = term + ':' + department
       if (seen.has(key)) throw new Error('Duplicate group')
       seen.add(key)
-      if (![sections, reports, measurements, courses, combined].every((value) => Number.isSafeInteger(value) && value >= 0)) throw new Error('Invalid count')
-      if (reports > sections || measurements > sections || combined > courses) throw new Error('Count exceeds total')
+      if (![sections, reports, measurements, courses, combined, combinedWithMissingSections].every((value) => Number.isSafeInteger(value) && value >= 0)) throw new Error('Invalid count')
+      if (reports > sections || measurements > sections || combined > courses || combinedWithMissingSections > combined) throw new Error('Count exceeds total')
       const date = new Date(checkedAt)
       if (Number.isNaN(date.getTime()) || date.getTime() > Date.now() + 5 * 60 * 1000 || Date.now() - date.getTime() > 3 * 60 * 60 * 1000) throw new Error('Invalid or stale scan time')
     }
@@ -46,8 +46,10 @@ function refreshCourseReportMetrics() {
   lock.waitLock(30000)
   try {
     sheet.getRange(2, 1, rows.length, 2).setNumberFormat('@')
-    sheet.getRange(2, 8, rows.length, 1).setNumberFormat('@')
-    sheet.getRange(2, 1, rows.length, 8).setValues(rows)
+    sheet.getRange(1, 8).setValue('المجمعة مع نقص تقارير الشعب')
+    sheet.getRange(1, 9).setValue('وقت الفحص')
+    sheet.getRange(2, 9, rows.length, 1).setNumberFormat('@')
+    sheet.getRange(2, 1, rows.length, 9).setValues(rows)
     SpreadsheetApp.flush()
   } finally {
     lock.releaseLock()
