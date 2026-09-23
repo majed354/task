@@ -1,6 +1,8 @@
 import {
   CSSProperties,
   ReactNode,
+  Suspense,
+  lazy,
   useEffect,
   useMemo,
   useRef,
@@ -45,6 +47,7 @@ import {
   taskSearchIndex,
 } from './data'
 import { downloadTaskCalendar } from './calendarExport'
+const CommitteeDashboard = lazy(() => import('./CommitteeDashboard'))
 
 const allCommittees = 'كل أنواع اللجان'
 
@@ -326,6 +329,8 @@ function Dashboard() {
       <header className="topbar" id="top">
         <a className="brand" href="#top" aria-label="دليل أعمال اللجان"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>دليل أعمال اللجان</strong></span></a>
         <nav className={mobileMenu ? 'topnav is-open' : 'topnav'} aria-label="التنقل الرئيسي">
+          <a className="portal-tab is-current" href="/">دليل أعمال اللجان</a>
+          <a className="portal-tab" href="/?view=dashboard">لوحة المتابعة</a>
           <a href="#committees" onClick={() => setMobileMenu(false)}>أنواع اللجان</a>
           <a href="#timeline" onClick={() => setMobileMenu(false)}>الخطة الزمنية</a>
           <a href="#calendar-export" onClick={() => setMobileMenu(false)}>تحميل التقويم</a>
@@ -457,5 +462,7 @@ function Dashboard() {
 }
 
 export default function App() {
-  return <Dashboard />
+  return new URLSearchParams(window.location.search).get('view') === 'dashboard'
+    ? <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح لوحة المتابعة…</div>}><CommitteeDashboard /></Suspense>
+    : <Dashboard />
 }

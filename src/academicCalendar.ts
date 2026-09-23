@@ -244,7 +244,7 @@ export function getDefaultTerm(today = new Date()) {
 export function getRelevantWeek(term: AcademicTerm, today = new Date()) {
   const weeks = buildOperationalWeeks(term)
   if (!weeks.length) return 0
-  const active = weeks.find((week) => compareLocalDates(today, week.start) >= 0 && compareLocalDates(today, week.graceEnd) <= 0)
+  const active = weeks.find((week) => compareLocalDates(today, week.start) >= 0 && compareLocalDates(today, week.end) <= 0)
   if (active) return active.number
   const next = weeks.find((week) => compareLocalDates(today, week.start) < 0)
   return next?.number ?? weeks[weeks.length - 1].number

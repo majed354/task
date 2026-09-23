@@ -11,6 +11,8 @@ const assignmentDocument = await readJson('src/generated/taskGuideAssignments.js
 const calendar = await readJson('src/config/academicCalendar.json')
 const dataSource = await readFile(path.join(root, 'src/data.ts'), 'utf8')
 const appSource = await readFile(path.join(root, 'src/App.tsx'), 'utf8')
+const dashboardSource = await readFile(path.join(root, 'src/CommitteeDashboard.tsx'), 'utf8')
+const sharePointSource = await readFile(path.join(root, 'src/sharePointData.ts'), 'utf8')
 const calendarExportSource = await readFile(path.join(root, 'src/calendarExport.ts'), 'utf8')
 
 const failures = []
@@ -195,8 +197,11 @@ assert(officeHoursGuide?.evidenceComponents?.length === 4, 'مكونات جدو�
 assert(!/(quickTemplateRequired|primaryTemplateId|companionTemplateIds)/.test(dataSource), 'عقد المهمة لا يفرض قالبًا أو يربطه بالتنفيذ')
 assert(!/(?:sourceTask|task)\.(?:coordinator|departmentHead)|recordCoordinator/.test(dataSource), 'بيانات العرض لا تستهلك أسماء المنسقين أو رؤساء الأقسام')
 assert(!/(AccessGate|committee-portal-access|1429|type="password")/.test(appSource), 'الموقع يفتح مباشرة بلا كلمة مرور أو تسجيل دخول')
-assert(!/(SharePoint|sharepoint|powerbi|مساحة التسليم|بانتظار الربط)/i.test(appSource), 'الواجهة مستقلة ولا تعرض ربطًا بمنصة خارجية')
-assert(!/(Department|department|الأقسام|قسمي|رئيس القسم)/.test(appSource), 'الواجهة لا تعرض الأقسام أو فلاترها')
+assert(/دليل أعمال اللجان/.test(appSource) && /لوحة المتابعة/.test(appSource), 'الموقع يعرض قسمي الدليل والمتابعة')
+assert(/CommitteeDashboard/.test(appSource) && /view=dashboard/.test(appSource), 'القسم الثاني يفتح لوحة المتابعة')
+assert(/Sites\.Selected/.test(sharePointSource) && /@azure\/msal-browser/.test(sharePointSource), 'قراءة SharePoint تتم بتسجيل دخول مفوض وصلاحية موقع محدد')
+assert(/loadCommitteeSnapshot/.test(dashboardSource) && /isDelayed/.test(dashboardSource), 'المؤشرات تعتمد على السجل المباشر ومواعيد المهام')
+assert(!/(AccessGate|committee-portal-access|1429|type="password")/.test(dashboardSource), 'لوحة المتابعة لا تخزن كلمة مرور محلية')
 assert(/تحميل التقويم/.test(appSource) && /calendar-export/.test(appSource), 'خيار تحميل التقويم ظاهر في الواجهة')
 assert(/const \[weekFilter, setWeekFilter\] = useState\('all'\)/.test(appSource) && /function changeTerm[\s\S]*?setWeekFilter\('all'\)/.test(appSource), 'الفصل كاملًا هو النطاق الافتراضي عند الفتح وتغيير الفصل')
 assert(/BEGIN:VCALENDAR/.test(calendarExportSource) && /END:VCALENDAR/.test(calendarExportSource), 'ملف التصدير يستخدم بنية iCalendar القياسية')
