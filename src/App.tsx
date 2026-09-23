@@ -47,7 +47,9 @@ import {
   taskSearchIndex,
 } from './data'
 import { downloadTaskCalendar } from './calendarExport'
-const CommitteeDashboard = lazy(() => import('./CommitteeDashboard'))
+const CommitteeDashboard = lazy(() => import.meta.env.VITE_PUBLIC_METRICS_CSV_URL
+  ? import('./PublicMetricsDashboard')
+  : import('./CommitteeDashboard'))
 
 const allCommittees = 'كل أنواع اللجان'
 
