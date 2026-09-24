@@ -273,6 +273,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .monitoring-shell { background: #f6f4ee; }
 .monitor-loading { min-height: 100vh; padding: 80px 24px; color: var(--green-deep); background: #f6f4ee; font-size: 16px; font-weight: 800; }
 .monitor-header-link { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; color: var(--green); font-size: 11px; font-weight: 900; white-space: nowrap; }
+.monitor-header-link:is(button) { border: 0; background: none; cursor: pointer; }
 .monitor-main { max-width: 1228px; min-height: calc(100vh - 130px); margin: 0 auto; padding: 45px 24px 80px; }
 .monitor-hero { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-bottom: 20px; padding: 34px 38px; border-radius: 23px; color: white; background: radial-gradient(circle at 14% 10%, rgba(198,166,98,.27), transparent 35%), linear-gradient(120deg, #173b35, #0d2927); box-shadow: 0 20px 46px rgba(12,45,39,.15); }
 .monitor-hero h1 { margin: 9px 0 5px; font-size: clamp(28px, 3vw, 42px); line-height: 1.3; }
@@ -328,6 +329,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .monitor-toolbar button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; color: var(--green-deep); background: white; font-size: 10px; font-weight: 800; }
 .monitor-toolbar button:disabled { opacity: .55; cursor: wait; }
 .monitor-error { padding: 12px 15px; border: 1px solid #e9c5c3; border-radius: 10px; color: #8b3236; background: #fff0ef; font-size: 11px; line-height: 1.7; }
+.course-login { max-width: 540px; margin: 8vh auto 0; padding: 32px; }
+.course-login h1 { margin: 0 0 10px; color: var(--green-deep); font-size: 27px; }
+.course-login p { color: var(--muted); line-height: 1.9; }
+.course-login form { display: grid; gap: 14px; margin-top: 22px; }
+.course-login label { display: grid; gap: 7px; color: var(--ink); font-size: 12px; font-weight: 800; }
+.course-login input { min-height: 46px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; font: inherit; direction: ltr; }
+.course-login button { min-height: 46px; border: 0; border-radius: 10px; color: white; background: var(--green); font-weight: 900; cursor: pointer; }
+.course-login button:disabled { opacity: .6; cursor: wait; }
 .monitor-source-line, .monitor-note { margin: 12px 0; color: var(--muted); font-size: 10px; line-height: 1.8; }
 .monitor-source-line a, .monitor-table-wrap a { color: var(--green); font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
 .monitor-filters { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 17px; }

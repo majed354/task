@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan the synced SharePoint folder and optionally publish name-free counts to Sheets."""
+"""Scan SharePoint, sync the private Google source, and update the protected dashboard."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import json
 import os
 import subprocess
 import unicodedata
+import urllib.request
 from pathlib import Path
 
 
@@ -31,6 +32,11 @@ DETAIL_OUTPUT = Path(os.environ.get(
     ROOT / "outputs" / "course-report-detail-public-sheet.csv",
 ))
 SYNC_SNAPSHOT = TEAM_FOLDER / "2-المتابعة" / "مؤشرات-تقارير-المقررات.json"
+INGEST_URL = os.environ.get("COURSE_REPORT_INGEST_URL", "https://shari3ahtask.netlify.app/api/course/ingest")
+INGEST_KEY_FILE = Path(os.environ.get(
+    "COURSE_REPORT_INGEST_KEY_FILE",
+    Path.home() / "Library/Application Support/tu-course-reports/dashboard-sync/course-ingest-key",
+))
 TERMS = ("٤٦١", "٤٦٢", "٤٧١", "٤٧٢")
 DEPARTMENTS = {
     "SHR": "قسم الشريعة",
@@ -95,7 +101,7 @@ def scan(sync_details: bool = False) -> tuple[list[list[str | int]], list[list[s
     return rows, detail_rows
 
 
-def write_synced_snapshot(rows: list[list[str | int]], detail_rows: list[list[str | int]]) -> None:
+def write_synced_snapshot(rows: list[list[str | int]], detail_rows: list[list[str | int]]) -> bytes:
     if subprocess.run(["pgrep", "-x", "OneDrive"], capture_output=True, check=False).returncode != 0:
         raise RuntimeError("OneDrive is not running; refusing to publish a fresh scan timestamp")
     SYNC_SNAPSHOT.parent.mkdir(parents=True, exist_ok=True)
@@ -114,6 +120,21 @@ def write_synced_snapshot(rows: list[list[str | int]], detail_rows: list[list[st
         handle.write(payload)
         handle.flush()
         os.fsync(handle.fileno())
+    return payload.encode("utf-8")
+
+
+def upload_protected_snapshot(payload: bytes, expected_sections: int) -> None:
+    key = INGEST_KEY_FILE.read_text(encoding="utf-8").strip()
+    if len(key) < 32:
+        raise RuntimeError("Dashboard ingest key is missing or too short")
+    request = urllib.request.Request(
+        INGEST_URL, data=payload, method="POST",
+        headers={"Content-Type": "application/json", "X-Course-Ingest-Key": key},
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        result = json.load(response)
+    if result.get("ok") is not True or result.get("sections") != expected_sections:
+        raise RuntimeError("Protected dashboard rejected the course-report snapshot")
 
 
 def main() -> None:
@@ -134,10 +155,12 @@ def main() -> None:
         writer.writerow(DETAIL_HEADER)
         writer.writerows(detail_rows)
     if args.sync:
-        write_synced_snapshot(rows, detail_rows)
+        payload = write_synced_snapshot(rows, detail_rows)
+        upload_protected_snapshot(payload, len(detail_rows))
     print(f"Scanned {len(rows)} aggregate rows and {len(detail_rows)} section rows; saved {OUTPUT} and {DETAIL_OUTPUT}")
     if args.sync:
         print(f"Synced aggregate snapshot: {SYNC_SNAPSHOT}")
+        print(f"Updated protected dashboard: {len(detail_rows)} sections")
 
 
 if __name__ == "__main__":

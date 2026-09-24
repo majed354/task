@@ -1,6 +1,6 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowUpLeft, BookOpenCheck, CheckCircle2, ClipboardList, FileCheck2, FolderOpen, LayoutDashboard, RefreshCw, Target } from 'lucide-react'
-import { courseReportScope, courseReportSheet, courseReportTerms, currentCourseReportTerm, loadCourseDetails, loadCourseReports, type CourseDetailRow, type CourseReportRow } from './courseReportData'
+import { type FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { BookOpenCheck, CheckCircle2, ClipboardList, FileCheck2, FolderOpen, LayoutDashboard, RefreshCw, Target } from 'lucide-react'
+import { CourseAccessError, courseReportScope, courseReportTerms, currentCourseReportTerm, loadCourseSnapshot, type CourseAccessScope, type CourseDetailRow, type CourseReportRow } from './courseReportData'
 import MemberProgress from './MemberProgress'
 import CourseItem, { type CourseGroup } from './CourseItem'
 
@@ -8,12 +8,6 @@ const number = new Intl.NumberFormat('ar-SA-u-nu-latn')
 const digits = (value: string) => value.replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)])
 const termLabel = (term: string) => term === 'all' ? 'جميع الفصول' : `الفصل ${digits(term)}`
 const percentage = (done: number, total: number) => total ? Math.round(done * 1000 / total) / 10 : 0
-const sharePointFolder = (term: string) => {
-  const base = '/sites/msteams_3b4354/Shared Documents/متابعة تقارير المقررات/1-التقارير'
-  const path = term === 'all' ? base : `${base}/${digits(term)}`
-  return `https://taifedusa.sharepoint.com/sites/msteams_3b4354/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(path)}`
-}
-
 function groupCourses(rows: CourseDetailRow[]): CourseGroup[] {
   const groups = new Map<string, CourseGroup>()
   for (const row of rows) {
@@ -41,6 +35,9 @@ function Metric({ title, done, total, icon }: { title: string; done: number; tot
 }
 
 export default function CourseReportsDashboard() {
+  const [scope, setScope] = useState<CourseAccessScope | null>(null)
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
   const [rows, setRows] = useState<CourseReportRow[]>([])
   const [details, setDetails] = useState<CourseDetailRow[]>([])
   const [term, setTerm] = useState(currentCourseReportTerm)
@@ -54,19 +51,40 @@ export default function CourseReportsDashboard() {
   const refresh = useCallback(async () => {
     setBusy(true); setError('')
     try {
-      const [aggregates, sections] = await Promise.all([loadCourseReports(), loadCourseDetails()])
+      const { scope: accessScope, aggregates, sections } = await loadCourseSnapshot()
       const courses = groupCourses(sections)
       for (const code of courseReportTerms) {
-        const all = aggregates.find((row) => row.term === code && row.department === 'كل الأقسام')
+        const all = aggregates.find((row) => row.term === code && row.department === (accessScope === 'all' ? 'كل الأقسام' : accessScope))
         const actual = sections.filter((row) => row.term === code)
         if (!all || actual.length !== all.sections || courses.filter((course) => course.term === code).length !== all.courses || actual.filter((row) => row.report !== 'غير مسلّم').length !== all.anyReport) throw new Error(`تفاصيل الفصل ${code} لا تطابق ورقة المؤشرات.`)
       }
-      setRows(aggregates); setDetails(sections)
+      setScope(accessScope); setRows(aggregates); setDetails(sections)
+      setDepartment((current) => accessScope === 'all' ? current : accessScope)
       setSelectedMember((name) => !name || sections.some((row) => row.member === name) ? name : '')
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'تعذّر تحميل تقارير المقررات.') }
+    } catch (cause) {
+      if (cause instanceof CourseAccessError && cause.status === 401) { setScope(null); setRows([]); setDetails([]) }
+      else setError(cause instanceof Error ? cause.message : 'تعذّر تحميل تقارير المقررات.')
+    }
     finally { setBusy(false) }
   }, [])
   useEffect(() => { document.title = 'لوحة متابعة تقارير المقررات — كلية الشريعة والأنظمة'; void refresh() }, [refresh])
+
+  const login = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setBusy(true); setLoginError('')
+    try {
+      const response = await fetch('/api/course/login', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
+      if (!response.ok) throw new Error(response.status === 401 ? 'كلمة المرور غير صحيحة.' : response.status === 429 ? 'محاولات كثيرة. حاول بعد عشر دقائق.' : 'تعذّر تسجيل الدخول الآن.')
+      setPassword('')
+      await refresh()
+    } catch (cause) { setLoginError(cause instanceof Error ? cause.message : 'تعذّر تسجيل الدخول الآن.') }
+    finally { setBusy(false) }
+  }
+
+  const logout = async () => {
+    await fetch('/api/course/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => undefined)
+    setScope(null); setRows([]); setDetails([]); setDepartment('كل الأقسام'); setSelectedMember(''); setPassword('')
+  }
 
   const scoped = useMemo(() => courseReportScope(rows, term), [rows, term])
   const current = scoped.find((row) => row.department === department)
@@ -86,13 +104,18 @@ export default function CourseReportsDashboard() {
   const overallProgress = percentage(submittedEvidence, totalEvidence)
   const singleSectionCourses = departmentCourses.filter((course) => course.sections.length === 1).length
 
+  if (!scope) return <div className="app-shell monitoring-shell" dir="rtl">
+    <header className="topbar" id="top"><a className="brand" href="/"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>متابعة الجودة</strong></span></a><nav className="topnav monitor-topnav" aria-label="أقسام الموقع"><a className="portal-tab" href="/">دليل أعمال اللجان</a><a className="portal-tab" href="/?view=dashboard">لوحة متابعة اللجان</a><a className="portal-tab is-current" href="/?view=course-reports" aria-current="page">تقارير المقررات</a></nav></header>
+    <main className="monitor-main"><section className="monitor-panel course-login"><h1>لوحة تقارير المقررات</h1><p>أدخل كلمة المرور المخصصة للعرض الكلي أو لقسمك. بعد الدخول تُعرض بيانات نطاقك داخل اللوحة.</p><form onSubmit={(event) => void login(event)}><label>كلمة المرور<input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label><button type="submit" disabled={busy}>{busy ? 'جارٍ التحقق…' : 'دخول'}</button></form>{loginError && <p className="monitor-error" role="alert">{loginError}</p>}{error && <p className="monitor-error" role="alert">{error}</p>}</section></main>
+  </div>
+
   return <div className="app-shell monitoring-shell" dir="rtl">
-    <header className="topbar" id="top"><a className="brand" href="/" aria-label="دليل أعمال اللجان"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>متابعة الجودة</strong></span></a><nav className="topnav monitor-topnav" aria-label="أقسام الموقع"><a className="portal-tab" href="/">دليل أعمال اللجان</a><a className="portal-tab" href="/?view=dashboard">لوحة متابعة اللجان</a><a className="portal-tab is-current" href="/?view=course-reports" aria-current="page">تقارير المقررات</a></nav><a className="monitor-header-link" href={courseReportSheet} target="_blank" rel="noreferrer">ورقة المؤشرات <ArrowUpLeft size={15} /></a></header>
+    <header className="topbar" id="top"><a className="brand" href="/" aria-label="دليل أعمال اللجان"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>متابعة الجودة</strong></span></a><nav className="topnav monitor-topnav" aria-label="أقسام الموقع"><a className="portal-tab" href="/">دليل أعمال اللجان</a><a className="portal-tab" href="/?view=dashboard">لوحة متابعة اللجان</a><a className="portal-tab is-current" href="/?view=course-reports" aria-current="page">تقارير المقررات</a></nav><button className="monitor-header-link" type="button" onClick={() => void logout()}>تسجيل الخروج</button></header>
     <main className="monitor-main">
       <section className="monitor-hero"><div><span className="monitor-eyebrow"><LayoutDashboard size={17} /> متابعة تقارير المقررات</span><h1>من الشعبة إلى التقرير المجمع</h1><p>نحسب تقرير كل شعبة وقياس مخرجاتها، ثم التقرير والقياس المجمعين للمقرر. تظهر التقارير الجزئية للشعب التي تغطيها فعلاً، ويبقى ما لم تُحدد شعبه بانتظار المطابقة.</p></div><div className="monitor-hero-badge"><span>الفصل الجاري متابعته</span><strong>٤٧٢</strong><small>الاختيار الافتراضي</small></div></section>
       <div className="monitor-toolbar"><span className="monitor-account">آخر فحص للمجلدات: {checkedLabel}</span><button type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} /> {busy ? 'جارٍ التحديث' : 'تحديث العرض'}</button></div>
       {error && <p className="monitor-error" role="alert">{error}</p>}{oldData && <p className="monitor-error" role="status">آخر فحص للمجلدات أقدم من ثلاث ساعات. الأرقام المعروضة هي آخر ما نُشر في ورقة المؤشرات.</p>}
-      <section className="monitor-control-panel" aria-label="تصفية تقارير المقررات"><div className="monitor-panel-head"><h2>نطاق العرض</h2><span>يمكن الجمع بين الفصول أو عرض قسم واحد</span></div><div className="monitor-filters"><label>الفصل<select value={term} onChange={(event) => { setTerm(event.target.value); setDepartment('كل الأقسام'); setSelectedMember(''); setVisible(40) }}><option value="all">جميع الفصول</option>{courseReportTerms.map((code) => <option key={code} value={code}>{termLabel(code)}</option>)}</select></label><label>القسم<select value={department} onChange={(event) => { setDepartment(event.target.value); setSelectedMember(''); setVisible(40) }}><option>كل الأقسام</option>{departmentRows.map((row) => <option key={row.department}>{row.department}</option>)}</select></label></div><p className="monitor-source-line">المصدر العام: <a href={courseReportSheet} target="_blank" rel="noreferrer">مؤشرات تقارير المقررات</a> · <a href={sharePointFolder(term)} target="_blank" rel="noreferrer">مجلد {termLabel(term)} في SharePoint</a> · ٤٨١ هيكل جاهز، وتبدأ بيانات التدريس المتاحة من ٤٦١ إلى ٤٧٢.</p></section>
+      <section className="monitor-control-panel" aria-label="تصفية تقارير المقررات"><div className="monitor-panel-head"><h2>نطاق العرض</h2><span>{scope === 'all' ? 'يمكن الجمع بين الفصول أو عرض قسم واحد' : `العرض مقصور على ${scope}`}</span></div><div className="monitor-filters"><label>الفصل<select value={term} onChange={(event) => { setTerm(event.target.value); if (scope === 'all') setDepartment('كل الأقسام'); setSelectedMember(''); setVisible(40) }}><option value="all">جميع الفصول</option>{courseReportTerms.map((code) => <option key={code} value={code}>{termLabel(code)}</option>)}</select></label>{scope === 'all' && <label>القسم<select value={department} onChange={(event) => { setDepartment(event.target.value); setSelectedMember(''); setVisible(40) }}><option>كل الأقسام</option>{departmentRows.map((row) => <option key={row.department}>{row.department}</option>)}</select></label>}</div><p className="monitor-source-line">تُعرض بيانات {scope === 'all' ? 'كل الأقسام' : scope} عبر اتصال محمي. ٤٨١ هيكل جاهز، وتبدأ بيانات التدريس المتاحة من ٤٦١ إلى ٤٧٢.</p></section>
       {!rows.length && !error && <div className="monitor-gate">جارٍ تحميل بيانات تقارير المقررات…</div>}
       {current && <>
         <section className="course-summary" aria-label="ملخص نطاق التقارير"><div><span><FolderOpen size={18} /> الشعب في النطاق</span><strong>{number.format(current.sections)}</strong><small>{termLabel(term)} · {department}</small></div><div><span><ClipboardList size={18} /> المقررات في النطاق</span><strong>{number.format(departmentCourses.length)}</strong><small>{number.format(singleSectionCourses)} منها ذات شعبة واحدة</small></div><div className="course-summary-progress"><span><CheckCircle2 size={18} /> اكتمال الأدلة</span><strong>{number.format(overallProgress)}٪</strong><small>{number.format(submittedEvidence)} من {number.format(totalEvidence)} متطلب</small></div></section>
@@ -107,7 +130,7 @@ export default function CourseReportsDashboard() {
           {visible < filteredCount && <button className="course-more" type="button" onClick={() => setVisible((count) => count + 40)}>عرض المزيد ({number.format(filteredCount - visible)})</button>}
           {filteredCount === 0 && <p className="monitor-note">لا توجد مقررات تطابق البحث.</p>}
         </section>
-        <section className="monitor-panel"><div className="monitor-panel-head"><h2>الأقسام الأربعة</h2><span>التغطية تشمل التقرير المستقل أو الجزئي المسند إلى الشعبة</span></div><div className="monitor-table-wrap"><table className="course-table"><thead><tr><th>القسم</th><th>الشعب</th><th>شعب لها تقرير</th><th>قياس الشعب</th><th>المقررات</th><th>التقرير المجمع</th><th>القياس المجمع</th></tr></thead><tbody>{departmentRows.map((row) => <tr key={row.department}><td><strong>{row.department}</strong></td><td>{number.format(row.sections)}</td><td>{number.format(row.anyReport)} / {number.format(row.sections)}</td><td>{number.format(row.measurements)} / {number.format(row.sections)}</td><td>{number.format(row.courses)}</td><td>{number.format(row.combined)} / {number.format(row.courses)}</td><td>{number.format(row.combinedMeasurements)} / {number.format(row.courses)}</td></tr>)}</tbody></table></div></section>
+        <section className="monitor-panel"><div className="monitor-panel-head"><h2>{scope === 'all' ? 'الأقسام الأربعة' : scope}</h2><span>التغطية تشمل التقرير المستقل أو الجزئي المسند إلى الشعبة</span></div><div className="monitor-table-wrap"><table className="course-table"><thead><tr><th>القسم</th><th>الشعب</th><th>شعب لها تقرير</th><th>قياس الشعب</th><th>المقررات</th><th>التقرير المجمع</th><th>القياس المجمع</th></tr></thead><tbody>{departmentRows.map((row) => <tr key={row.department}><td><strong>{row.department}</strong></td><td>{number.format(row.sections)}</td><td>{number.format(row.anyReport)} / {number.format(row.sections)}</td><td>{number.format(row.measurements)} / {number.format(row.sections)}</td><td>{number.format(row.courses)}</td><td>{number.format(row.combined)} / {number.format(row.courses)}</td><td>{number.format(row.combinedMeasurements)} / {number.format(row.courses)}</td></tr>)}</tbody></table></div></section>
         <p className="monitor-note">«غير مسلّم» تعني أن ملف التسليم لم يظهر في مجلده عند آخر فحص؛ لا تعني التأخر دون موعد معتمد. عند تصفية قسم، تظهر نسبة المقرر كاملاً إذا دُرّس في أكثر من قسم.</p>
       </>}
     </main><footer className="site-footer"><strong>متابعة الجودة</strong><span>كلية الشريعة والأنظمة</span></footer>

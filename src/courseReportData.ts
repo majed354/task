@@ -34,12 +34,15 @@ export interface CourseDetailRow {
 
 export const courseReportTerms = ['461', '462', '471', '472'] as const
 export const currentCourseReportTerm = '472'
-export const courseReportSheet = 'https://docs.google.com/spreadsheets/d/1yJTkplb3IyP89RK-zv-AK42NOuk_C_4u8bTiPyz6Qhk/edit?gid=1497658740#gid=1497658740'
-const publishedCsv = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROMId3BOGaEpK7sEOITC3CIs0HLsuGbmbDdcW4OpUPsNRAuAz9lBtr1CY98hsYAp5tAcwQh401ERfJ/pub?gid=1497658740&single=true&output=csv'
 const departments = ['كل الأقسام', 'قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية']
 const header = ['الفصل', 'القسم', 'الشعب', 'تقارير الشعب المسلمة', 'قياسات المخرجات المسلمة', 'المقررات', 'التقارير المجمعة المسلمة', 'المجمعة مع نقص تقارير الشعب', 'وقت الفحص', 'الشعب المغطاة بتقرير جزئي', 'التقارير الجزئية المسلمة', 'تقارير جزئية بانتظار الإسناد', 'الشعب ذات أي تقرير', 'قياسات المخرجات المجمعة المسلمة']
 const detailHeader = ['الفصل', 'رمز المقرر', 'اسم المقرر', 'القسم', 'الشعبة التنظيمية', 'حالة تقرير الشعبة', 'قياس مخرجات الشعبة', 'التقرير المجمع', 'القياس المجمع', 'المتطلبات المنجزة', 'إجمالي المتطلبات', 'تقارير جزئية بانتظار الإسناد', 'وقت الفحص', 'عضو هيئة التدريس']
-const publishedDetailCsv = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROMId3BOGaEpK7sEOITC3CIs0HLsuGbmbDdcW4OpUPsNRAuAz9lBtr1CY98hsYAp5tAcwQh401ERfJ/pub?gid=2024894823&single=true&output=csv'
+
+export type CourseAccessScope = 'all' | 'قسم الشريعة' | 'قسم الأنظمة' | 'قسم القراءات' | 'قسم الثقافة الإسلامية'
+
+export class CourseAccessError extends Error {
+  constructor(public status: number, message: string) { super(message) }
+}
 
 function westernDigits(value: string): string {
   return value.replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
@@ -72,7 +75,7 @@ function parseCsv(input: string): string[][] {
   return rows
 }
 
-export function parseCourseReportCsv(csv: string): CourseReportRow[] {
+export function parseCourseReportCsv(csv: string, scope: CourseAccessScope = 'all'): CourseReportRow[] {
   const [columns, ...values] = parseCsv(csv)
   if (!columns || columns.length !== header.length || header.some((name, index) => columns[index]?.trim() !== name)) {
     throw new Error('أعمدة ورقة تقارير المقررات لا تطابق الصيغة المطلوبة.')
@@ -99,13 +102,16 @@ export function parseCourseReportCsv(csv: string): CourseReportRow[] {
   })
   for (const term of courseReportTerms) {
     const termRows = rows.filter((row) => row.term === term)
-    if (termRows.length !== departments.length || new Set(termRows.map((row) => row.department)).size !== departments.length) {
+    const expected = scope === 'all' ? departments : [scope]
+    if (termRows.length !== expected.length || expected.some((department) => !termRows.some((row) => row.department === department))) {
       throw new Error(`مؤشرات الأقسام للفصل ${term} غير مكتملة.`)
     }
-    const overall = termRows.find((row) => row.department === 'كل الأقسام')!
-    for (const field of ['sections', 'reports', 'measurements', 'partialCovered', 'partialReports', 'unassignedPartial', 'anyReport'] as const) {
-      if (termRows.filter((row) => row.department !== 'كل الأقسام').reduce((sum, row) => sum + row[field], 0) !== overall[field]) {
-        throw new Error(`إجمالي ${field} للفصل ${term} لا يطابق الأقسام.`)
+    if (scope === 'all') {
+      const overall = termRows.find((row) => row.department === 'كل الأقسام')!
+      for (const field of ['sections', 'reports', 'measurements', 'partialCovered', 'partialReports', 'unassignedPartial', 'anyReport'] as const) {
+        if (termRows.filter((row) => row.department !== 'كل الأقسام').reduce((sum, row) => sum + row[field], 0) !== overall[field]) {
+          throw new Error(`إجمالي ${field} للفصل ${term} لا يطابق الأقسام.`)
+        }
       }
     }
   }
@@ -136,12 +142,6 @@ export function courseReportScope(rows: CourseReportRow[], term: string): Course
   return [...aggregate.values()]
 }
 
-export async function loadCourseReports(): Promise<CourseReportRow[]> {
-  const response = await fetch(publishedCsv, { cache: 'no-store' })
-  if (!response.ok) throw new Error(`تعذّر تحميل ورقة تقارير المقررات (${response.status}).`)
-  return parseCourseReportCsv(await response.text())
-}
-
 export function parseCourseDetailCsv(csv: string): CourseDetailRow[] {
   const [columns, ...values] = parseCsv(csv)
   const hasMembers = columns?.length === detailHeader.length
@@ -167,8 +167,18 @@ export function parseCourseDetailCsv(csv: string): CourseDetailRow[] {
   })
 }
 
-export async function loadCourseDetails(): Promise<CourseDetailRow[]> {
-  const response = await fetch(publishedDetailCsv, { cache: 'no-store' })
-  if (!response.ok) throw new Error(`تعذّر تحميل تفاصيل تقارير المقررات (${response.status}).`)
-  return parseCourseDetailCsv(await response.text())
+function asCsv(rows: Array<Array<string | number>>): string {
+  return rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n')
+}
+
+export async function loadCourseSnapshot(): Promise<{ scope: CourseAccessScope; aggregates: CourseReportRow[]; sections: CourseDetailRow[] }> {
+  const response = await fetch('/api/course/data', { cache: 'no-store', credentials: 'same-origin' })
+  if (!response.ok) throw new CourseAccessError(response.status, response.status === 401 ? 'يلزم إدخال كلمة المرور.' : `تعذّر تحميل بيانات التقارير (${response.status}).`)
+  const payload = await response.json() as { scope?: CourseAccessScope; aggregateRows?: Array<Array<string | number>>; courseRows?: Array<Array<string | number>> }
+  if (!payload.scope || !['all', ...departments.slice(1)].includes(payload.scope) || !Array.isArray(payload.aggregateRows) || !Array.isArray(payload.courseRows)) throw new Error('بيانات التقارير المحمية غير مكتملة.')
+  return {
+    scope: payload.scope,
+    aggregates: parseCourseReportCsv(asCsv([header, ...payload.aggregateRows]), payload.scope),
+    sections: parseCourseDetailCsv(asCsv([detailHeader, ...payload.courseRows])),
+  }
 }
