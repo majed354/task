@@ -30,6 +30,28 @@ export interface CourseDetailRow {
   required: number
   unassignedPartial: number
   checkedAt: string
+  thesisDue?: boolean
+}
+
+export interface ThesisEntry {
+  term: string
+  code: string
+  department: string
+  section: string
+  member: string
+  gradeDate: string
+  observedTerms: number
+  basis: 'study' | 'member'
+}
+
+export interface ThesisSignal {
+  department: string
+  code: string
+  member: string
+  terms: string[]
+  lastTerm: string
+  absentNextTerm: string
+  sections: number
 }
 
 export const courseReportTerms = ['461', '462', '471', '472'] as const
@@ -171,14 +193,21 @@ function asCsv(rows: Array<Array<string | number>>): string {
   return rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n')
 }
 
-export async function loadCourseSnapshot(): Promise<{ scope: CourseAccessScope; aggregates: CourseReportRow[]; sections: CourseDetailRow[] }> {
+export async function loadCourseSnapshot(): Promise<{ scope: CourseAccessScope; aggregates: CourseReportRow[]; sections: CourseDetailRow[]; theses: ThesisEntry[]; thesisSignals: ThesisSignal[] }> {
   const response = await fetch('/api/course/data', { cache: 'no-store', credentials: 'same-origin' })
   if (!response.ok) throw new CourseAccessError(response.status, response.status === 401 ? 'يلزم إدخال كلمة المرور.' : `تعذّر تحميل بيانات التقارير (${response.status}).`)
-  const payload = await response.json() as { scope?: CourseAccessScope; aggregateRows?: Array<Array<string | number>>; courseRows?: Array<Array<string | number>> }
+  const payload = await response.json() as { scope?: CourseAccessScope; aggregateRows?: Array<Array<string | number>>; courseRows?: Array<Array<string | number>>; thesisRows?: ThesisEntry[]; thesisSignals?: ThesisSignal[] }
   if (!payload.scope || !['all', ...departments.slice(1)].includes(payload.scope) || !Array.isArray(payload.aggregateRows) || !Array.isArray(payload.courseRows)) throw new Error('بيانات التقارير المحمية غير مكتملة.')
+  const sections = parseCourseDetailCsv(asCsv([detailHeader, ...payload.courseRows]))
+  const theses = (payload.thesisRows || []).map((row) => ({ ...row, term: westernDigits(row.term) }))
+  const thesisSignals = (payload.thesisSignals || []).map((row) => ({ ...row, terms: row.terms.map(westernDigits), lastTerm: westernDigits(row.lastTerm), absentNextTerm: westernDigits(row.absentNextTerm) }))
+  const thesisKeys = new Set(sections.filter((row) => row.name === 'الرسالة').map((row) => [row.term, row.code, row.department, row.section].join(':')))
+  if (theses.length !== thesisKeys.size || theses.some((row) => !thesisKeys.has([row.term, row.code, row.department, row.section].join(':')))) throw new Error('سجل حالات الرسائل لا يطابق الشعب المنشورة.')
+  const due = new Set(theses.filter((row) => row.gradeDate).map((row) => [row.term, row.code, row.department, row.section].join(':')))
+  for (const section of sections) if (section.name === 'الرسالة') section.thesisDue = due.has([section.term, section.code, section.department, section.section].join(':'))
   return {
     scope: payload.scope,
     aggregates: parseCourseReportCsv(asCsv([header, ...payload.aggregateRows]), payload.scope),
-    sections: parseCourseDetailCsv(asCsv([detailHeader, ...payload.courseRows])),
+    sections, theses, thesisSignals,
   }
 }

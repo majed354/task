@@ -415,6 +415,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .member-table tr.is-selected { background: #f2faf5; }
 .member-name { padding: 0; border: 0; background: none; color: var(--green-deep); font: inherit; font-weight: 900; text-align: right; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .member-name:hover { color: var(--green); }
+.thesis-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.thesis-summary > div { padding: 14px; border: 1px solid #d6e8de; border-radius: 12px; background: #f2faf5; }
+.thesis-summary span { display: block; color: var(--muted); font-size: 11px; }
+.thesis-summary strong { display: block; margin-top: 5px; color: var(--green-deep); font-size: 24px; }
+.thesis-table { max-height: 420px; overflow: auto; }
+.thesis-details { margin-top: 20px; }
+.thesis-details h3 { margin: 0 0 8px; color: var(--green-deep); font-size: 14px; }
 
 @media (max-width: 1000px) {
   .monitor-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -445,5 +452,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .monitor-kpis article > strong { font-size: 26px; }
   .monitor-panel { padding: 17px; }
   .member-focus { grid-template-columns: 1fr; }
+  .thesis-summary { grid-template-columns: 1fr; }
   .monitor-bar-row { grid-template-columns: 92px minmax(0, 1fr) 28px; gap: 8px; font-size: 9px; }
 }

@@ -4,7 +4,9 @@ import type { Config, Context } from '@netlify/functions'
 
 type Scope = 'all' | 'قسم الشريعة' | 'قسم الأنظمة' | 'قسم القراءات' | 'قسم الثقافة الإسلامية'
 type SheetRow = Array<string | number>
-type Snapshot = { aggregateRows: SheetRow[]; courseRows: SheetRow[] }
+type ThesisRow = { term: string; code: string; department: string; section: string; member: string; gradeDate: string; observedTerms: number; basis: 'study' | 'member' }
+type ThesisSignal = { department: string; code: string; member: string; terms: string[]; lastTerm: string; absentNextTerm: string; sections: number }
+type Snapshot = { aggregateRows: SheetRow[]; courseRows: SheetRow[]; thesisRows?: ThesisRow[]; thesisSignals?: ThesisSignal[] }
 
 const scopes: Scope[] = ['all', 'قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية']
 const departments = scopes.slice(1)
@@ -89,6 +91,18 @@ function validateSnapshot(value: unknown): value is Snapshot {
   for (const row of snapshot.courseRows) {
     if (!Array.isArray(row) || row.length !== 14 || !['٤٦١', '٤٦٢', '٤٧١', '٤٧٢'].includes(String(row[0])) || !departments.includes(String(row[3]) as Scope) || !String(row[13]).trim()) return false
   }
+  if (snapshot.thesisRows !== undefined) {
+    if (!Array.isArray(snapshot.thesisRows)) return false
+    const thesisKeys = new Set(snapshot.courseRows.filter((row) => row[2] === 'الرسالة').map((row) => `${row[0]}:${row[1]}:${row[3]}:${row[4]}`))
+    const seen = new Set<string>()
+    for (const row of snapshot.thesisRows) {
+      const key = `${row.term}:${row.code}:${row.department}:${row.section}`
+      if (!thesisKeys.has(key) || seen.has(key) || !departments.includes(row.department as Scope) || !['study', 'member'].includes(row.basis) || !Number.isInteger(row.observedTerms) || row.observedTerms < 1 || row.observedTerms > 4 || (row.gradeDate && !/^\d{4}-\d{2}-\d{2}$/.test(row.gradeDate))) return false
+      seen.add(key)
+    }
+    if (seen.size !== thesisKeys.size) return false
+  }
+  if (snapshot.thesisSignals !== undefined && (!Array.isArray(snapshot.thesisSignals) || snapshot.thesisSignals.some((row) => !departments.includes(row.department as Scope) || !Array.isArray(row.terms) || !row.terms.every((term) => ['٤٦١', '٤٦٢', '٤٧١', '٤٧٢'].includes(term))))) return false
   return true
 }
 
@@ -113,7 +127,9 @@ export function scopedSnapshot(snapshot: Snapshot, scope: Scope): Snapshot {
     const done = count === 1 ? Number(covered > 0 || combined > 0) + Number(measured > 0 || combinedMeasurement > 0) : covered + measured + combined + combinedMeasurement
     for (const row of sectionRows) { row[9] = done; row[10] = required }
   }
-  return { aggregateRows, courseRows }
+  return { aggregateRows, courseRows,
+    thesisRows: snapshot.thesisRows?.filter((row) => row.department === scope),
+    thesisSignals: snapshot.thesisSignals?.filter((row) => row.department === scope) }
 }
 
 export default async function course(request: Request, context: Context): Promise<Response> {
