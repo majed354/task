@@ -395,12 +395,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .course-item-totals span { padding: 7px 10px; border-radius: 8px; background: #f2faf5; color: var(--muted); font-size: 11px; }
 .course-item-totals strong { color: var(--green-deep); }
 .course-more { display: block; margin: 15px auto 0; padding: 10px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--green-deep); font-weight: 800; cursor: pointer; }
+.member-toolbar { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+.member-toolbar .course-search { flex: 1 1 300px; margin: 0; }
+.member-sort { display: grid; gap: 5px; color: var(--muted); font-size: 11px; font-weight: 800; }
+.member-sort select { min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: white; font-size: 11px; font-weight: 800; }
+.member-clear { padding: 11px 15px; border: 1px solid var(--line); border-radius: 10px; color: var(--green-deep); background: white; font-size: 11px; font-weight: 800; cursor: pointer; }
+.member-focus { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.member-focus > div { min-width: 0; padding: 14px; border: 1px solid #d6e8de; border-radius: 12px; background: #f2faf5; }
+.member-focus span, .member-focus small { display: block; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.member-focus strong { display: block; margin: 5px 0; color: var(--green-deep); font-size: 18px; overflow-wrap: anywhere; }
+.member-table tr.is-selected { background: #f2faf5; }
+.member-name { padding: 0; border: 0; background: none; color: var(--green-deep); font: inherit; font-weight: 900; text-align: right; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.member-name:hover { color: var(--green); }
 
 @media (max-width: 1000px) {
   .monitor-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .course-summary, .course-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monitor-kpis.is-aggregate { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .monitor-departments { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .member-focus { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 820px) {
   .monitoring-shell .topbar { grid-template-columns: 1fr auto; }
@@ -423,5 +436,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .monitor-kpis article { min-height: 120px; padding: 13px; }
   .monitor-kpis article > strong { font-size: 26px; }
   .monitor-panel { padding: 17px; }
+  .member-focus { grid-template-columns: 1fr; }
   .monitor-bar-row { grid-template-columns: 92px minmax(0, 1fr) 28px; gap: 8px; font-size: 9px; }
 }

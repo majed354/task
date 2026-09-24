@@ -1,8 +1,8 @@
-// SharePoint -> private Drive JSON -> public, name-free course-report sheets.
+// SharePoint -> private Drive JSON -> public course-report sheets with assigned faculty names.
 const COURSE_REPORT_TERMS = ['٤٦١', '٤٦٢', '٤٧١', '٤٧٢']
 const COURSE_REPORT_DEPARTMENTS = ['كل الأقسام', 'قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية']
 const COURSE_AGGREGATE_HEADER = ['الفصل', 'القسم', 'الشعب', 'تقارير الشعب المسلمة', 'قياسات المخرجات المسلمة', 'المقررات', 'التقارير المجمعة المسلمة', 'المجمعة مع نقص تقارير الشعب', 'وقت الفحص', 'الشعب المغطاة بتقرير جزئي', 'التقارير الجزئية المسلمة', 'تقارير جزئية بانتظار الإسناد', 'الشعب ذات أي تقرير', 'قياسات المخرجات المجمعة المسلمة']
-const COURSE_DETAIL_HEADER = ['الفصل', 'رمز المقرر', 'اسم المقرر', 'القسم', 'الشعبة التنظيمية', 'حالة تقرير الشعبة', 'قياس مخرجات الشعبة', 'التقرير المجمع', 'القياس المجمع', 'المتطلبات المنجزة', 'إجمالي المتطلبات', 'تقارير جزئية بانتظار الإسناد', 'وقت الفحص']
+const COURSE_DETAIL_HEADER = ['الفصل', 'رمز المقرر', 'اسم المقرر', 'القسم', 'الشعبة التنظيمية', 'حالة تقرير الشعبة', 'قياس مخرجات الشعبة', 'التقرير المجمع', 'القياس المجمع', 'المتطلبات المنجزة', 'إجمالي المتطلبات', 'تقارير جزئية بانتظار الإسناد', 'وقت الفحص', 'عضو هيئة التدريس']
 
 function assertCourseCount(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) throw new Error('Invalid count: ' + label)
@@ -44,8 +44,8 @@ function validateCourseReportSnapshot(snapshot) {
   const totals = new Map()
   for (const row of details) {
     if (!Array.isArray(row) || row.length !== COURSE_DETAIL_HEADER.length) throw new Error('Invalid course detail row width')
-    const [term, code, name, department, section, report, clo, combined, combinedClo, done, required, pending, checkedAt] = row
-    if (!COURSE_REPORT_TERMS.includes(term) || !/^[0-9]+$/.test(String(code)) || !String(name).trim() || !COURSE_REPORT_DEPARTMENTS.slice(1).includes(department) || !/^\d{3}$/.test(String(section)) || !['مستقل', 'تغطية جماعية', 'غير مسلّم'].includes(report)) throw new Error('Invalid course detail identifier')
+    const [term, code, name, department, section, report, clo, combined, combinedClo, done, required, pending, checkedAt, member] = row
+    if (!COURSE_REPORT_TERMS.includes(term) || !/^[0-9]+$/.test(String(code)) || !String(name).trim() || !COURSE_REPORT_DEPARTMENTS.slice(1).includes(department) || !/^\d{3}$/.test(String(section)) || !['مستقل', 'تغطية جماعية', 'غير مسلّم'].includes(report) || typeof member !== 'string' || !member.trim()) throw new Error('Invalid course detail identifier')
     for (const flag of [clo, combined, combinedClo]) if (flag !== 0 && flag !== 1) throw new Error('Invalid course detail flag')
     for (const value of [done, required, pending]) assertCourseCount(value, 'course detail')
     if (done > required || required < 2) throw new Error('Invalid course progress')

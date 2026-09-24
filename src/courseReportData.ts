@@ -21,6 +21,7 @@ export interface CourseDetailRow {
   name: string
   department: string
   section: string
+  member: string
   report: 'مستقل' | 'تغطية جماعية' | 'غير مسلّم'
   measurement: boolean
   combined: boolean
@@ -37,7 +38,7 @@ export const courseReportSheet = 'https://docs.google.com/spreadsheets/d/1yJTkpl
 const publishedCsv = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROMId3BOGaEpK7sEOITC3CIs0HLsuGbmbDdcW4OpUPsNRAuAz9lBtr1CY98hsYAp5tAcwQh401ERfJ/pub?gid=1497658740&single=true&output=csv'
 const departments = ['كل الأقسام', 'قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية']
 const header = ['الفصل', 'القسم', 'الشعب', 'تقارير الشعب المسلمة', 'قياسات المخرجات المسلمة', 'المقررات', 'التقارير المجمعة المسلمة', 'المجمعة مع نقص تقارير الشعب', 'وقت الفحص', 'الشعب المغطاة بتقرير جزئي', 'التقارير الجزئية المسلمة', 'تقارير جزئية بانتظار الإسناد', 'الشعب ذات أي تقرير', 'قياسات المخرجات المجمعة المسلمة']
-const detailHeader = ['الفصل', 'رمز المقرر', 'اسم المقرر', 'القسم', 'الشعبة التنظيمية', 'حالة تقرير الشعبة', 'قياس مخرجات الشعبة', 'التقرير المجمع', 'القياس المجمع', 'المتطلبات المنجزة', 'إجمالي المتطلبات', 'تقارير جزئية بانتظار الإسناد', 'وقت الفحص']
+const detailHeader = ['الفصل', 'رمز المقرر', 'اسم المقرر', 'القسم', 'الشعبة التنظيمية', 'حالة تقرير الشعبة', 'قياس مخرجات الشعبة', 'التقرير المجمع', 'القياس المجمع', 'المتطلبات المنجزة', 'إجمالي المتطلبات', 'تقارير جزئية بانتظار الإسناد', 'وقت الفحص', 'عضو هيئة التدريس']
 const publishedDetailCsv = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROMId3BOGaEpK7sEOITC3CIs0HLsuGbmbDdcW4OpUPsNRAuAz9lBtr1CY98hsYAp5tAcwQh401ERfJ/pub?gid=2024894823&single=true&output=csv'
 
 function westernDigits(value: string): string {
@@ -143,10 +144,11 @@ export async function loadCourseReports(): Promise<CourseReportRow[]> {
 
 export function parseCourseDetailCsv(csv: string): CourseDetailRow[] {
   const [columns, ...values] = parseCsv(csv)
-  if (!columns || columns.length !== detailHeader.length || detailHeader.some((name, index) => columns[index]?.trim() !== name)) throw new Error('أعمدة تفاصيل تقارير المقررات لا تطابق الصيغة المطلوبة.')
+  const hasMembers = columns?.length === detailHeader.length
+  if (!columns || (columns.length !== detailHeader.length && columns.length !== detailHeader.length - 1) || detailHeader.slice(0, columns.length).some((name, index) => columns[index]?.trim() !== name)) throw new Error('أعمدة تفاصيل تقارير المقررات لا تطابق الصيغة المطلوبة.')
   const seen = new Set<string>()
   return values.map((fields) => {
-    if (fields.length !== detailHeader.length) throw new Error('أحد صفوف تفاصيل المقررات غير مكتمل.')
+    if (fields.length !== columns.length) throw new Error('أحد صفوف تفاصيل المقررات غير مكتمل.')
     const term = westernDigits(fields[0].trim())
     const code = westernDigits(fields[1].trim())
     const name = fields[2].trim()
@@ -156,11 +158,12 @@ export function parseCourseDetailCsv(csv: string): CourseDetailRow[] {
     const numbers = fields.slice(6, 12).map((value) => Number(westernDigits(value.trim())))
     if (!courseReportTerms.some((value) => value === term) || !/^\d+$/.test(code) || !name || !departments.slice(1).includes(department) || !/^\d{3}$/.test(section) || !['مستقل', 'تغطية جماعية', 'غير مسلّم'].includes(report) || fields.slice(6, 12).some((value) => !/^\d+$/.test(westernDigits(value.trim()))) || numbers.some((value) => !Number.isSafeInteger(value))) throw new Error('تفاصيل المقرر أو الشعبة غير صالحة.')
     const [measurement, combined, combinedMeasurement, done, required, unassignedPartial] = numbers
-    if ([measurement, combined, combinedMeasurement].some((value) => value > 1) || done > required || required < 2 || !Number.isFinite(Date.parse(fields[12]))) throw new Error('حالة إنجاز المقرر غير صالحة.')
+    const member = hasMembers ? fields[13].trim().replace(/\s+/g, ' ') : ''
+    if ([measurement, combined, combinedMeasurement].some((value) => value > 1) || done > required || required < 2 || !Number.isFinite(Date.parse(fields[12])) || (hasMembers && !member)) throw new Error('حالة إنجاز المقرر غير صالحة.')
     const key = [term, code, department, section].join(':')
     if (seen.has(key)) throw new Error('شعبة مكررة في ورقة التفاصيل.')
     seen.add(key)
-    return { term, code, name, department, section, report, measurement: measurement === 1, combined: combined === 1, combinedMeasurement: combinedMeasurement === 1, done, required, unassignedPartial, checkedAt: fields[12].trim() }
+    return { term, code, name, department, section, member, report, measurement: measurement === 1, combined: combined === 1, combinedMeasurement: combinedMeasurement === 1, done, required, unassignedPartial, checkedAt: fields[12].trim() }
   })
 }
 

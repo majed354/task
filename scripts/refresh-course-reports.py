@@ -47,7 +47,7 @@ HEADER = ("الفصل", "القسم", "الشعب", "تقارير الشعب ا�
 DETAIL_HEADER = ("الفصل", "رمز المقرر", "اسم المقرر", "القسم", "الشعبة التنظيمية",
                  "حالة تقرير الشعبة", "قياس مخرجات الشعبة", "التقرير المجمع",
                  "القياس المجمع", "المتطلبات المنجزة", "إجمالي المتطلبات",
-                 "تقارير جزئية بانتظار الإسناد", "وقت الفحص")
+                 "تقارير جزئية بانتظار الإسناد", "وقت الفحص", "عضو هيئة التدريس")
 
 
 def scan(sync_details: bool = False) -> tuple[list[list[str | int]], list[list[str | int]]]:
@@ -89,7 +89,7 @@ def scan(sync_details: bool = False) -> tuple[list[list[str | int]], list[list[s
                                     DEPARTMENTS[section["القسم"]], section["الشعبة"], section["التقرير"],
                                     int(section["القياس"]), int(course["تقرير_مجمع"]), int(course["قياس_مجمع"]),
                                     course["عدد_المنجز"], course["عدد_المتطلبات"],
-                                    course["تقارير_جزئية_بانتظار_الإسناد"], checked])
+                                    course["تقارير_جزئية_بانتظار_الإسناد"], checked, section["العضو"]])
     if len(rows) != 20:
         raise RuntimeError("Expected 20 term/department rows")
     return rows, detail_rows
