@@ -4,7 +4,7 @@ import { counts, isDelayed, riyadhDate } from './committeeMetrics'
 import { connectedAccount, connectSharePoint, disconnectSharePoint, loadCommitteeSnapshot, sharePointReady, type CommitteeSnapshot } from './sharePointData'
 
 const sitePage = 'https://taifedusa.sharepoint.com/sites/msteams_3b4354/Lists/1448/AllItems.aspx'
-const guideFolder = 'https://taifedusa.sharepoint.com/sites/msteams_3b4354/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Fmsteams%5F3b4354%2FShared%20Documents%2F%D8%A3%D8%B9%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D9%84%D8%AC%D8%A7%D9%86%2F%D8%AF%D9%84%D9%8A%D9%84%20%D9%85%D9%87%D8%A7%D9%85%20%D8%A7%D9%84%D9%84%D8%AC%D8%A7%D9%86'
+const guideFolder = `https://taifedusa.sharepoint.com/sites/msteams_3b4354/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent('/sites/msteams_3b4354/Shared Documents/أعمال اللجان/دليل مهام اللجان/٤٨١')}`
 const number = new Intl.NumberFormat('ar-SA-u-nu-latn')
 
 function safeFolder(url: string): boolean {
@@ -76,9 +76,10 @@ export default function CommitteeDashboard() {
   return <div className="app-shell monitoring-shell" dir="rtl">
     <header className="topbar" id="top">
       <a className="brand" href="/" aria-label="دليل أعمال اللجان"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>أعمال اللجان</strong></span></a>
-      <nav className="topnav monitor-topnav" aria-label="قسما الموقع">
+      <nav className="topnav monitor-topnav" aria-label="أقسام الموقع">
         <a className="portal-tab" href="/">دليل أعمال اللجان</a>
-        <a className="portal-tab is-current" href="/?view=dashboard" aria-current="page">لوحة المتابعة</a>
+        <a className="portal-tab is-current" href="/?view=dashboard" aria-current="page">لوحة متابعة اللجان</a>
+        <a className="portal-tab" href="/?view=course-reports">تقارير المقررات</a>
       </nav>
       <a className="monitor-header-link" href={guideFolder} target="_blank" rel="noreferrer">مجلد اللجان <ArrowUpLeft size={15} /></a>
     </header>
