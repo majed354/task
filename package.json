@@ -7,6 +7,9 @@
     "dev": "vite",
     "check:data": "node scripts/validate-data.mjs",
     "check:access": "node --experimental-strip-types scripts/test-course-access.mjs",
+    "check:committees": "node --experimental-strip-types scripts/test-committee-access.mjs",
+    "check:search": "node --experimental-strip-types scripts/test-arabic-search.mjs",
+    "check:terms": "node --experimental-strip-types scripts/test-course-terms.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

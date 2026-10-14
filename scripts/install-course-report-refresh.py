@@ -25,7 +25,9 @@ def main() -> None:
     INSTALL_DIR.mkdir(parents=True, exist_ok=True)
     PLIST.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(REPO / "scripts/refresh-course-reports.py", INSTALL_DIR / "refresh-course-reports.py")
+    shutil.copy2(REPO / 'scripts/build_official_sections.py', INSTALL_DIR / 'build_official_sections.py')
     shutil.copy2(SOURCE_SCANNER, INSTALL_DIR / "course-delivery-scanner.py")
+    shutil.copy2(REPO / "scripts/refresh-committee-tasks.py", INSTALL_DIR / "refresh-committee-tasks.py")
     python = str(PYTHON if PYTHON.is_file() else Path(sys.executable))
     config = {
         "Label": LABEL,

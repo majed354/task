@@ -4,6 +4,13 @@ import { CourseAccessError, courseReportScope, courseReportTerms, currentCourseR
 import MemberProgress from './MemberProgress'
 import CourseItem, { type CourseGroup } from './CourseItem'
 import { adjustedCourseRows, eligibleSection, thesisReviewLabel, visibleTheses, visibleThesisSignals } from './thesisData'
+import ReportFolderLink from './ReportFolderLink'
+import SearchableSelect from './SearchableSelect'
+import { matchesArabicSearch } from './arabicSearch'
+import { matchesTermSelection } from './courseTerms'
+import TermMultiSelect, { selectedTermsLabel } from './TermMultiSelect'
+import SectionNumber from './SectionNumber'
+import MemberBatchLink from './MemberBatchLink'
 
 const number = new Intl.NumberFormat('ar-SA-u-nu-latn')
 const digits = (value: string) => value.replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)])
@@ -45,9 +52,11 @@ export default function CourseReportsDashboard() {
   const [details, setDetails] = useState<CourseDetailRow[]>([])
   const [theses, setTheses] = useState<ThesisEntry[]>([])
   const [thesisSignals, setThesisSignals] = useState<ThesisSignal[]>([])
-  const [term, setTerm] = useState(currentCourseReportTerm)
+  const [terms, setTerms] = useState<string[]>([currentCourseReportTerm])
   const [department, setDepartment] = useState('كل الأقسام')
   const [selectedMember, setSelectedMember] = useState('')
+  const [selectedCourse, setSelectedCourse] = useState('')
+  const [memberQuery, setMemberQuery] = useState('')
   const [query, setQuery] = useState('')
   const [visible, setVisible] = useState(40)
   const [busy, setBusy] = useState(false)
@@ -88,21 +97,26 @@ export default function CourseReportsDashboard() {
 
   const logout = async () => {
     await fetch('/api/course/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => undefined)
-    setScope(null); setRows([]); setDetails([]); setTheses([]); setThesisSignals([]); setDepartment('كل الأقسام'); setSelectedMember(''); setPassword('')
+    setScope(null); setRows([]); setDetails([]); setTheses([]); setThesisSignals([]); setDepartment('كل الأقسام'); setSelectedMember(''); setSelectedCourse(''); setMemberQuery(''); setQuery(''); setPassword('')
   }
 
-  const scoped = useMemo(() => courseReportScope(rows, term), [rows, term])
+  const scoped = useMemo(() => courseReportScope(rows, terms), [rows, terms])
   const current = scoped.find((row) => row.department === department)
   const departmentRows = scoped.filter((row) => row.department !== 'كل الأقسام')
-  const allCourses = useMemo(() => groupCourses(details.filter((row) => (term === 'all' || row.term === term) && eligibleSection(row))), [details, term])
+  const allCourses = useMemo(() => groupCourses(details.filter((row) => matchesTermSelection(row.term, terms) && eligibleSection(row))), [details, terms])
   const departmentCourses = useMemo(() => department === 'كل الأقسام' ? allCourses : allCourses.filter((course) => course.sections.some((row) => row.department === department)), [allCourses, department])
-  const memberRows = useMemo(() => details.filter((row) => (term === 'all' || row.term === term) && (department === 'كل الأقسام' || row.department === department)), [details, term, department])
-  const shownTheses = useMemo(() => visibleTheses(theses, term, department, selectedMember), [theses, term, department, selectedMember])
-  const shownThesisSignals = useMemo(() => visibleThesisSignals(thesisSignals, term, department, selectedMember), [thesisSignals, term, department, selectedMember])
+  const memberRows = useMemo(() => details.filter((row) => matchesTermSelection(row.term, terms) && (department === 'كل الأقسام' || row.department === department)), [details, terms, department])
+  const shownTheses = useMemo(() => visibleTheses(theses, terms, department, selectedMember), [theses, terms, department, selectedMember])
+  const shownThesisSignals = useMemo(() => visibleThesisSignals(thesisSignals, terms, department, selectedMember), [thesisSignals, terms, department, selectedMember])
   const thesisEvidence = useMemo(() => new Map(details.filter((row) => row.name === 'الرسالة').map((row) => [[row.term, row.code, row.department, row.section].join(':'), row])), [details])
   const memberCourses = useMemo(() => selectedMember ? departmentCourses.filter((course) => course.sections.some((row) => row.member === selectedMember && (department === 'كل الأقسام' || row.department === department))) : departmentCourses, [departmentCourses, selectedMember, department])
-  const shownCourses = useMemo(() => memberCourses.filter((course) => !query.trim() || `${course.code} ${course.name}`.includes(query.trim())).slice(0, visible), [memberCourses, query, visible])
-  const filteredCount = useMemo(() => memberCourses.filter((course) => !query.trim() || `${course.code} ${course.name}`.includes(query.trim())).length, [memberCourses, query])
+  const memberOptions = useMemo(() => [...new Set(memberRows.map((row) => row.member).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ar')).map((name) => ({ value: name, label: name })), [memberRows])
+  const courseOptions = useMemo(() => [...memberCourses].sort((a, b) => a.name.localeCompare(b.name, 'ar') || a.code.localeCompare(b.code, 'en', { numeric: true })).map((course) => ({ value: course.key, label: `${course.name} · ${course.code}${terms.length > 1 ? ` · ${termLabel(course.term)}` : ''}` })), [memberCourses, terms])
+  const filteredCourses = useMemo(() => memberCourses.filter((course) => selectedCourse ? course.key === selectedCourse : matchesArabicSearch(`${course.code} ${course.name}`, query)), [memberCourses, selectedCourse, query])
+  const shownCourses = filteredCourses.slice(0, visible)
+  const filteredCount = filteredCourses.length
+  const selectMember = (name: string) => { setSelectedMember(name); setMemberQuery(name); setSelectedCourse(''); setQuery(''); setVisible(40) }
+  const clearSelection = () => { setSelectedMember(''); setMemberQuery(''); setSelectedCourse(''); setQuery(''); setVisible(40) }
   const lastChecked = rows.reduce((latest, row) => row.checkedAt > latest ? row.checkedAt : latest, '')
   const checkedTime = lastChecked ? Date.parse(lastChecked) : NaN
   const checkedLabel = Number.isFinite(checkedTime) ? new Intl.DateTimeFormat('ar-SA-u-ca-gregory', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Riyadh' }).format(checkedTime) : '—'
@@ -125,28 +139,45 @@ export default function CourseReportsDashboard() {
       <section className="monitor-hero"><div><span className="monitor-eyebrow"><LayoutDashboard size={17} /> متابعة تقارير المقررات</span><h1>من الشعبة إلى التقرير المجمع</h1><p>نحسب تقرير كل شعبة وقياس مخرجاتها، ثم التقرير والقياس المجمعين للمقرر. تظهر التقارير الجزئية للشعب التي تغطيها فعلاً، ويبقى ما لم تُحدد شعبه بانتظار المطابقة.</p></div><div className="monitor-hero-badge"><span>الفصل الجاري متابعته</span><strong>٤٧٢</strong><small>الاختيار الافتراضي</small></div></section>
       <div className="monitor-toolbar"><span className="monitor-account">آخر فحص للمجلدات: {checkedLabel}</span><button type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={16} /> {busy ? 'جارٍ التحديث' : 'تحديث العرض'}</button></div>
       {error && <p className="monitor-error" role="alert">{error}</p>}{oldData && <p className="monitor-error" role="status">آخر فحص للمجلدات أقدم من ثلاث ساعات. الأرقام المعروضة هي آخر لقطة محفوظة.</p>}
-      <section className="monitor-control-panel" aria-label="تصفية تقارير المقررات"><div className="monitor-panel-head"><h2>نطاق العرض</h2><span>{scope === 'all' ? 'يمكن الجمع بين الفصول أو عرض قسم واحد' : `العرض مقصور على ${scope}`}</span></div><div className="monitor-filters"><label>الفصل<select value={term} onChange={(event) => { setTerm(event.target.value); if (scope === 'all') setDepartment('كل الأقسام'); setSelectedMember(''); setVisible(40) }}><option value="all">جميع الفصول</option>{courseReportTerms.map((code) => <option key={code} value={code}>{termLabel(code)}</option>)}</select></label>{scope === 'all' && <label>القسم<select value={department} onChange={(event) => { setDepartment(event.target.value); setSelectedMember(''); setVisible(40) }}><option>كل الأقسام</option>{departmentRows.map((row) => <option key={row.department}>{row.department}</option>)}</select></label>}</div><p className="monitor-source-line">تُعرض بيانات {scope === 'all' ? 'كل الأقسام' : scope} عبر اتصال محمي. الأرقام هنا للمتطلبات المستحقة؛ قد تختلف عن أعداد الشعب الخام في ورقة Google. ٤٨١ هيكل جاهز، وتبدأ بيانات التدريس المتاحة من ٤٦١ إلى ٤٧٢.</p></section>
+      <section className="monitor-control-panel" aria-label="تصفية تقارير المقررات">
+        <div className="monitor-panel-head"><h2>نطاق العرض</h2><span>{scope === 'all' ? 'يمكن الجمع بين الفصول أو عرض قسم واحد' : `العرض مقصور على ${scope}`}</span></div>
+        <div className="monitor-filters">
+          <TermMultiSelect value={terms} onChange={(selected) => { setTerms(selected); clearSelection() }} />
+          {scope === 'all' && <label>القسم<select value={department} onChange={(event) => { setDepartment(event.target.value); clearSelection() }}><option>كل الأقسام</option>{departmentRows.map((row) => <option key={row.department}>{row.department}</option>)}</select></label>}
+        </div>
+        <div className="report-search-filters">
+          <SearchableSelect label="المقرر" placeholder="اكتب اسم المقرر أو رمزه" allLabel="جميع المقررات" options={courseOptions} value={selectedCourse} query={query}
+            onQueryChange={(text) => { setQuery(text); setSelectedCourse(''); if (!selectedMember) setMemberQuery(''); setVisible(40) }}
+            onSelect={(key, label) => { setSelectedCourse(key); setQuery(label); if (!selectedMember) setMemberQuery(''); setVisible(40) }} />
+          <SearchableSelect label="عضو هيئة التدريس" placeholder="اكتب اسم العضو" allLabel="جميع الأعضاء" options={memberOptions} value={selectedMember} query={memberQuery}
+            onQueryChange={(text) => { setMemberQuery(text); setSelectedMember(''); setSelectedCourse(''); setQuery(''); setVisible(40) }}
+            onSelect={(name) => selectMember(name)} />
+        </div>
+        <p className="monitor-note">اكتب داخل أي قائمة لتصفية نتائجها، ثم اختر المقرر أو العضو. يراعي البحث اختلافات الحروف العربية والتشكيل والمسافات.</p>
+        <p className="monitor-source-line">تُعرض بيانات {scope === 'all' ? 'كل الأقسام' : scope} عبر اتصال محمي. الأرقام هنا للمتطلبات المستحقة؛ قد تختلف عن أعداد الشعب الخام في ورقة Google. ٤٨١ هيكل جاهز، وتبدأ بيانات التدريس المتاحة من ٤٦١ إلى ٤٧٢.</p>
+      </section>
       {!rows.length && !error && <div className="monitor-gate">جارٍ تحميل بيانات تقارير المقررات…</div>}
       {current && <>
-        <section className="course-summary" aria-label="ملخص نطاق التقارير"><div><span><FolderOpen size={18} /> الشعب المستحقة</span><strong>{number.format(current.sections)}</strong><small>{termLabel(term)} · {department}</small></div><div><span><ClipboardList size={18} /> المقررات المستحقة</span><strong>{number.format(departmentCourses.length)}</strong><small>{number.format(singleSectionCourses)} منها ذات شعبة واحدة</small></div><div className="course-summary-progress"><span><CheckCircle2 size={18} /> اكتمال الأدلة المستحقة</span><strong>{number.format(overallProgress)}٪</strong><small>{number.format(submittedEvidence)} من {number.format(totalEvidence)} متطلب</small></div></section>
+        <section className="course-summary" aria-label="ملخص نطاق التقارير"><div><span><FolderOpen size={18} /> الشعب المستحقة</span><strong>{number.format(current.sections)}</strong><small>{selectedTermsLabel(terms)} · {department}</small></div><div><span><ClipboardList size={18} /> المقررات المستحقة</span><strong>{number.format(departmentCourses.length)}</strong><small>{number.format(singleSectionCourses)} منها ذات شعبة واحدة</small></div><div className="course-summary-progress"><span><CheckCircle2 size={18} /> اكتمال الأدلة المستحقة</span><strong>{number.format(overallProgress)}٪</strong><small>{number.format(submittedEvidence)} من {number.format(totalEvidence)} متطلب</small></div></section>
         <section className="course-metrics" aria-label="حالة التسليم"><Metric title="تقارير الشعب المغطاة" done={current.anyReport} total={current.sections} icon={<FileCheck2 size={18} />} /><Metric title="قياس مخرجات الشعب" done={current.measurements} total={current.sections} icon={<Target size={18} />} /><Metric title="التقارير المجمعة" done={current.combined} total={current.courses} icon={<ClipboardList size={18} />} /><Metric title="قياسات المخرجات المجمعة" done={current.combinedMeasurements} total={current.courses} icon={<Target size={18} />} /></section>
         <p className="monitor-note" role="status">من تقارير الشعب المغطاة {number.format(current.reports)} مستقل و{number.format(current.partialCovered)} تغطيها تقارير جزئية؛ وقد تتداخل الفئتان. استُلِم {number.format(current.partialReports)} تقريرًا جزئيًا، منها {number.format(current.unassignedPartial)} بانتظار تعيين الشعب. {current.combinedWithMissingSections ? `هناك ${number.format(current.combinedWithMissingSections)} مقررًا له تقرير مجمع مع نقص في تقارير بعض شعبه.` : ''} المقرر ذو الشعبة الواحدة له متطلبان فقط: تقرير وقياس، ويكفي رفع كل منهما مرة واحدة.</p>
+        {(selectedMember || memberQuery.trim()) && <MemberProgress rows={memberRows} selected={selectedMember} query={memberQuery} onSelect={selectMember} />}
+        {selectedMember && <MemberBatchLink member={selectedMember} terms={terms} department={department} rows={memberRows.filter(row => row.member === selectedMember && eligibleSection(row))} />}
+        {(!memberQuery.trim() || selectedMember) && <section className="monitor-panel" id="course-evidence">
+          <div className="monitor-panel-head"><h2>{selectedMember ? `مقررات ${selectedMember}` : 'إنجاز كل مقرر وشعبه'}</h2><span>افتح المقرر لرؤية حالة كل شعبة</span></div>
+          <p className="monitor-note">أرقام الشعب مأخوذة من ملفات النتائج. «بحاجة للمطابقة» تعني أن أكثر من رقم محتمل للشعبة، و«غير متاح في النتائج» تعني غياب نتائج مطابقة في الملفات المتاحة.</p>
+          <p className="course-formula">للمقرر متعدد الشعب: المتطلبات = تقرير وقياس لكل شعبة + تقرير وقياس مجمعان. مثال: ٤ شعب، وتقرير شعبة واحدة فقط = ١ من ١٠ = ١٠٪. لا تدخل الرسالة في هذه النسبة حتى يوثق رصد الدرجة. عند تحديد عضو تظهر نسبة متطلبات شعبه وحدها.</p>
+          <div className="course-list">{shownCourses.map((course) => <CourseItem key={course.key} course={course} selectedMember={selectedMember} department={department} expanded={Boolean(selectedCourse)} />)}</div>
+          {visible < filteredCount && <button className="course-more" type="button" onClick={() => setVisible((count) => count + 40)}>عرض المزيد ({number.format(filteredCount - visible)})</button>}
+          {filteredCount === 0 && <p className="monitor-note">لا توجد مقررات تطابق البحث.</p>}
+        </section>}
         <section className="monitor-panel thesis-panel" aria-label="متابعة الرسائل العلمية">
           <div className="monitor-panel-head"><h2>متابعة الرسائل العلمية</h2><span>الرصد النهائي للدرجة هو شرط استحقاق التقرير</span></div>
           <div className="thesis-summary"><div><span>رسائل بانتظار توثيق الدرجة</span><strong>{number.format(unconfirmedTheses)}</strong></div><div><span>تقارير أصبحت مستحقة</span><strong>{number.format(dueTheses)}</strong></div><div><span>إشارات إشراف للمراجعة</span><strong>{number.format(shownThesisSignals.filter((row) => row.terms.length >= 3 || row.absentNextTerm).length)}</strong></div></div>
           <p className="monitor-note">عدد الفصول وانقطاع المقرر من جدول العضو إشارات للمراجعة، ولا يثبتان تخرج طالب بعينه. عند توثيق تاريخ رصد الدرجة في سجل الحالات الداخلي تدخل شعبة الرسالة في المتطلبات المستحقة ونسبة العضو. هذه الإشارات محسوبة على مستوى العضو والمقرر؛ ولا نستطيع تتبع رسالة واحدة عبر الفصول إلا بعد إدخال معرّف ثابت لها.</p>
           <div className="monitor-table-wrap"><table className="course-table thesis-table"><thead><tr><th>عضو هيئة التدريس</th><th>رمز الرسالة</th><th>ظهرت في</th><th>آخر ظهور</th><th>إشارة المراجعة</th></tr></thead><tbody>{shownThesisSignals.map((signal) => <tr key={`${signal.department}:${signal.code}:${signal.member}`}><td>{signal.member}<small>{signal.department}</small></td><td>{signal.code}</td><td>{signal.terms.map(digits).join('، ')}</td><td>{digits(signal.lastTerm)}{signal.absentNextTerm && ` ← غابت في ${digits(signal.absentNextTerm)}`}</td><td>{thesisReviewLabel(signal)}</td></tr>)}</tbody></table></div>
           {!shownThesisSignals.length && <p className="monitor-note">لا توجد إشارات رسائل في هذا النطاق.</p>}
-          {selectedMember && shownTheses.length > 0 && <div className="monitor-table-wrap thesis-details"><h3>شعب الرسالة لدى {selectedMember}</h3><table className="course-table"><thead><tr><th>الفصل</th><th>رمز المقرر</th><th>الشعبة التنظيمية</th><th>عدد الفصول المرصودة</th><th>التقرير</th><th>القياس</th><th>حالة الاستحقاق</th></tr></thead><tbody>{shownTheses.map((entry) => { const evidence = thesisEvidence.get([entry.term, entry.code, entry.department, entry.section].join(':')); return <tr key={`${entry.term}:${entry.code}:${entry.department}:${entry.section}`}><td>{digits(entry.term)}</td><td>{entry.code}</td><td>{digits(entry.section)}</td><td>{number.format(entry.observedTerms)} {entry.basis === 'study' ? 'للرسالة المعرّفة' : 'لظهور المقرر لدى العضو'}</td><td>{evidence?.report || 'غير معروف'}</td><td>{evidence?.measurement ? 'مسلّم' : 'غير مسلّم'}</td><td>{entry.gradeDate ? `مستحق · رُصدت الدرجة ${entry.gradeDate}` : 'بانتظار توثيق الدرجة'}</td></tr> })}</tbody></table></div>}
-        </section>
-        <MemberProgress rows={memberRows} selected={selectedMember} onSelect={(name) => { setSelectedMember(name); setQuery(''); setVisible(40) }} />
-        <section className="monitor-panel">
-          <div className="monitor-panel-head"><h2>{selectedMember ? `مقررات ${selectedMember}` : 'إنجاز كل مقرر وشعبه'}</h2><span>افتح المقرر لرؤية حالة كل شعبة</span></div>
-          <label className="course-search">البحث برمز المقرر أو اسمه<input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setVisible(40) }} placeholder="مثال: 2001421 أو فقه" /></label>
-          <p className="course-formula">للمقرر متعدد الشعب: المتطلبات = تقرير وقياس لكل شعبة + تقرير وقياس مجمعان. مثال: ٤ شعب، وتقرير شعبة واحدة فقط = ١ من ١٠ = ١٠٪. لا تدخل الرسالة في هذه النسبة حتى يوثق رصد الدرجة. عند تحديد عضو تظهر نسبة متطلبات شعبه وحدها.</p>
-          <div className="course-list">{shownCourses.map((course) => <CourseItem key={course.key} course={course} selectedMember={selectedMember} department={department} />)}</div>
-          {visible < filteredCount && <button className="course-more" type="button" onClick={() => setVisible((count) => count + 40)}>عرض المزيد ({number.format(filteredCount - visible)})</button>}
-          {filteredCount === 0 && <p className="monitor-note">لا توجد مقررات تطابق البحث.</p>}
+          {selectedMember && shownTheses.length > 0 && <div className="monitor-table-wrap thesis-details"><h3>شعب الرسالة لدى {selectedMember}</h3><table className="course-table"><thead><tr><th>الفصل</th><th>رمز المقرر</th><th>رقم الشعبة</th><th>عدد الفصول المرصودة</th><th>التقرير</th><th>القياس</th><th>حالة الاستحقاق</th></tr></thead><tbody>{shownTheses.map((entry) => { const evidence = thesisEvidence.get([entry.term, entry.code, entry.department, entry.section].join(':')); return <tr key={`${entry.term}:${entry.code}:${entry.department}:${entry.section}`}><td>{digits(entry.term)}</td><td>{entry.code}</td><td><SectionNumber row={evidence} /></td><td>{number.format(entry.observedTerms)} {entry.basis === 'study' ? 'للرسالة المعرّفة' : 'لظهور المقرر لدى العضو'}</td><td>{evidence?.report || 'غير معروف'}{entry.gradeDate && evidence && <ReportFolderLink path={evidence.folders?.report} delivered={evidence.report !== 'غير مسلّم'} label={`تقرير الرسالة لدى ${entry.member}`} />}</td><td>{evidence?.measurement ? 'مسلّم' : 'غير مسلّم'}{entry.gradeDate && evidence && <ReportFolderLink path={evidence.folders?.measurement} delivered={evidence.measurement} label={`قياس مخرجات الرسالة لدى ${entry.member}`} />}</td><td>{entry.gradeDate ? `مستحق · رُصدت الدرجة ${entry.gradeDate}` : 'بانتظار توثيق الدرجة'}</td></tr> })}</tbody></table></div>}
         </section>
         <section className="monitor-panel"><div className="monitor-panel-head"><h2>{scope === 'all' ? 'الأقسام الأربعة' : scope}</h2><span>التغطية تشمل التقرير المستقل أو الجزئي المسند إلى الشعبة</span></div><div className="monitor-table-wrap"><table className="course-table"><thead><tr><th>القسم</th><th>الشعب</th><th>شعب لها تقرير</th><th>قياس الشعب</th><th>المقررات</th><th>التقرير المجمع</th><th>القياس المجمع</th></tr></thead><tbody>{departmentRows.map((row) => <tr key={row.department}><td><strong>{row.department}</strong></td><td>{number.format(row.sections)}</td><td>{number.format(row.anyReport)} / {number.format(row.sections)}</td><td>{number.format(row.measurements)} / {number.format(row.sections)}</td><td>{number.format(row.courses)}</td><td>{number.format(row.combined)} / {number.format(row.courses)}</td><td>{number.format(row.combinedMeasurements)} / {number.format(row.courses)}</td></tr>)}</tbody></table></div></section>
         <p className="monitor-note">«غير مسلّم» تعني أن ملف التسليم لم يظهر في مجلده عند آخر فحص؛ لا تعني التأخر دون موعد معتمد. عند تصفية قسم، تظهر نسبة المقرر كاملاً إذا دُرّس في أكثر من قسم.</p>

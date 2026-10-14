@@ -1,3 +1,4 @@
+import { matchesTermSelection, type TermSelection } from './courseTerms.ts'
 import type { CourseDetailRow, CourseReportRow, ThesisEntry, ThesisSignal } from './courseReportData'
 
 export const eligibleSection = (row: CourseDetailRow) => row.name !== 'الرسالة' || row.thesisDue === true
@@ -34,11 +35,11 @@ export function thesisReviewLabel(signal: ThesisSignal): string {
   return 'ظهور أول — قيد المتابعة'
 }
 
-export function visibleTheses(entries: ThesisEntry[], term: string, department: string, member: string): ThesisEntry[] {
-  return entries.filter((row) => (term === 'all' || row.term === term) && (department === 'كل الأقسام' || row.department === department) && (!member || row.member === member))
+export function visibleTheses(entries: ThesisEntry[], term: TermSelection, department: string, member: string): ThesisEntry[] {
+  return entries.filter((row) => matchesTermSelection(row.term, term) && (department === 'كل الأقسام' || row.department === department) && (!member || row.member === member))
 }
 
-export function visibleThesisSignals(signals: ThesisSignal[], term: string, department: string, member: string): ThesisSignal[] {
-  return signals.filter((row) => (term === 'all' || row.lastTerm === term || row.absentNextTerm === term) && (department === 'كل الأقسام' || row.department === department) && (!member || row.member === member))
+export function visibleThesisSignals(signals: ThesisSignal[], term: TermSelection, department: string, member: string): ThesisSignal[] {
+  return signals.filter((row) => (matchesTermSelection(row.lastTerm, term) || matchesTermSelection(row.absentNextTerm, term)) && (department === 'كل الأقسام' || row.department === department) && (!member || row.member === member))
     .sort((a, b) => Number(Boolean(b.absentNextTerm)) - Number(Boolean(a.absentNextTerm)) || b.terms.length - a.terms.length || a.member.localeCompare(b.member, 'ar'))
 }

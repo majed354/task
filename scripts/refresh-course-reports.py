@@ -10,10 +10,12 @@ import json
 import os
 import re
 import subprocess
+import sys
 import unicodedata
 import urllib.request
 from datetime import date
 from pathlib import Path
+from build_official_sections import register_signature
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,6 +61,66 @@ DETAIL_HEADER = ("الفصل", "رمز المقرر", "اسم المقرر", "ا
 THESIS_HEADER = ("الفصل", "رمز_القسم", "رمز_المقرر", "الشعبة_التنظيمية", "معرف_العضو",
                  "عضو_هيئة_التدريس", "معرف_الرسالة", "تاريخ_رصد_الدرجة")
 THESIS_REGISTRY = TEAM_FOLDER / "0-الأدلة-والقوالب" / "قوائم-المقررات" / "سجل-حالات-الرسائل.csv"
+OFFICIAL_SECTIONS = THESIS_REGISTRY.parent / 'مطابقة-أرقام-الشعب-من-النتائج.json'
+
+
+def official_section_numbers(detail_rows: list[list[str | int]]) -> list[dict] | None:
+    if not OFFICIAL_SECTIONS.exists():
+        return None
+    metadata = json.loads(OFFICIAL_SECTIONS.read_text(encoding='utf-8'))
+    if metadata.get('schema') != 'official-sections-v1':
+        raise ValueError('Official section mapping schema is invalid')
+    registers = {}
+    for term in TERMS:
+        with (THESIS_REGISTRY.parent / f'سجل-الشعب-{term}.csv').open(encoding='utf-8-sig', newline='') as stream:
+            for row in csv.DictReader(stream):
+                key = (term, row['رمز_المقرر'], DEPARTMENTS[row['رمز_القسم']], row['الشعبة_التنظيمية'])
+                registers[key] = row
+    normalized_term = lambda term: term.translate(str.maketrans('0123456789', '٠١٢٣٤٥٦٧٨٩'))
+    entries = {(normalized_term(entry['term']), entry['code'], entry['department'], entry['section']): entry for entry in metadata['entries']}
+    expected = {tuple(str(row[index]) for index in (0, 1, 3, 4)) for row in detail_rows}
+    if len(entries) != len(metadata['entries']) or set(entries) != expected:
+        raise ValueError('Official numbers do not cover the current section registers; rebuild the mapping')
+    numbers = []
+    for key, entry in entries.items():
+        row = registers[key]
+        if entry['registerSignature'] != register_signature(row) or entry['member'] != row['عضو_هيئة_التدريس']:
+            raise ValueError('Section assignment changed; rebuild its official-number mapping')
+        if entry['status'] == 'matched' and row['رقم_الشعبة_الرسمي'] != entry['officialSection']:
+            raise ValueError('Official-number register and reviewed source mapping disagree')
+        numbers.append({'term': key[0], 'code': key[1], 'department': key[2], 'section': key[3], 'member': entry['member'],
+                        'officialSection': entry['officialSection'], 'status': entry['status'], 'candidates': entry['candidates'],
+                        'sourceFiles': sorted({Path(source['file']).name for source in entry['sources']})})
+    return numbers
+
+
+def folder_links(detail_rows: list[list[str | int]]) -> list[dict[str, str]]:
+    """Use registered upload folders; keep URLs out of the public CSV sheets."""
+    links = []
+    for term in TERMS:
+        source = THESIS_REGISTRY.parent / f"سجل-الشعب-{term}.csv"
+        with source.open(encoding="utf-8-sig", newline="") as handle:
+            for row in csv.DictReader(handle):
+                if "/الشعب/" not in row["تقرير_الشعبة"]:
+                    raise ValueError("Section folder is outside its registered course")
+                paths = {
+                    "report": row["تقرير_الشعبة"],
+                    "measurement": row["قياس_مخرجات_الشعبة"],
+                    "combined": row["تقرير_المقرر_المجمع"],
+                    "combinedMeasurement": row["تقرير_الشعبة"].split("/الشعب/", 1)[0] + "/05-قياس-مخرجات-المقرر-المجمع",
+                }
+                if any(not path.startswith(f"1-التقارير/{term}/") or ".." in Path(path).parts for path in paths.values()):
+                    raise ValueError("Report folder path is outside its registered term")
+                if any(not (TEAM_FOLDER / path).is_dir() for path in paths.values()):
+                    raise ValueError("A registered report upload folder is missing")
+                links.append({"term": term, "code": row["رمز_المقرر"], "department": DEPARTMENTS[row["رمز_القسم"]],
+                              "section": row["الشعبة_التنظيمية"],
+                              **{key: unicodedata.normalize("NFC", path) for key, path in paths.items()}})
+    expected = {(str(row[0]), str(row[1]), str(row[3]), str(row[4])) for row in detail_rows}
+    actual = {(row["term"], row["code"], row["department"], row["section"]) for row in links}
+    if len(links) != len(actual) or actual != expected:
+        raise ValueError("Report folder links do not match every published section")
+    return links
 
 
 def thesis_key(row: dict[str, str]) -> tuple[str, str, str, str]:
@@ -212,8 +274,13 @@ def write_synced_snapshot(rows: list[list[str | int]], detail_rows: list[list[st
                  if unicodedata.normalize('NFC', path.name) != expected_name]
     if conflicts:
         raise RuntimeError(f'OneDrive conflict copy requires reconciliation: {conflicts[0]}')
-    payload = json.dumps({"aggregateRows": rows, "courseRows": detail_rows,
-                          "thesisRows": thesis_rows, "thesisSignals": thesis_signals}, ensure_ascii=False,
+    snapshot = {"aggregateRows": rows, "courseRows": detail_rows,
+                          "folderLinks": folder_links(detail_rows),
+                          "thesisRows": thesis_rows, "thesisSignals": thesis_signals}
+    numbers = official_section_numbers(detail_rows)
+    if numbers is not None:
+        snapshot['sectionNumbers'] = numbers
+    payload = json.dumps(snapshot, ensure_ascii=False,
                          separators=(",", ":")) + "\n"
     # Update the existing File Provider item in place. Replacing its inode can leave
     # OneDrive showing the old SharePoint version even though the local path is fresh.
@@ -242,6 +309,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sync", action="store_true", help="Write the aggregate snapshot into the synced SharePoint folder")
     args = parser.parse_args()
+    if args.sync:
+        # Relay the live committee list independently, even if the report scan fails.
+        committee_script = Path(__file__).resolve().parent / 'refresh-committee-tasks.py'
+        if committee_script.is_file():
+            result = subprocess.run([sys.executable, str(committee_script)], check=False)
+            if result.returncode:
+                print('Committee relay failed; preserving its last successful snapshot', flush=True)
     if args.sync and subprocess.run(["pgrep", "-x", "OneDrive"], capture_output=True, check=False).returncode != 0:
         raise RuntimeError("OneDrive is not running; refusing to publish a fresh scan timestamp")
     rows, detail_rows = scan(sync_details=args.sync)

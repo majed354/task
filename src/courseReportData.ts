@@ -1,3 +1,6 @@
+import { courseSectionKey, isCourseFolderPath, type CourseFolderLinks } from './courseFolderLinks'
+import { validOfficialSections, officialSectionKey, type OfficialSectionData } from './officialSectionData'
+
 export interface CourseReportRow {
   term: string
   department: string
@@ -31,6 +34,8 @@ export interface CourseDetailRow {
   unassignedPartial: number
   checkedAt: string
   thesisDue?: boolean
+  folders?: CourseFolderLinks
+  officialNumber?: OfficialSectionData
 }
 
 export interface ThesisEntry {
@@ -140,29 +145,7 @@ export function parseCourseReportCsv(csv: string, scope: CourseAccessScope = 'al
   return rows
 }
 
-export function courseReportScope(rows: CourseReportRow[], term: string): CourseReportRow[] {
-  if (term !== 'all') return rows.filter((row) => row.term === term)
-  const aggregate = new Map<string, CourseReportRow>()
-  for (const row of rows) {
-    const found = aggregate.get(row.department)
-    if (!found) aggregate.set(row.department, { ...row, term: 'all' })
-    else {
-      found.sections += row.sections
-      found.reports += row.reports
-      found.measurements += row.measurements
-      found.courses += row.courses
-      found.combined += row.combined
-      found.combinedWithMissingSections += row.combinedWithMissingSections
-      found.partialCovered += row.partialCovered
-      found.partialReports += row.partialReports
-      found.unassignedPartial += row.unassignedPartial
-      found.anyReport += row.anyReport
-      found.combinedMeasurements += row.combinedMeasurements
-      if (row.checkedAt > found.checkedAt) found.checkedAt = row.checkedAt
-    }
-  }
-  return [...aggregate.values()]
-}
+export { courseReportScope } from './courseTerms'
 
 export function parseCourseDetailCsv(csv: string): CourseDetailRow[] {
   const [columns, ...values] = parseCsv(csv)
@@ -178,7 +161,7 @@ export function parseCourseDetailCsv(csv: string): CourseDetailRow[] {
     const section = westernDigits(fields[4].trim()).padStart(3, '0')
     const report = fields[5].trim() as CourseDetailRow['report']
     const numbers = fields.slice(6, 12).map((value) => Number(westernDigits(value.trim())))
-    if (!courseReportTerms.some((value) => value === term) || !/^\d+$/.test(code) || !name || !departments.slice(1).includes(department) || !/^\d{3}$/.test(section) || !['مستقل', 'تغطية جماعية', 'غير مسلّم'].includes(report) || fields.slice(6, 12).some((value) => !/^\d+$/.test(westernDigits(value.trim()))) || numbers.some((value) => !Number.isSafeInteger(value))) throw new Error('تفاصيل المقرر أو الشعبة غير صالحة.')
+    if (!courseReportTerms.some((value) => value === term) || !/^\d+(?:-\d{1,3})?$/.test(code) || !name || !departments.slice(1).includes(department) || !/^\d{3}$/.test(section) || !['مستقل', 'تغطية جماعية', 'غير مسلّم'].includes(report) || fields.slice(6, 12).some((value) => !/^\d+$/.test(westernDigits(value.trim()))) || numbers.some((value) => !Number.isSafeInteger(value))) throw new Error('تفاصيل المقرر أو الشعبة غير صالحة.')
     const [measurement, combined, combinedMeasurement, done, required, unassignedPartial] = numbers
     const member = hasMembers ? fields[13].trim().replace(/\s+/g, ' ') : ''
     if ([measurement, combined, combinedMeasurement].some((value) => value > 1) || done > required || required < 2 || !Number.isFinite(Date.parse(fields[12])) || (hasMembers && !member)) throw new Error('حالة إنجاز المقرر غير صالحة.')
@@ -196,9 +179,23 @@ function asCsv(rows: Array<Array<string | number>>): string {
 export async function loadCourseSnapshot(): Promise<{ scope: CourseAccessScope; aggregates: CourseReportRow[]; sections: CourseDetailRow[]; theses: ThesisEntry[]; thesisSignals: ThesisSignal[] }> {
   const response = await fetch('/api/course/data', { cache: 'no-store', credentials: 'same-origin' })
   if (!response.ok) throw new CourseAccessError(response.status, response.status === 401 ? 'يلزم إدخال كلمة المرور.' : `تعذّر تحميل بيانات التقارير (${response.status}).`)
-  const payload = await response.json() as { scope?: CourseAccessScope; aggregateRows?: Array<Array<string | number>>; courseRows?: Array<Array<string | number>>; thesisRows?: ThesisEntry[]; thesisSignals?: ThesisSignal[] }
+  const payload = await response.json() as { scope?: CourseAccessScope; aggregateRows?: Array<Array<string | number>>; courseRows?: Array<Array<string | number>>; thesisRows?: ThesisEntry[]; thesisSignals?: ThesisSignal[]; folderLinks?: CourseFolderLinks[]; sectionNumbers?: OfficialSectionData[] }
   if (!payload.scope || !['all', ...departments.slice(1)].includes(payload.scope) || !Array.isArray(payload.aggregateRows) || !Array.isArray(payload.courseRows)) throw new Error('بيانات التقارير المحمية غير مكتملة.')
   const sections = parseCourseDetailCsv(asCsv([detailHeader, ...payload.courseRows]))
+  if (payload.sectionNumbers !== undefined) {
+    if (!validOfficialSections(payload.sectionNumbers, payload.courseRows)) throw new Error('أرقام الشعب لا تطابق سجلات المقررات والأعضاء.')
+    const numbers = new Map(payload.sectionNumbers.map(row => [officialSectionKey({ ...row, term: westernDigits(row.term) }), row]))
+    for (const section of sections) section.officialNumber = numbers.get(officialSectionKey(section))
+  }
+  const folders = new Map<string, CourseFolderLinks>()
+  for (const row of payload.folderLinks || []) {
+    if (![row.report, row.measurement, row.combined, row.combinedMeasurement].every(isCourseFolderPath)) throw new Error('أحد روابط مجلدات التقارير غير صالح.')
+    const normalized = { ...row, term: westernDigits(row.term) }
+    const key = courseSectionKey(normalized)
+    if (folders.has(key)) throw new Error('رابط مجلد شعبة مكرر.')
+    folders.set(key, normalized)
+  }
+  for (const section of sections) section.folders = folders.get(courseSectionKey(section))
   const theses = (payload.thesisRows || []).map((row) => ({ ...row, term: westernDigits(row.term) }))
   const thesisSignals = (payload.thesisSignals || []).map((row) => ({ ...row, terms: row.terms.map(westernDigits), lastTerm: westernDigits(row.lastTerm), absentNextTerm: westernDigits(row.absentNextTerm) }))
   const thesisKeys = new Set(sections.filter((row) => row.name === 'الرسالة').map((row) => [row.term, row.code, row.department, row.section].join(':')))

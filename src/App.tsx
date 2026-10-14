@@ -47,9 +47,8 @@ import {
   taskSearchIndex,
 } from './data'
 import { downloadTaskCalendar } from './calendarExport'
-const CommitteeDashboard = lazy(() => import.meta.env.VITE_PUBLIC_METRICS_CSV_URL
-  ? import('./PublicMetricsDashboard')
-  : import('./CommitteeDashboard'))
+const CommitteeDashboard = lazy(() => import('./CommitteeTasksDashboard'))
+const PublicCommitteeDashboard = lazy(() => import('./PublicMetricsDashboard'))
 const CourseReportsDashboard = lazy(() => import('./CourseReportsDashboard'))
 
 const allCommittees = 'كل أنواع اللجان'
@@ -468,6 +467,7 @@ function Dashboard() {
 export default function App() {
   const view = new URLSearchParams(window.location.search).get('view')
   if (view === 'dashboard') return <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح لوحة اللجان…</div>}><CommitteeDashboard /></Suspense>
+  if (view === 'committee-metrics') return <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح مؤشرات اللجان…</div>}><PublicCommitteeDashboard /></Suspense>
   if (view === 'course-reports') return <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح لوحة تقارير المقررات…</div>}><CourseReportsDashboard /></Suspense>
   return <Dashboard />
 }

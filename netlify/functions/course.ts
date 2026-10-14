@@ -1,12 +1,17 @@
 import { createHmac, scryptSync, timingSafeEqual } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 import type { Config, Context } from '@netlify/functions'
+import { isCourseFolderPath, type CourseFolderLinks } from '../../src/courseFolderLinks.ts'
+import { buildCommitteeSnapshot, scopedCommitteeSnapshot } from './lib/committeeSnapshot.ts'
+import type { CommitteeTaskSnapshot } from '../../src/committeeTaskData.ts'
+import { executionContext, executionTicket, executionSecret, memberBatchContext, memberBatchTicket, ExecutionError } from './lib/reportExecution.ts'
+import { validOfficialSections, type OfficialSectionData } from '../../src/officialSectionData.ts'
 
 type Scope = 'all' | 'قسم الشريعة' | 'قسم الأنظمة' | 'قسم القراءات' | 'قسم الثقافة الإسلامية'
 type SheetRow = Array<string | number>
 type ThesisRow = { term: string; code: string; department: string; section: string; member: string; gradeDate: string; observedTerms: number; basis: 'study' | 'member' }
 type ThesisSignal = { department: string; code: string; member: string; terms: string[]; lastTerm: string; absentNextTerm: string; sections: number }
-type Snapshot = { aggregateRows: SheetRow[]; courseRows: SheetRow[]; thesisRows?: ThesisRow[]; thesisSignals?: ThesisSignal[] }
+type Snapshot = { aggregateRows: SheetRow[]; courseRows: SheetRow[]; thesisRows?: ThesisRow[]; thesisSignals?: ThesisSignal[]; folderLinks?: CourseFolderLinks[]; sectionNumbers?: OfficialSectionData[] }
 
 const scopes: Scope[] = ['all', 'قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية']
 const departments = scopes.slice(1)
@@ -91,6 +96,17 @@ function validateSnapshot(value: unknown): value is Snapshot {
   for (const row of snapshot.courseRows) {
     if (!Array.isArray(row) || row.length !== 14 || !['٤٦١', '٤٦٢', '٤٧١', '٤٧٢'].includes(String(row[0])) || !departments.includes(String(row[3]) as Scope) || !String(row[13]).trim()) return false
   }
+  if (snapshot.sectionNumbers !== undefined && !validOfficialSections(snapshot.sectionNumbers, snapshot.courseRows)) return false
+  if (snapshot.folderLinks !== undefined) {
+    if (!Array.isArray(snapshot.folderLinks) || snapshot.folderLinks.length !== snapshot.courseRows.length) return false
+    const sectionKeys = new Set(snapshot.courseRows.map((row) => `${row[0]}:${row[1]}:${row[3]}:${row[4]}`))
+    const seen = new Set<string>()
+    for (const row of snapshot.folderLinks) {
+      const key = `${row.term}:${row.code}:${row.department}:${row.section}`
+      if (!sectionKeys.has(key) || seen.has(key) || ![row.report, row.measurement, row.combined, row.combinedMeasurement].every((path) => isCourseFolderPath(path) && path.startsWith(`1-التقارير/${row.term}/`))) return false
+      seen.add(key)
+    }
+  }
   if (snapshot.thesisRows !== undefined) {
     if (!Array.isArray(snapshot.thesisRows)) return false
     const thesisKeys = new Set(snapshot.courseRows.filter((row) => row[2] === 'الرسالة').map((row) => `${row[0]}:${row[1]}:${row[3]}:${row[4]}`))
@@ -128,6 +144,8 @@ export function scopedSnapshot(snapshot: Snapshot, scope: Scope): Snapshot {
     for (const row of sectionRows) { row[9] = done; row[10] = required }
   }
   return { aggregateRows, courseRows,
+    sectionNumbers: snapshot.sectionNumbers?.filter((row) => row.department === scope),
+    folderLinks: snapshot.folderLinks?.filter((row) => row.department === scope),
     thesisRows: snapshot.thesisRows?.filter((row) => row.department === scope),
     thesisSignals: snapshot.thesisSignals?.filter((row) => row.department === scope) }
 }
@@ -135,6 +153,22 @@ export function scopedSnapshot(snapshot: Snapshot, scope: Scope): Snapshot {
 export default async function course(request: Request, context: Context): Promise<Response> {
   const action = context.params.action
   try {
+    if ((action === 'execute' || action === 'execute-member') && request.method === 'POST') {
+      if (request.headers.get('origin') !== new URL(request.url).origin || !request.headers.get('content-type')?.startsWith('application/json')) return json({ error: 'طلب تنفيذ غير صالح.' }, 403)
+      const scope = sessionScope(request)
+      if (!scope) return json({ error: 'يلزم إدخال رمز القسم.' }, 401)
+      const text = await request.text()
+      if (text.length > 2048) return json({ error: 'طلب التنفيذ أكبر من الحد المسموح.' }, 413)
+      const body = JSON.parse(text) as Record<string, unknown>
+      if (!body || typeof body !== 'object' || Array.isArray(body)) return json({ error: 'طلب التنفيذ غير مكتمل.' }, 422)
+      const snapshot = await getStore({ name: 'course-reports-private', consistency: 'strong' }).get('latest', { type: 'json' }) as Snapshot | null
+      if (!snapshot || !validateSnapshot(snapshot)) return json({ error: 'بيانات التقارير غير متاحة.' }, 503)
+      try {
+        const secret = executionSecret(Netlify.env.get('COURSE_INGEST_KEY') || '')
+        return json(action === 'execute-member' ? memberBatchTicket(memberBatchContext(snapshot, scope, body), secret) : executionTicket(executionContext(snapshot, scope, body), secret))
+      }
+      catch (error) { if (error instanceof ExecutionError) return json({ error: error.message }, error.status); throw error }
+    }
     if (action === 'login' && request.method === 'POST') {
       const body = await request.json().catch(() => ({})) as { password?: unknown }
       const attempts = getStore({ name: 'course-login-attempts', consistency: 'strong' })
@@ -153,6 +187,28 @@ export default async function course(request: Request, context: Context): Promis
       return json({ scope }, 200, sessionCookie(scope))
     }
     if (action === 'logout' && request.method === 'POST') return json({ ok: true }, 200, clearCookie())
+    if (action === 'committee-ingest' && request.method === 'POST') {
+      const expected = Netlify.env.get('COURSE_INGEST_KEY') || ''
+      if (expected.length < 32 || !same(request.headers.get('x-course-ingest-key') || '', expected)) return json({ error: 'غير مصرح.' }, 401)
+      const body = await request.text()
+      if (body.length > 5_000_000) return json({ error: 'الملف أكبر من الحد المسموح.' }, 413)
+      let snapshot: CommitteeTaskSnapshot
+      try { snapshot = buildCommitteeSnapshot(JSON.parse(body)) }
+      catch { return json({ error: 'بيانات مهام اللجان غير مكتملة.' }, 422) }
+      const store = getStore({ name: 'committee-tasks-private', consistency: 'strong' })
+      const previous = await store.get('latest', { type: 'json' }) as CommitteeTaskSnapshot | null
+      if (previous && Date.parse(previous.checkedAt) > Date.parse(snapshot.checkedAt)) return json({ error: 'اللقطة أقدم من آخر مزامنة.' }, 409)
+      await store.setJSON('latest', snapshot)
+      return json({ ok: true, tasks: snapshot.records.length })
+    }
+    if (action === 'committee-data' && request.method === 'GET') {
+      const scope = sessionScope(request)
+      if (!scope) return json({ error: 'يلزم إدخال رمز القسم.' }, 401)
+      const store = getStore({ name: 'committee-tasks-private', consistency: 'strong' })
+      const snapshot = await store.get('latest', { type: 'json' }) as CommitteeTaskSnapshot | null
+      if (!snapshot) return json({ error: 'بيانات مهام اللجان غير متاحة حاليًا.' }, 503)
+      return json({ scope, ...scopedCommitteeSnapshot(snapshot, scope) })
+    }
     if (action === 'ingest' && request.method === 'POST') {
       const expected = Netlify.env.get('COURSE_INGEST_KEY') || ''
       if (expected.length < 32 || !same(request.headers.get('x-course-ingest-key') || '', expected)) return json({ error: 'غير مصرح.' }, 401)
