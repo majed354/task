@@ -3,6 +3,9 @@ import { getStore } from '@netlify/blobs'
 import type { Config, Context } from '@netlify/functions'
 import { isCourseFolderPath, type CourseFolderLinks } from '../../src/courseFolderLinks.ts'
 import { buildCommitteeSnapshot, scopedCommitteeSnapshot } from './lib/committeeSnapshot.ts'
+import { loadCommitteeNews, saveCommitteeNews } from './lib/committeeNewsStore.ts'
+import { buildCommitteeReview, saveCommitteeReview } from './lib/committeeReview.ts'
+import { riyadhDate } from '../../src/committeeMetrics.ts'
 import type { CommitteeTaskSnapshot } from '../../src/committeeTaskData.ts'
 import { executionContext, executionTicket, executionSecret, memberBatchContext, memberBatchTicket, ExecutionError } from './lib/reportExecution.ts'
 import { validOfficialSections, type OfficialSectionData } from '../../src/officialSectionData.ts'
@@ -198,8 +201,44 @@ export default async function course(request: Request, context: Context): Promis
       const store = getStore({ name: 'committee-tasks-private', consistency: 'strong' })
       const previous = await store.get('latest', { type: 'json' }) as CommitteeTaskSnapshot | null
       if (previous && Date.parse(previous.checkedAt) > Date.parse(snapshot.checkedAt)) return json({ error: 'اللقطة أقدم من آخر مزامنة.' }, 409)
+      await saveCommitteeNews(previous, snapshot)
       await store.setJSON('latest', snapshot)
       return json({ ok: true, tasks: snapshot.records.length })
+    }
+    if (action === 'committee-submit' && request.method === 'POST') {
+      const scope = sessionScope(request)
+      if (!scope) return json({ error: 'يلزم إدخال رمز القسم.' }, 401)
+      if (request.headers.get('origin') !== new URL(request.url).origin) return json({ error: 'طلب غير مسموح.' }, 403)
+      const text = await request.text()
+      if (text.length > 2000) return json({ error: 'طلب أكبر من الحد المسموح.' }, 413)
+      let body: { taskId?: string; term?: string }
+      try { body = JSON.parse(text) }
+      catch { return json({ error: 'طلب غير صالح.' }, 400) }
+      if (!body || typeof body.taskId !== 'string' || typeof body.term !== 'string') return json({ error: 'طلب غير صالح.' }, 400)
+      const store = getStore({ name: 'committee-tasks-private', consistency: 'strong' })
+      const snapshot = await store.get('latest', { type: 'json' }) as CommitteeTaskSnapshot | null
+      const task = snapshot?.records.find((task) => task.id === body.taskId && task.term === body.term && (scope === 'all' || task.department === scope))
+      if (!task) return json({ error: 'المهمة غير متاحة في نطاقك.' }, 404)
+      const observedAt = new Date().toISOString()
+      const day = riyadhDate(new Date(observedAt))
+      const event = { id: `submission:${task.term}:${task.id}:${day}`, taskId: task.id, term: task.term, department: task.department,
+        committee: task.committee, title: task.title, kind: 'submission', status: 'بانتظار فحص المستندات', observedAt }
+      const key = `news/${task.department}/${task.term}/${Date.parse(day)}-submission-${encodeURIComponent(task.id)}`
+      await store.setJSON(key, { events: [event] }, { onlyIfNew: true })
+      return json({ ok: true })
+    }
+    if (action === 'committee-review-ingest' && request.method === 'POST') {
+      const expected = Netlify.env.get('COURSE_INGEST_KEY') || ''
+      if (expected.length < 32 || !same(request.headers.get('x-course-ingest-key') || '', expected)) return json({ error: 'غير مصرح.' }, 401)
+      const body = await request.text()
+      if (body.length > 20_000) return json({ error: 'الملف أكبر من الحد المسموح.' }, 413)
+      const snapshot = await getStore({ name: 'committee-tasks-private', consistency: 'strong' }).get('latest', { type: 'json' }) as CommitteeTaskSnapshot | null
+      if (!snapshot) return json({ error: 'بيانات مهام اللجان غير متاحة حاليًا.' }, 503)
+      let review: ReturnType<typeof buildCommitteeReview>
+      try { review = buildCommitteeReview(JSON.parse(body), snapshot) }
+      catch { return json({ error: 'بيانات المراجعة غير مكتملة.' }, 422) }
+      await saveCommitteeReview(review)
+      return json({ ok: true, reviewId: review.id })
     }
     if (action === 'committee-data' && request.method === 'GET') {
       const scope = sessionScope(request)
@@ -207,7 +246,12 @@ export default async function course(request: Request, context: Context): Promis
       const store = getStore({ name: 'committee-tasks-private', consistency: 'strong' })
       const snapshot = await store.get('latest', { type: 'json' }) as CommitteeTaskSnapshot | null
       if (!snapshot) return json({ error: 'بيانات مهام اللجان غير متاحة حاليًا.' }, 503)
-      return json({ scope, ...scopedCommitteeSnapshot(snapshot, scope) })
+      const scoped = scopedCommitteeSnapshot(snapshot, scope)
+      try { return json({ scope, ...scoped, news: await loadCommitteeNews(scoped) }) }
+      catch (error) {
+        console.error('Committee news could not be loaded', error)
+        return json({ scope, ...scoped, news: [], newsUnavailable: true })
+      }
     }
     if (action === 'ingest' && request.method === 'POST') {
       const expected = Netlify.env.get('COURSE_INGEST_KEY') || ''

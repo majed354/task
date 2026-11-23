@@ -10,6 +10,7 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument('url')
+parser.add_argument('--expect-news-task', help='Verify a known existing news item is returned to each authorized scope')
 args = parser.parse_args()
 url = args.url.rstrip('/')
 target = urllib.parse.urlparse(url)
@@ -27,6 +28,10 @@ for scope, password in passwords.items():
         assert 'no-store' in response.headers.get('Cache-Control', '')
     assert len(committee['records']) == (340 if scope == 'all' else 85)
     assert scope == 'all' or all(row['department'] == scope for row in committee['records'])
+    assert isinstance(committee.get('news'), list) and not committee.get('newsUnavailable', False)
+    assert scope == 'all' or all(row['department'] == scope for row in committee['news'])
+    if args.expect_news_task and any(row['id'] == args.expect_news_task for row in committee['records']):
+        assert any(row['taskId'] == args.expect_news_task for row in committee['news']), 'Expected saved committee news was not returned'
     with client.open(url + '/api/course/data', timeout=30) as response:
         courses = json.load(response)
     assert courses['scope'] == scope

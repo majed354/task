@@ -1,5 +1,6 @@
 import { isCompleted, riyadhDate } from './committeeMetrics.ts'
 import type { CourseAccessScope } from './courseReportData'
+import type { CommitteeNewsItem } from './committeeNews.ts'
 
 export const committeeDepartments = ['قسم الشريعة', 'قسم الأنظمة', 'قسم القراءات', 'قسم الثقافة الإسلامية'] as const
 export const committeeTerms = ['481', '461', '462', '471', '472'] as const
@@ -17,7 +18,7 @@ export interface CommitteeTask {
   deliverable: string
   evidence: string
 }
-export interface CommitteeTaskSnapshot { records: CommitteeTask[]; checkedAt: string }
+export interface CommitteeTaskSnapshot { records: CommitteeTask[]; checkedAt: string; news?: CommitteeNewsItem[]; newsUnavailable?: boolean }
 export type TaskView = 'actionable' | 'upcoming' | 'completed' | 'all'
 export const termDigits = (value: string) => value.replace(/\d/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)])
 export const westernTerm = (value: string) => value.replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))

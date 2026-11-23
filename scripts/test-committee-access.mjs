@@ -53,4 +53,12 @@ for (const session of [{ scope: 'قسم آخر', expires: Date.now() + 60000 }, 
   assert.equal((await course(new Request('https://example.test/api/course/committee-data', { headers: { cookie: `course_scope=${payload}.${signature}` } }), context)).status, 401)
 }
 assert.equal((await course(new Request('https://example.test/api/course/committee-ingest', { method: 'POST', body: '{}' }), { params: { action: 'committee-ingest' } })).status, 401)
+for (const action of ['committee-submit', 'committee-review-ingest']) {
+  assert.equal((await course(new Request(`https://example.test/api/course/${action}`, { method: 'POST', body: '{}' }), { params: { action } })).status, 401)
+}
+const payload = Buffer.from(JSON.stringify({ scope: 'قسم القراءات', expires: Date.now() + 60_000 })).toString('base64url')
+const signature = createHmac('sha256', secret).update(payload).digest('base64url')
+const cookie = `course_scope=${payload}.${signature}`
+assert.equal((await course(new Request('https://example.test/api/course/committee-submit', { method: 'POST', headers: { cookie, origin: 'https://other.test' }, body: '{}' }), { params: { action: 'committee-submit' } })).status, 403)
+assert.equal((await course(new Request('https://example.test/api/course/committee-submit', { method: 'POST', headers: { cookie, origin: 'https://example.test' }, body: 'null' }), { params: { action: 'committee-submit' } })).status, 400)
 console.log('Committee access: four department scopes, private folder links, incomplete snapshots, task priorities and unauthorized access passed.')

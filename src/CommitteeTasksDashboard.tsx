@@ -4,6 +4,8 @@ import { CommitteeAccessError, committeeDepartments, committeeTerms, loadCommitt
 import { riyadhDate } from './committeeMetrics'
 import type { CourseAccessScope } from './courseReportData'
 import { matchesArabicSearch } from './arabicSearch'
+import CommitteeNews from './CommitteeNewsPanel'
+import type { CommitteeNewsItem } from './committeeNews'
 
 const number = new Intl.NumberFormat('ar-SA-u-nu-latn')
 const listUrl = 'https://taifedusa.sharepoint.com/sites/msteams_3b4354/Lists/1448/AllItems.aspx'
@@ -14,6 +16,10 @@ const dateLabel = (date: string) => date ? `${date.slice(8, 10)}/${date.slice(5,
 export default function CommitteeTasksDashboard() {
   const [scope, setScope] = useState<CourseAccessScope | null>(null)
   const [records, setRecords] = useState<CommitteeTask[]>([])
+  const [news, setNews] = useState<CommitteeNewsItem[]>([])
+  const [newsUnavailable, setNewsUnavailable] = useState(false)
+  const [submitting, setSubmitting] = useState('')
+  const [submissionMessage, setSubmissionMessage] = useState<{ key: string; text: string; error: boolean } | null>(null)
   const [checkedAt, setCheckedAt] = useState('')
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
@@ -23,8 +29,8 @@ export default function CommitteeTasksDashboard() {
   const [term, setTerm] = useState(committeeTerms.some((value) => value === initial.get('term')) ? initial.get('term')! : '481')
   const [department, setDepartment] = useState(initial.get('department') || 'كل الأقسام')
   const [committee, setCommittee] = useState(initial.get('committee') || 'كل اللجان')
-  const [query, setQuery] = useState('')
-  const [view, setView] = useState<TaskView>('actionable')
+  const [query, setQuery] = useState(initial.get('task') || '')
+  const [view, setView] = useState<TaskView>(initial.get('task') ? 'all' : 'actionable')
   const [visible, setVisible] = useState(30)
   const [copied, setCopied] = useState('')
   const [today, setToday] = useState(riyadhDate)
@@ -34,9 +40,10 @@ export default function CommitteeTasksDashboard() {
     try {
       const snapshot = await loadCommitteeTasks()
       setScope(snapshot.scope); setRecords(snapshot.records); setCheckedAt(snapshot.checkedAt)
+      setNews(snapshot.news || []); setNewsUnavailable(Boolean(snapshot.newsUnavailable))
       if (snapshot.scope !== 'all') setDepartment(snapshot.scope)
     } catch (cause) {
-      if (cause instanceof CommitteeAccessError && cause.status === 401) { setScope(null); setRecords([]); setCheckedAt('') }
+      if (cause instanceof CommitteeAccessError && cause.status === 401) { setScope(null); setRecords([]); setNews([]); setCheckedAt('') }
       else setError(cause instanceof Error ? cause.message : 'تعذّر تحميل مهام اللجان.')
     } finally { setBusy(false) }
   }, [])
@@ -45,13 +52,18 @@ export default function CommitteeTasksDashboard() {
     const timer = window.setInterval(() => setToday(riyadhDate()), 60_000)
     return () => window.clearInterval(timer)
   }, [refresh])
+  useEffect(() => {
+    if (!scope) return
+    const timer = window.setInterval(() => { if (document.visibilityState === 'visible') void refresh() }, 60_000)
+    return () => window.clearInterval(timer)
+  }, [scope, refresh])
 
   const login = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setBusy(true); setLoginError('')
     try {
       const response = await fetch('/api/course/login', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
       if (!response.ok) throw new Error(response.status === 401 ? 'كلمة المرور غير صحيحة.' : response.status === 429 ? 'محاولات كثيرة. حاول بعد عشر دقائق.' : 'تعذّر تسجيل الدخول الآن.')
-      setPassword(''); setRecords([]); setView('actionable'); setQuery(''); await refresh()
+      setPassword(''); setRecords([]); setView(initial.get('task') ? 'all' : 'actionable'); setQuery(initial.get('task') || ''); await refresh()
     } catch (cause) { setLoginError(cause instanceof Error ? cause.message : 'تعذّر تسجيل الدخول الآن.') }
     finally { setBusy(false) }
   }
@@ -60,9 +72,20 @@ export default function CommitteeTasksDashboard() {
     try {
       const response = await fetch('/api/course/logout', { method: 'POST', credentials: 'same-origin' })
       if (!response.ok) throw new Error('تعذّر تسجيل الخروج. حاول مرة أخرى.')
-      setScope(null); setRecords([]); setCheckedAt(''); setDepartment('كل الأقسام'); setCommittee('كل اللجان'); setPassword(''); setQuery('')
+      setScope(null); setRecords([]); setNews([]); setCheckedAt(''); setDepartment('كل الأقسام'); setCommittee('كل اللجان'); setPassword(''); setQuery('')
     } catch (cause) { setError((cause as Error).message) }
     finally { setBusy(false) }
+  }
+  const submitForReview = async (task: CommitteeTask) => {
+    const key = `${task.term}:${task.id}`
+    setSubmitting(key); setSubmissionMessage(null)
+    try {
+      const response = await fetch('/api/course/committee-submit', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId: task.id, term: task.term }) })
+      if (!response.ok) throw new Error(response.status === 401 ? 'انتهت جلسة الدخول. أعد تسجيل الدخول.' : 'تعذّر تسجيل طلب المراجعة. حاول مجددًا.')
+      setSubmissionMessage({ key, text: 'سُجّل طلب المراجعة. تُفحص المستندات الجديدة أو المعدّلة في الدورة الدورية كل ثلاثة أيام؛ الاعتماد النهائي مستقل عن المراجعة.', error: false })
+      await refresh()
+    } catch (cause) { setSubmissionMessage({ key, text: (cause as Error).message, error: true }) }
+    finally { setSubmitting('') }
   }
   const allowedDepartment = scope === 'all' ? committeeDepartments.includes(department as typeof committeeDepartments[number]) ? department : 'كل الأقسام' : scope
   const termRecords = useMemo(() => records.filter((task) => task.term === term && (allowedDepartment === 'كل الأقسام' || task.department === allowedDepartment)), [records, term, allowedDepartment])
@@ -101,10 +124,11 @@ export default function CommitteeTasksDashboard() {
           <label>اللجنة<select value={selectedCommittee} onChange={(event) => setCommittee(event.target.value)}><option>كل اللجان</option>{committees.map((name) => <option key={name}>{name}</option>)}</select></label>
         </div>{copied && <p className="monitor-note" role="status">{copied}</p>}<p className="monitor-note">رابط اللجنة يحفظ اختيار الفصل والقسم واللجنة، ويظل الدخول بكلمة المرور مطلوبًا.</p></section>
         <section className="monitor-kpis is-aggregate" aria-label="مؤشرات مهام النطاق"><article><span><FolderOpen size={18} /> إجمالي المهام</span><strong>{number.format(currentRecords.length)}</strong><small>الفصل {termDigits(term)}</small></article><article><span><CheckCircle2 size={18} /> مكتمل</span><strong>{number.format(complete)}</strong><small>{currentRecords.length ? Math.round(complete * 100 / currentRecords.length) : 0}٪ من المهام</small></article><article><span><Clock3 size={18} /> تحتاج الاستكمال الآن</span><strong>{number.format(actionable)}</strong><small>{number.format(upcoming)} مهمة قادمة</small></article><article className="is-alert"><span><AlertTriangle size={18} /> متعثر أو متأخر</span><strong>{number.format(delayed)}</strong><small>بحسب الموعد وحالة السجل</small></article></section>
+        <CommitteeNews news={news} records={currentRecords} unavailable={newsUnavailable} />
         <section className="monitor-panel committee-task-panel" aria-label="مهام اللجان"><div className="monitor-panel-head"><h2>مهام اللجنة</h2><span>{number.format(shown.length)} مهمة في هذا العرض</span></div><div className="committee-task-controls"><div className="committee-view-tabs" role="group" aria-label="حالة المهام">{views.map(([value, label]) => <button type="button" key={value} aria-pressed={view === value} onClick={() => setView(value)}>{label} <span>{number.format(tasksForView(currentRecords, value, today).length)}</span></button>)}</div><label className="committee-task-search"><Search size={17} /><input aria-label="بحث في المهام" placeholder="ابحث عن مهمة أو مخرج مطلوب" value={query} onChange={(event) => setQuery(event.target.value)} /></label></div>
           <div className="committee-task-list">{shown.slice(0, visible).map((task) => {
             const state = taskState(task, today)
-            return <article className={`committee-task-card is-${state}`} key={`${task.term}:${task.id}`}><div className="committee-task-heading"><div><small>{task.department} · {task.committee}</small><h3>{task.title}</h3></div><span className={`committee-task-status is-${state}`}>{stateLabels[state]}</span></div><div className="committee-task-dates"><span>بداية التنفيذ: <strong>{dateLabel(task.start)}</strong></span><span>التسليم: <strong>{dateLabel(task.due)}</strong></span><span>{task.period}</span></div>{task.deliverable && <p><strong>المطلوب:</strong> {task.deliverable}</p>}{task.evidence && <p className="committee-task-evidence"><strong>الشاهد:</strong> {task.evidence}</p>}<div className="committee-task-actions"><a className="committee-folder-button" href={task.folderUrl} target="_blank" rel="noreferrer" aria-label={`فتح مجلد المهمة: ${task.title}`}><FolderOpen size={18} /> {state === 'completed' ? 'فتح مجلد المهمة' : 'فتح مجلد المهمة ورفع المستندات'}<ArrowUpLeft size={16} /></a><small>حالة السجل: {task.status}</small></div></article>
+            return <article className={`committee-task-card is-${state}`} key={`${task.term}:${task.id}`}><div className="committee-task-heading"><div><small>{task.department} · {task.committee}</small><h3>{task.title}</h3></div><span className={`committee-task-status is-${state}`}>{stateLabels[state]}</span></div><div className="committee-task-dates"><span>بداية التنفيذ: <strong>{dateLabel(task.start)}</strong></span><span>التسليم: <strong>{dateLabel(task.due)}</strong></span><span>{task.period}</span></div>{task.deliverable && <p><strong>المطلوب:</strong> {task.deliverable}</p>}{task.evidence && <p className="committee-task-evidence"><strong>الشاهد:</strong> {task.evidence}</p>}<div className="committee-task-actions"><a className="committee-folder-button" href={task.folderUrl} target="_blank" rel="noreferrer" aria-label={`فتح مجلد المهمة: ${task.title}`}><FolderOpen size={18} /> {state === 'completed' ? 'فتح مجلد المهمة' : 'فتح مجلد المهمة ورفع المستندات'}<ArrowUpLeft size={16} /></a><button type="button" className="committee-review-button" disabled={Boolean(submitting)} onClick={() => void submitForReview(task)}>{submitting === `${task.term}:${task.id}` ? 'جارٍ تسجيل الطلب…' : 'طلب مراجعة المستندات بعد رفعها'}</button><small>حالة السجل: {task.status}</small></div>{submissionMessage?.key === `${task.term}:${task.id}` && <p className={submissionMessage.error ? 'monitor-error' : 'monitor-note'} role={submissionMessage.error ? 'alert' : 'status'}>{submissionMessage.text}</p>}</article>
           })}</div>
           {!shown.length && <p className="committee-empty" role="status">{currentRecords.length ? 'لا توجد مهام تطابق هذا العرض.' : 'لا توجد مهام مسجلة لهذا الفصل في نطاقك.'}</p>}
           {visible < shown.length && <button type="button" className="course-more" onClick={() => setVisible((value) => value + 30)}>عرض المزيد ({number.format(shown.length - visible)})</button>}

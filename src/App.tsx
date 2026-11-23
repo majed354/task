@@ -191,7 +191,7 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
         </section>
       </div>
 
-      <footer className="modal-actions"><button className="secondary-button" type="button" onClick={onClose}>إغلاق</button></footer>
+      <footer className="modal-actions"><a className="primary-button" href={`/?view=dashboard&committee=${encodeURIComponent(task.committee)}&task=${encodeURIComponent(task.sourceId)}`}>متابعة المهمة ورفع مستنداتها</a><button className="secondary-button" type="button" onClick={onClose}>إغلاق</button></footer>
     </AccessibleDialog>
   )
 }

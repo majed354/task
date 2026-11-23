@@ -495,6 +495,28 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .term-multi-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; padding: 9px 3px 2px; border-top: 1px solid var(--line); }
 .term-multi-actions button { flex: 1; padding: 8px; border: 0; border-radius: 6px; background: #f2faf5; color: var(--green-deep); font: inherit; font-size: 10px; font-weight: 800; cursor: pointer; }
 /* Department-scoped committee tasks; reuse the reporting portal's visual system. */
+.committee-news { margin-bottom: 24px; }
+.committee-news h2 { display: flex; align-items: center; gap: 9px; }
+.committee-news-intro { margin: 0 0 18px; color: #52645a; font-size: 1rem; line-height: 1.8; }
+.committee-news-list { list-style: none; margin: 0; padding: 0; }
+.committee-news-item { display: flex; align-items: flex-start; gap: 14px; padding: 20px 0; border-top: 1px solid #e2eae5; }
+.committee-news-icon { display: grid; place-items: center; flex: 0 0 40px; height: 40px; border-radius: 12px; background: #edf3ef; color: #52645a; }
+.committee-news-item.is-completed .committee-news-icon { background: #e5f5ed; color: #146647; }
+.committee-news-body { flex: 1; min-width: 0; }
+.committee-news-kind { font-size: .875rem; font-weight: 700; color: #176d62; }
+.committee-news-body h3 { margin: 5px 0; font-size: 1.06rem; line-height: 1.8; overflow-wrap: anywhere; }
+.committee-news-body p { margin: 4px 0 8px; color: #52645a; font-size: .875rem; line-height: 1.8; }
+.committee-news-body time, .committee-news-body small { color: #617568; font-size: .875rem; line-height: 1.8; }
+.committee-news-folder { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; padding: 9px 12px; border: 1px solid #ccdcd2; border-radius: 9px; color: #176d62; font-size: .875rem; font-weight: 700; text-decoration: none; }
+.committee-news-folder:hover { background: #edf5f0; }
+.committee-news-folder:focus-visible { outline: 3px solid #176d62; outline-offset: 3px; }
+.committee-review-button { padding: 10px 14px; border: 1px solid #176d62; border-radius: 10px; background: #f2f8f4; color: #176d62; font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
+.committee-review-button:disabled { opacity: .65; cursor: wait; }
+@media (max-width: 640px) {
+  .committee-news-item { flex-wrap: wrap; gap: 10px; }
+  .committee-news-body { flex-basis: calc(100% - 50px); }
+  .committee-news-folder { margin-inline-start: 50px; }
+}
 .course-access-panel { max-width: 560px; margin: 24px auto; padding: 28px; border: 1px solid #dce6df; border-radius: 20px; background: #fff; }
 .course-access-panel h2 { margin-top: 0; }
 .course-access-panel p { color: #52645a; line-height: 1.9; }
