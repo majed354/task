@@ -19,16 +19,38 @@ PLIST = Path.home() / "Library/LaunchAgents" / f"{LABEL}.plist"
 PYTHON = Path.home() / "Library/Application Support/tu-course-reports/venv/bin/python3.14"
 
 
+def working_python() -> str:
+    """Probe interpreters: Homebrew upgrades can leave an existing venv broken."""
+    candidates = [PYTHON, Path('/opt/homebrew/bin/python3'), Path(sys.executable)]
+    discovered = shutil.which('python3')
+    if discovered:
+        candidates.append(Path(discovered))
+    for candidate in dict.fromkeys(candidates):
+        try:
+            result = subprocess.run(
+                [str(candidate), '-c',
+                 'import sys, csv, hashlib, json, urllib.request; from zoneinfo import ZoneInfo; '
+                 'assert sys.version_info >= (3, 10); ZoneInfo("Asia/Riyadh")'],
+                capture_output=True, timeout=15, check=False,
+            )
+            if result.returncode == 0:
+                # Keep Homebrew's stable symlink instead of its versioned Cellar target.
+                return str(candidate)
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+    raise RuntimeError('No working Python 3.10+ interpreter was found; refresh was not changed')
+
+
 def main() -> None:
     if not SOURCE_SCANNER.is_file():
         raise FileNotFoundError(SOURCE_SCANNER)
+    python = working_python()
     INSTALL_DIR.mkdir(parents=True, exist_ok=True)
     PLIST.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(REPO / "scripts/refresh-course-reports.py", INSTALL_DIR / "refresh-course-reports.py")
     shutil.copy2(REPO / 'scripts/build_official_sections.py', INSTALL_DIR / 'build_official_sections.py')
     shutil.copy2(SOURCE_SCANNER, INSTALL_DIR / "course-delivery-scanner.py")
     shutil.copy2(REPO / "scripts/refresh-committee-tasks.py", INSTALL_DIR / "refresh-committee-tasks.py")
-    python = str(PYTHON if PYTHON.is_file() else Path(sys.executable))
     config = {
         "Label": LABEL,
         "ProgramArguments": [python, str(INSTALL_DIR / "refresh-course-reports.py"), "--sync"],
