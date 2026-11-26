@@ -90,6 +90,53 @@ class ReviewValidation(unittest.TestCase):
         self.assertNotIn('النواقص والعناصر', output)
         self.assertIn('b' * 64, output)
 
+class RequiredMinutesAndEvidence(unittest.TestCase):
+    def setUp(self):
+        self.task = {'id': 'test', 'title': 'نشر الجدول', 'department': 'قسم القراءات',
+                     'committee': 'لجنة العلاقات العامة والإعلام', 'deliverable': 'جدول منشور', 'evidence': 'الجدول المنشور'}
+        self.criteria = reviewer.criteria_from('', self.task)
+        self.documents = {'مستند.txt': {'lines': {'سطر 1': 'محتوى قابل للتحقق في اختبار بوابة القرار'}, 'limitations': []}}
+        self.result = {'summary': 'اختبار بوابة القرار', 'recommendations': [], 'limitations': [], 'criteria': [
+            {'id': row['id'], 'status': 'مستوفى', 'comment': 'تم فحص الشرط',
+             'evidence': [{'file': 'مستند.txt', 'locator': 'سطر 1', 'quote': 'محتوى قابل للتحقق'}]}
+            for row in self.criteria]}
+
+    def test_both_artifacts_required_for_every_catalog_task(self):
+        catalog = json.loads((reviewer.PROJECT / 'netlify/functions/lib/committeeCatalog.json').read_text())
+        for task in catalog:
+            criteria = reviewer.criteria_from('', task)
+            self.assertEqual([row['kind'] for row in criteria if 'kind' in row], ['minutes', 'work_evidence'], task['id'])
+
+    def test_missing_either_artifact_blocks_approval(self):
+        for kind in ('minutes', 'work_evidence'):
+            with self.subTest(missing=kind):
+                result = json.loads(json.dumps(self.result))
+                criterion = next(row for row in self.criteria if row.get('kind') == kind)
+                assessment = next(row for row in result['criteria'] if row['id'] == criterion['id'])
+                assessment.update(status='ناقص', comment='المستند المطلوب غير مرفق', evidence=[])
+                verdict = reviewer.validate_result(result, self.criteria, self.documents)
+                self.assertEqual(reviewer.document_decision(verdict)['status'], 'incomplete')
+                result['criteria'].remove(assessment)
+                with self.assertRaises(ValueError):
+                    reviewer.validate_result(result, self.criteria, self.documents)
+
+    def test_unreadable_artifact_suspends_approval(self):
+        criterion = next(row for row in self.criteria if row.get('kind') == 'work_evidence')
+        next(row for row in self.result['criteria'] if row['id'] == criterion['id']).update(status='غير متحقق', evidence=[])
+        self.assertEqual(reviewer.validate_result(self.result, self.criteria, self.documents), 'تعذر التحقق')
+
+    def test_incomplete_minutes_blocks_approval_even_with_both_artifacts(self):
+        self.result['criteria'][2].update(status='ناقص', comment='تاريخ الاجتماع غير مدون', evidence=[])
+        self.assertEqual(reviewer.validate_result(self.result, self.criteria, self.documents), 'يحتاج استكمالًا')
+
+    def test_report_has_separate_minutes_and_work_evidence_assessments(self):
+        report = {**self.result, 'verdict': 'مستوفٍ مبدئيًا', 'taskId': 'test', 'inputHash': 'c' * 64,
+                  'reviewedAt': '2026-11-26', 'engine': {'model': 'gemini-4-neon-medium'}}
+        output = reviewer.render_review(self.task, report, self.criteria)
+        self.assertIn('<b>المحضر</b>: مستوفى', output)
+        self.assertIn('<b>شاهد العمل</b>: مستوفى', output)
+
+
 class AzurePublishing(unittest.TestCase):
     def setUp(self):
         self.endpoint = 'https://committees.tu-shari3ah.com/api/course/committee-review-ingest'
