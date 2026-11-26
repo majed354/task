@@ -31,7 +31,7 @@ DEFAULT_ROOT = Path.home() / 'Library/CloudStorage/OneDrive-TaifUniversity/كل�
 DEFAULT_STATE = Path.home() / 'Library/Application Support/tu-committee-review'
 KEY_FILE = Path.home() / 'Library/Application Support/tu-course-reports/dashboard-sync/course-ingest-key'
 ENDPOINT = os.environ.get('COMMITTEE_REVIEW_INGEST_URL', 'https://committees.tu-shari3ah.com/api/course/committee-review-ingest')
-VERSION = '2'
+VERSION = '3'
 BLANK_TEMPLATE_HASHES = set(json.loads((PROJECT / 'scripts/committee-blank-template-hashes.json').read_text())['sha256'])
 VERDICTS = ('مستوفٍ مبدئيًا', 'يحتاج استكمالًا', 'تعذر التحقق')
 STATUSES = ('مستوفى', 'ناقص', 'غير متحقق')
@@ -121,6 +121,8 @@ def result_schema(criteria: list[dict]) -> dict:
 
 
 def validate_result(result: dict, criteria: list[dict], documents: dict[str, dict]) -> str:
+    if not criteria:
+        raise ValueError('لا يمكن إصدار اعتماد دون شروط للفحص')
     if not isinstance(result, dict) or not isinstance(result.get('summary'), str):
         raise ValueError('نتيجة النموذج غير مكتملة')
     rows = result.get('criteria')
@@ -156,7 +158,8 @@ def ask_neon(payload: dict, model: str) -> tuple[dict, dict]:
 أعد حكمًا لكل شرط بمعرفه مرة واحدة. استخدم مستوفى أو ناقص أو غير متحقق.
 ناقص: المتطلب أو التقرير غير موجود، أو الحقل فارغ، أو المرفق قالب غير معبأ. غير متحقق: الدليل موجود لكن يتعذر قراءته أو التحقق من الصورة أو التوقيع أو مضمونه.
 كل استيفاء يتطلب شاهدًا مقتبسًا حرفيًا من موضع محدد في ملف محدد؛ عيّن file وlocator تمامًا كما وردا في documents.
-إذا افتقد المستند دليلًا فوضح ما يجب إرفاقه. لا تستنتج صحة توقيع أو صورة من استخراج نصي.
+إذا افتقد المستند دليلًا فوضح ما يجب إرفاقه لكل شرط ناقص أو غير متحقق، واكتب توصيات عملية لاستكماله.
+قرار الاعتماد الآلي يتطلب استيفاء جميع الشروط بشواهد صحيحة دون أي قيد قراءة أو تحقق؛ لا تستنتج صحة توقيع أو صورة من استخراج نصي.
 كل شرط يتعلق بعنصر غير مقروء أو صورة أو اعتماد لا يمكن التحقق منه يجب أن يبقى غير متحقق.
 اكتب الخلاصة والملاحظات بالعربية، مختصرة وقابلة للتنفيذ، دون ذكر أسماء الطلاب أو بياناتهم الشخصية في الخلاصة.
 ''' + json.dumps(payload, ensure_ascii=False)
@@ -185,6 +188,14 @@ def ask_neon(payload: dict, model: str) -> tuple[dict, dict]:
     return final['structured_output'], {'model': model, 'conversationId': final.get('conversation_id'), 'usage': final.get('usage')}
 
 
+def document_decision(verdict: str) -> dict[str, str]:
+    return {
+        'مستوفٍ مبدئيًا': {'status': 'approved', 'label': 'معتمد آليًا', 'title': 'قرار اعتماد آلي للمستندات', 'filename': 'اعتماد'},
+        'يحتاج استكمالًا': {'status': 'incomplete', 'label': 'غير معتمد — يحتاج استكمالًا', 'title': 'تقرير نواقص المستندات', 'filename': 'نواقص'},
+        'تعذر التحقق': {'status': 'unverified', 'label': 'الاعتماد معلّق — تعذر التحقق', 'title': 'تقرير تعذر التحقق من المستندات', 'filename': 'تعذر-التحقق'},
+    }[verdict].copy()
+
+
 def render_review(task: dict, review: dict, requirements: list[dict]) -> str:
     esc = lambda value: html.escape(str(value))
     labels = {row['id']: row['requirement'] for row in requirements}
@@ -192,13 +203,18 @@ def render_review(task: dict, review: dict, requirements: list[dict]) -> str:
                    + ''.join('<p><b>' + esc(e['file']) + ' - ' + esc(e['locator']) + '</b><br>' + esc(e['quote']) + '</p>' for e in row['evidence']) + '</td></tr>' for row in review['criteria'])
     notes = ''.join('<li>' + esc(note) + '</li>' for note in review['recommendations'])
     limits = ''.join('<li>' + esc(note) + '</li>' for note in review['limitations'])
-    return f'''<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>مراجعة المهمة - {esc(task['title'])}</title>
+    decision = document_decision(review['verdict'])
+    unresolved = ''.join('<li><b>' + esc(labels[row['id']]) + '</b> — ' + esc(row['status']) + ': ' + esc(row['comment']) + '</li>'
+                         for row in review['criteria'] if row['status'] != 'مستوفى')
+    completion = ('<h2>النواقص والعناصر التي تحتاج تحققًا</h2><ul>' + unresolved + '</ul>') if unresolved else ''
+    return f'''<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(decision['title'])} - {esc(task['title'])}</title>
 <style>body{{font:16px/1.9 Tahoma,Arial,sans-serif;color:#203f36;background:#f5f8f6;margin:0;padding:24px}}main{{max-width:1050px;margin:auto;background:white;padding:32px;border-radius:16px}}h1{{font-size:24px}}h2{{font-size:20px;margin-top:30px}}table{{width:100%;border-collapse:collapse}}th,td{{border:1px solid #cbd9d1;padding:12px;text-align:right;vertical-align:top;overflow-wrap:anywhere}}th{{background:#edf5ef}}.verdict{{padding:14px;background:#edf5ef;font-weight:bold}}small{{color:#51695e}}@media(max-width:600px){{body,main{{padding:12px}}th,td{{padding:7px}}}}@media print{{body{{background:white}}main{{padding:0}}}}</style>
-<main><h1>مراجعة مستندات المهمة</h1><h2>{esc(task['title'])}</h2><p>{esc(task['department'])} | {esc(task['committee'])} | الفصل ٤٨١</p>
-<p class="verdict">{esc(review['verdict'])}</p><p>{esc(review['summary'])}</p><small>تاريخ المراجعة: {esc(review['reviewedAt'])}<br>المحرك: {esc(review['engine']['model'])} عبر اشتراك Antigravity</small>
+<main><h1>{esc(decision['title'])}</h1><h2>{esc(task['title'])}</h2><p>{esc(task['department'])} | {esc(task['committee'])} | الفصل ٤٨١</p>
+<p class="verdict">{esc(decision['label'])}</p><p>{esc(review['summary'])}</p><small>معرف المهمة: {esc(review['taskId'])}<br>تاريخ القرار: {esc(review['reviewedAt'])}<br>المحرك: {esc(review['engine']['model'])} عبر اشتراك Antigravity<br>بصمة المستندات: {esc(review['inputHash'])}</small>
+{completion}
 <h2>فحص الشروط والشواهد</h2><table><thead><tr><th>الشرط</th><th>النتيجة</th><th>الملاحظة والشاهد</th></tr></thead><tbody>{rows}</tbody></table>
-<h2>المطلوب استكماله</h2><ul>{notes or '<li>لا توجد توصيات إضافية مسجلة.</li>'}</ul><h2>حدود المراجعة</h2><ul>{limits or '<li>فحص محتوى المستندات المقروءة؛ لا يمثل اعتمادًا رسميًا ولا تحققًا من أصالة المستند.</li>'}</ul>
-<p>هذه مراجعة آلية أولية، ولا تغير حالة المهمة الرسمية أو تعتمد إنجازها. العناصر غير المقروءة أو غير المرفقة لم تُحتسب مستوفاة.</p></main></html>'''
+<h2>إجراءات الاستكمال</h2><ul>{notes or '<li>لا توجد إجراءات إضافية مسجلة.</li>'}</ul><h2>حدود المراجعة</h2><ul>{limits or '<li>الفحص يخص محتوى المستندات المقروءة؛ لا يثبت أصالة المستند أو صحة التوقيع.</li>'}</ul>
+<p>يسري القرار الآلي على نسخ المستندات ذات البصمة المبينة أعلاه فقط. أي تعديل يستلزم مراجعة جديدة. هذا قرار النموذج بشأن استيفاء المستندات، ولا يمثل توقيعًا أو اعتمادًا صادرًا عن جهة الجامعة المختصة، ولا يغير حالة المهمة في السجل الرسمي.</p></main></html>'''
 
 
 class NoPublishRedirect(urllib.request.HTTPRedirectHandler):
@@ -301,10 +317,11 @@ def run(args: argparse.Namespace) -> dict:
                 result['limitations'] = list(dict.fromkeys(result.get('limitations', []) + doc['limitations']))
             verdict = validate_result(result, requirements, documents)
             reviewed_at = now()
-            review = {**result, 'verdict': verdict, 'taskId': task['id'], 'inputHash': fingerprint, 'reviewedAt': reviewed_at, 'engine': engine, 'criteriaDefinition': requirements, 'fileHashes': manifest}
+            decision = document_decision(verdict)
+            review = {**result, 'verdict': verdict, 'decision': decision, 'taskId': task['id'], 'inputHash': fingerprint, 'reviewedAt': reviewed_at, 'engine': engine, 'criteriaDefinition': requirements, 'fileHashes': manifest}
             output = args.output_dir / task['id'] if args.output_dir else folder
             output.mkdir(parents=True, exist_ok=True)
-            basename = 'مراجعة-آلية-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '-' + fingerprint[:10]
+            basename = 'مراجعة-آلية-' + decision['filename'] + '-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '-' + fingerprint[:10]
             review_path = output / (basename + '.html')
             atomic_json(output / (basename + '.json'), review)
             review_path.write_text(render_review(task, review, requirements), encoding='utf-8')

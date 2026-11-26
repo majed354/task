@@ -54,6 +54,42 @@ class ReviewValidation(unittest.TestCase):
             self.assertEqual(lines, {'فقرة 1': 'تنفيذ', 'فقرة 2': 'نتيجة موثقة'})
             self.assertEqual(limits, [])
 
+    def test_approval_requires_verified_evidence_and_nonempty_criteria(self):
+        verdict = reviewer.validate_result(self.result, self.criteria, self.documents)
+        self.assertEqual(reviewer.document_decision(verdict)['status'], 'approved')
+        self.result['limitations'] = ['تعذر التحقق من التوقيع']
+        verdict = reviewer.validate_result(self.result, self.criteria, self.documents)
+        self.assertEqual(reviewer.document_decision(verdict)['status'], 'unverified')
+        with self.assertRaises(ValueError):
+            reviewer.validate_result({**self.result, 'criteria': []}, [], self.documents)
+
+    def test_deficiency_report_lists_every_unresolved_requirement(self):
+        self.criteria.append({'id': 'C02', 'requirement': 'اعتماد الجهة المختصة'})
+        self.result['criteria'] = [
+            {'id': 'C01', 'status': 'ناقص', 'comment': 'أرفق دليل التنفيذ <test>', 'evidence': []},
+            {'id': 'C02', 'status': 'غير متحقق', 'comment': 'أرفق اعتمادًا مقروءًا', 'evidence': []},
+        ]
+        verdict = reviewer.validate_result(self.result, self.criteria, self.documents)
+        report = {**self.result, 'verdict': verdict, 'taskId': 'test', 'inputHash': 'a' * 64,
+                  'reviewedAt': '2026-11-26', 'engine': {'model': 'gemini-4-neon-medium'}}
+        output = reviewer.render_review({'title': 'مهمة', 'department': 'قسم', 'committee': 'لجنة'}, report, self.criteria)
+        self.assertIn('تقرير نواقص المستندات', output)
+        self.assertIn('غير معتمد — يحتاج استكمالًا', output)
+        self.assertIn('دليل التنفيذ</b> — ناقص', output)
+        self.assertIn('اعتماد الجهة المختصة</b> — غير متحقق', output)
+        self.assertIn('&lt;test&gt;', output)
+        self.assertIn('a' * 64, output)
+
+    def test_approval_report_identifies_document_version(self):
+        verdict = reviewer.validate_result(self.result, self.criteria, self.documents)
+        report = {**self.result, 'verdict': verdict, 'taskId': 'test', 'inputHash': 'b' * 64,
+                  'reviewedAt': '2026-11-26', 'engine': {'model': 'gemini-4-neon-medium'}}
+        output = reviewer.render_review({'title': 'مهمة', 'department': 'قسم', 'committee': 'لجنة'}, report, self.criteria)
+        self.assertIn('قرار اعتماد آلي للمستندات', output)
+        self.assertIn('معتمد آليًا', output)
+        self.assertNotIn('النواقص والعناصر', output)
+        self.assertIn('b' * 64, output)
+
 class AzurePublishing(unittest.TestCase):
     def setUp(self):
         self.endpoint = 'https://committees.tu-shari3ah.com/api/course/committee-review-ingest'
