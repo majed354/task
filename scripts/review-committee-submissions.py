@@ -19,6 +19,8 @@ import subprocess
 import tempfile
 import unicodedata
 import urllib.request
+import urllib.error
+import urllib.parse
 import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime, timezone
@@ -28,7 +30,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 DEFAULT_ROOT = Path.home() / 'Library/CloudStorage/OneDrive-TaifUniversity/كلية الشريعة والأنظمة — الجودة والاعتماد - ٤٨١'
 DEFAULT_STATE = Path.home() / 'Library/Application Support/tu-committee-review'
 KEY_FILE = Path.home() / 'Library/Application Support/tu-course-reports/dashboard-sync/course-ingest-key'
-ENDPOINT = 'https://shari3ahtask.netlify.app/api/course/committee-review-ingest'
+ENDPOINT = os.environ.get('COMMITTEE_REVIEW_INGEST_URL', 'https://committees.tu-shari3ah.com/api/course/committee-review-ingest')
 VERSION = '2'
 BLANK_TEMPLATE_HASHES = set(json.loads((PROJECT / 'scripts/committee-blank-template-hashes.json').read_text())['sha256'])
 VERDICTS = ('مستوفٍ مبدئيًا', 'يحتاج استكمالًا', 'تعذر التحقق')
@@ -199,15 +201,48 @@ def render_review(task: dict, review: dict, requirements: list[dict]) -> str:
 <p>هذه مراجعة آلية أولية، ولا تغير حالة المهمة الرسمية أو تعتمد إنجازها. العناصر غير المقروءة أو غير المرفقة لم تُحتسب مستوفاة.</p></main></html>'''
 
 
-def publish(receipt: dict) -> None:
+class NoPublishRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, fp, code, message, headers, new_url):
+        return None
+
+
+def review_request(payload: dict) -> urllib.request.Request:
+    target = urllib.parse.urlsplit(ENDPOINT)
+    if (target.scheme != 'https' or target.hostname not in ('committees.tu-shari3ah.com', 'proud-desert-0347eba1e.3.azurestaticapps.net')
+            or target.username or target.password or target.port not in (None, 443) or target.query or target.fragment
+            or target.path != '/api/course/committee-review-ingest'):
+        raise ValueError('وجهة المراجعة ليست موقع اللجان المعتمد على Azure؛ لم يُرسل المفتاح')
     key = KEY_FILE.read_text().strip()
-    request = urllib.request.Request(ENDPOINT, data=json.dumps(receipt, ensure_ascii=False).encode(), method='POST', headers={'Content-Type': 'application/json', 'X-Course-Ingest-Key': key})
-    with urllib.request.urlopen(request, timeout=30) as response:
-        if json.load(response).get('ok') is not True:
+    if len(key) < 32:
+        raise ValueError('مفتاح ترحيل المراجعات غير متاح')
+    return urllib.request.Request(ENDPOINT, data=json.dumps(payload, ensure_ascii=False).encode(), method='POST', headers={'Content-Type': 'application/json', 'X-Course-Ingest-Key': key})
+
+
+def check_publish_connection() -> None:
+    # An empty receipt must reach payload validation without writing a news item.
+    request = review_request({})
+    try:
+        urllib.request.build_opener(NoPublishRedirect()).open(request, timeout=30).close()
+    except urllib.error.HTTPError as error:
+        with error:
+            if error.code == 422 and json.load(error).get('error') == 'بيانات المراجعة غير مكتملة.':
+                return
+        raise RuntimeError(f'تعذر التحقق من استقبال المراجعات على Azure (HTTP {error.code})') from error
+    raise RuntimeError('استجابة استقبال المراجعات غير متوقعة؛ لم يبدأ الفحص')
+
+
+def publish(receipt: dict) -> None:
+    request = review_request(receipt)
+    with urllib.request.build_opener(NoPublishRedirect()).open(request, timeout=30) as response:
+        result = json.load(response)
+        expected = f"review:{receipt['term']}:{receipt['taskId']}:{receipt['inputHash']}"
+        if result.get('ok') is not True or result.get('reviewId') != expected:
             raise RuntimeError('لم تقبل اللوحة نتيجة المراجعة')
 
 
 def run(args: argparse.Namespace) -> dict:
+    if args.publish and not args.dry_run:
+        check_publish_connection()
     root = args.root.resolve(strict=True)
     catalog = json.loads((PROJECT / 'netlify/functions/lib/committeeCatalog.json').read_text())
     folders = {tuple(norm(part) for part in f.parent.relative_to(root).parts): f.parent for f in root.rglob('تفاصيل المهمة.md')}
@@ -216,7 +251,7 @@ def run(args: argparse.Namespace) -> dict:
         raise ValueError('معرف المهمة غير موجود')
     state_path = args.state_dir / 'state.json'
     state = json.loads(state_path.read_text()) if state_path.exists() else {'reviews': {}}
-    summary = {'checkedAt': now(), 'tasks': len(catalog), 'reviewed': 0, 'unchanged': 0, 'withoutSubmission': 0, 'blankTemplates': 0, 'failed': []}
+    summary = {'checkedAt': now(), 'tasks': len(catalog), 'reviewed': 0, 'published': 0, 'unchanged': 0, 'withoutSubmission': 0, 'blankTemplates': 0, 'failed': []}
     for task in catalog:
         try:
             identity = '481:' + task['id']
@@ -254,8 +289,9 @@ def run(args: argparse.Namespace) -> dict:
             fingerprint = hashlib.sha256(json.dumps({'version': VERSION, 'model': args.model, 'task': task, 'details': details, 'files': manifest}, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
             if previous and previous['inputHash'] == fingerprint and Path(previous['reviewPath']).exists():
                 summary['unchanged'] += 1
-                if args.publish and not args.dry_run and not previous.get('published'):
-                    publish(previous['receipt']); previous['published'] = True; atomic_json(state_path, state)
+                if args.publish and not args.dry_run and (not previous.get('published') or previous.get('publishedTo') != ENDPOINT):
+                    publish(previous['receipt']); previous['published'] = True; previous['publishedTo'] = ENDPOINT; atomic_json(state_path, state)
+                    summary['published'] += 1
                 continue
             if args.dry_run:
                 print('Ready for review:', task['id'], 'files', len(documents), flush=True)
@@ -278,7 +314,8 @@ def run(args: argparse.Namespace) -> dict:
             summary['reviewed'] += 1
             print('Reviewed:', task['id'], verdict, flush=True)
             if args.publish:
-                publish(receipt); state['reviews'][identity]['published'] = True; atomic_json(state_path, state)
+                publish(receipt); state['reviews'][identity]['published'] = True; state['reviews'][identity]['publishedTo'] = ENDPOINT; atomic_json(state_path, state)
+                summary['published'] += 1
         except Exception as error:
             summary['failed'].append({'taskId': task['id'], 'error': str(error)})
             print('Review failed:', task['id'], str(error), flush=True)

@@ -45,6 +45,7 @@ def main() -> None:
     if not SOURCE_SCANNER.is_file():
         raise FileNotFoundError(SOURCE_SCANNER)
     python = working_python()
+    previous = plistlib.loads(PLIST.read_bytes()) if PLIST.exists() else {}
     INSTALL_DIR.mkdir(parents=True, exist_ok=True)
     PLIST.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(REPO / "scripts/refresh-course-reports.py", INSTALL_DIR / "refresh-course-reports.py")
@@ -57,6 +58,9 @@ def main() -> None:
         "RunAtLoad": True,
         "StartInterval": 3600,
         "EnvironmentVariables": {
+            **previous.get("EnvironmentVariables", {}),
+            "COMMITTEE_INGEST_URL": "https://committees.tu-shari3ah.com/api/course/committee-ingest",
+            "COURSE_REPORT_INGEST_URL": "https://committees.tu-shari3ah.com/api/course/ingest",
             "COURSE_REPORT_SCANNER": str(INSTALL_DIR / "course-delivery-scanner.py"),
             "COURSE_REPORT_OUTPUT": str(INSTALL_DIR / "course-report-public-sheet.csv"),
             "COURSE_REPORT_DETAIL_OUTPUT": str(INSTALL_DIR / "course-report-detail-public-sheet.csv"),

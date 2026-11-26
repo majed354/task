@@ -36,7 +36,7 @@ DETAIL_OUTPUT = Path(os.environ.get(
     ROOT / "outputs" / "course-report-detail-public-sheet.csv",
 ))
 SYNC_SNAPSHOT = TEAM_FOLDER / "2-المتابعة" / "مؤشرات-تقارير-المقررات.json"
-INGEST_URL = os.environ.get("COURSE_REPORT_INGEST_URL", "https://shari3ahtask.netlify.app/api/course/ingest")
+INGEST_URL = os.environ.get("COURSE_REPORT_INGEST_URL", "https://committees.tu-shari3ah.com/api/course/ingest")
 INGEST_KEY_FILE = Path(os.environ.get(
     "COURSE_REPORT_INGEST_KEY_FILE",
     Path.home() / "Library/Application Support/tu-course-reports/dashboard-sync/course-ingest-key",

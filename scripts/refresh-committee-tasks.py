@@ -13,7 +13,7 @@ from pathlib import Path
 TEAM = Path('/Users/majd/Library/CloudStorage/OneDrive-TaifUniversity/كلية الشريعة والأنظمة — الجودة والاعتماد - متابعة تقارير المقررات')
 SOURCE = Path(os.environ.get('COMMITTEE_SNAPSHOT_FILE', TEAM / '2-المتابعة/مهام-اللجان.json'))
 KEY = Path(os.environ.get('COURSE_REPORT_INGEST_KEY_FILE', Path.home() / 'Library/Application Support/tu-course-reports/dashboard-sync/course-ingest-key'))
-URL = os.environ.get('COMMITTEE_INGEST_URL', 'https://shari3ahtask.netlify.app/api/course/committee-ingest')
+URL = os.environ.get('COMMITTEE_INGEST_URL', 'https://committees.tu-shari3ah.com/api/course/committee-ingest')
 
 def refresh() -> int:
     value = json.loads(SOURCE.read_text(encoding='utf-8-sig'))
