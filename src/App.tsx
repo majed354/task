@@ -47,7 +47,9 @@ import {
   taskSearchIndex,
 } from './data'
 import { downloadTaskCalendar } from './calendarExport'
-const CommitteeDashboard = lazy(() => import('./CommitteeDashboard'))
+const CommitteeDashboard = lazy(() => import('./CommitteeTasksDashboard'))
+const PublicCommitteeDashboard = lazy(() => import('./PublicMetricsDashboard'))
+const CourseReportsDashboard = lazy(() => import('./CourseReportsDashboard'))
 
 const allCommittees = 'كل أنواع اللجان'
 
@@ -189,7 +191,7 @@ function TaskModal({ task, onClose }: { task: Task; onClose: () => void }) {
         </section>
       </div>
 
-      <footer className="modal-actions"><button className="secondary-button" type="button" onClick={onClose}>إغلاق</button></footer>
+      <footer className="modal-actions"><a className="primary-button" href={`/?view=dashboard&committee=${encodeURIComponent(task.committee)}&task=${encodeURIComponent(task.sourceId)}`}>متابعة المهمة ورفع مستنداتها</a><button className="secondary-button" type="button" onClick={onClose}>إغلاق</button></footer>
     </AccessibleDialog>
   )
 }
@@ -330,7 +332,8 @@ function Dashboard() {
         <a className="brand" href="#top" aria-label="دليل أعمال اللجان"><span className="brand-mark"><BookOpenCheck size={23} /></span><span><small>كلية الشريعة والأنظمة</small><strong>دليل أعمال اللجان</strong></span></a>
         <nav className={mobileMenu ? 'topnav is-open' : 'topnav'} aria-label="التنقل الرئيسي">
           <a className="portal-tab is-current" href="/">دليل أعمال اللجان</a>
-          <a className="portal-tab" href="/?view=dashboard">لوحة المتابعة</a>
+          <a className="portal-tab" href="/?view=dashboard">لوحة متابعة اللجان</a>
+          <a className="portal-tab" href="/?view=course-reports">تقارير المقررات</a>
           <a href="#committees" onClick={() => setMobileMenu(false)}>أنواع اللجان</a>
           <a href="#timeline" onClick={() => setMobileMenu(false)}>الخطة الزمنية</a>
           <a href="#calendar-export" onClick={() => setMobileMenu(false)}>تحميل التقويم</a>
@@ -462,7 +465,9 @@ function Dashboard() {
 }
 
 export default function App() {
-  return new URLSearchParams(window.location.search).get('view') === 'dashboard'
-    ? <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح لوحة المتابعة…</div>}><CommitteeDashboard /></Suspense>
-    : <Dashboard />
+  const view = new URLSearchParams(window.location.search).get('view')
+  if (view === 'dashboard') return <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح لوحة اللجان…</div>}><CommitteeDashboard /></Suspense>
+  if (view === 'committee-metrics') return <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح مؤشرات اللجان…</div>}><PublicCommitteeDashboard /></Suspense>
+  if (view === 'course-reports') return <Suspense fallback={<div className="monitor-loading" dir="rtl">جارٍ فتح لوحة تقارير المقررات…</div>}><CourseReportsDashboard /></Suspense>
+  return <Dashboard />
 }

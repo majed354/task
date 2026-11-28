@@ -1,5 +1,6 @@
 node_modules/
 dist/
+outputs/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
@@ -9,3 +10,7 @@ vite.config.d.ts
 
 # Local Netlify folder
 .netlify
+
+# Python runtime cache
+__pycache__/
+*.py[cod]

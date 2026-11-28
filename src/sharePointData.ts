@@ -27,7 +27,7 @@ type DriveItem = { id: string; name: string; folder?: { childCount?: number } }
 const GRAPH = 'https://graph.microsoft.com/v1.0'
 const SITE_PATH = '/sites/taifedusa.sharepoint.com:/sites/msteams_3b4354'
 const LIST_NAME = 'سجل مهام اللجان 1448'
-const GUIDE_PATH = 'أعمال اللجان/دليل مهام اللجان'
+const GUIDE_PATH = 'أعمال اللجان/دليل مهام اللجان/٤٨١'
 const SCOPE = 'Sites.Selected'
 
 export const sharePointConfig = {
@@ -121,6 +121,22 @@ function value(fields: Record<string, unknown>, name?: string): string {
   return name && fields[name] != null ? String(fields[name]).trim() : ''
 }
 
+function currentFolderUrl(value: string): string {
+  try {
+    const url = new URL(value)
+    if (url.origin !== 'https://taifedusa.sharepoint.com') return value
+    const decoded = decodeURIComponent(url.pathname)
+    const marker = '/دليل مهام اللجان/'
+    if (!decoded.includes(marker)) return value
+    const relative = decoded.split(marker)[1].replace(/^٤٨١\//, '')
+    const [department, ...rest] = relative.split('/')
+    if (!department || rest.length < 2) return value
+    // The department directories were uploaded from macOS with decomposed Arabic hamzas.
+    const path = `/sites/msteams_3b4354/Shared Documents/أعمال اللجان/دليل مهام اللجان/٤٨١/${[department.normalize('NFD'), ...rest].join('/')}`
+    return `${url.origin}/sites/msteams_3b4354/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(path)}`
+  } catch { return value }
+}
+
 function folderKey(department: string, committee: string, task: string): string {
   return [department, committee, task].map((part) => part.normalize('NFKC').trim()).join('\u0000')
 }
@@ -177,7 +193,7 @@ export async function loadCommitteeSnapshot(): Promise<CommitteeSnapshot> {
       committee: value(fields, names.committee),
       due: value(fields, names.due).slice(0, 10),
       status: value(fields, names.status) || 'لم يبدأ',
-      folderUrl: value(fields, names.folder),
+      folderUrl: currentFolderUrl(value(fields, names.folder)),
       additionalFolderItems: null,
     }
   })
